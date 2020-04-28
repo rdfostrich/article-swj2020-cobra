@@ -12,7 +12,7 @@
   <meta name="citation_author" content="Thibault Mahieu" />
   <meta name="citation_author" content="Ruben Verborgh" />
   
-  <meta name="citation_publication_date" content="2020/04/27" />
+  <meta name="citation_publication_date" content="2020/04/28" />
 </head>
 
 <body prefix="dctypes: http://purl.org/dc/dcmitype/ pimspace: http://www.w3.org/ns/pim/space# rsa: http://www.w3.org/ns/auth/rsa# cert: http://www.w3.org/ns/auth/cert# wgs: http://www.w3.org/2003/01/geo/wgs84_pos# biblio: http://purl.org/net/biblio# bibo: http://purl.org/ontology/bibo/ book: http://purl.org/NET/book/vocab# ov: http://open.vocab.org/terms/ doap: http://usefulinc.com/ns/doap# dbr: http://dbpedia.org/resource/ dbp: http://dbpedia.org/property/ sio: http://semanticscience.org/resource/ opmw: http://www.opmw.org/ontology/ deo: http://purl.org/spar/deo/ doco: http://purl.org/spar/doco/ cito: http://purl.org/spar/cito/ fabio: http://purl.org/spar/fabio/ solid: http://www.w3.org/ns/solid/terms# acl: http://www.w3.org/ns/auth/acl# dio: https://w3id.org/dio# lsc: http://linkedscience.org/lsc/ns#" typeof="schema:CreativeWork sioc:Post prov:Entity lsc:Research">
@@ -82,7 +82,10 @@ Donec quis lectus eget sem tempor tristique pellentesque in dolor.</p>
 <div datatype="rdf:HTML" property="schema:description">
       <h2 property="schema:name">Related Work</h2>
 
-      <p class="todo">Reuse stuff from OSTRICH, and reverse-delta specific stuff</p>
+      <ul class="todo">
+        <li>Reuse stuff from OSTRICH, and reverse-delta specific stuff, aggregated deltas <span class="references">[<a href="#ref-1">1</a>]</span></li>
+        <li>reverse deltas: RCS <span class="references">[<a href="#ref-2">2</a>]</span>.</li>
+      </ul>
 
     </div>
 </section>
@@ -91,16 +94,165 @@ Donec quis lectus eget sem tempor tristique pellentesque in dolor.</p>
 <div datatype="rdf:HTML" property="schema:description">
       <h2 property="schema:name">Problem Statement</h2>
 
-      <p class="todo">Research question + hypotheses</p>
+      <p>As mentioned in <a href="#introduction">Section 1</a>, the hybrid storage solution provided by OSTRICH leads to long unidirectional delta chains,
+which can become problematic for RDF archives with many versions in terms of ingestion time, storage size and query execution time.
+Our goal in this work is to investigate if these issues can be alleviated by modifying the delta chain structure.</p>
+
+      <p>We formulate our research question as follows:
+<q id="research-question">How can we improve the storage of RDF archives under the hybrid storage strategy by modification of the delta chain structure?</q></p>
+
+      <p>Concretely, we start from the storage approach from OSTRICH, and we apply two modifications:</p>
+
+      <ol>
+        <li>Creation of new snapshots, which leads to multiple delta chains.</li>
+        <li>Introduction of bidirectional delta chains using reverse deltas.</li>
+      </ol>
+
+      <p>Since both of these modifications will reduce the length of delta chains,
+we expect that this will reduce ingestion time, overall storage size, and average query execution time for all query atoms.
+Based on this, we define the following hypotheses:</p>
+
+      <ol>
+        <li id="hypothesis-qualitative-storage">Storage size will be significantly lower for a bidirectional delta chain compared to a unidirectional delta chain.</li>
+        <li id="hypothesis-qualitative-ingestion">In-order ingestion time will be lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
+        <li id="hypothesis-qualitative-querying-vm">The mean VM query execution will be lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
+        <li id="hypothesis-qualitative-querying-dm">The mean DM query execution will be lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
+        <li id="hypothesis-qualitative-querying-vq">The mean VQ query execution will be lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
+      </ol>
 
     </div>
 </section>
 
   <section id="solution" inlist="" rel="schema:hasPart" resource="#solution">
 <div datatype="rdf:HTML" property="schema:description">
-      <h2 property="schema:name">Forward and Reverse Deltas</h2>
+      <h2 property="schema:name">Bidirectional Delta Chain</h2>
+
+      <p>In this section, we explain our bidirectional delta chain approach.
+We start by explaining the general idea behind a bidirectional delta chain.
+After that, we explain its implication on storage.
+Finally, we discuss querying algorithms for the foundational query atoms based on this storage approach.</p>
+
+      <h3 id="solution-approaches">Delta Chain Approaches</h3>
+
+      <p>In the scope of this work, we distinguish between six different delta chain approaches,
+as can be seen in <a href="#delta-chain-approaches">Table 1</a>.
+We decompose these approaches into 2 axes: directionality and aggregation.</p>
+
+      <p>In terms of directionality, we distinguish three forms.
+The simplest form is the <em>forward unidirectional</em> delta chain,
+where the snapshot comes first, and is followed by deltas that are relative to the previous delta.
+The <em>reverse unidirectional</em> delta chain is a variant of this where everything is reversed.
+Concretely, the snapshot comes last, and is preceded by deltas, where each delta is relative to the next delta.
+These forward and reverse unidirectional approaches can be combined with each other to form a <em>bidirectional delta chain</em>,
+where a first set of deltas exist before the snapshot,
+and a second set of deltas exists after the snapshot.</p>
+
+      <p>In terms of aggregation, we consider the default non-aggregated form and the aggregated form.
+In the non-aggregated form, each delta is relative to the delta immediately before or after it.
+In the aggregated form <span class="references">[<a href="#ref-1">1</a>]</span>, each delta is relative to the snapshot before or after it,
+where other deltas may occur inbetween.
+This aggregated delta approach leads to lower version materialization times,
+since each delta can be directly applied to a snapshot,
+as opposed to non-aggregated deltas where multiple deltas need to be combined before a version can be materialized.
+As such, the version materialization time for aggregated deltas is <code>O(1)</code> with respect to the number of versions,
+while it is <code>O(n)</code> for non-aggregated deltas with respect to the number of versions.
+This shows how aggregated deltas lead to better query execution times.
+The major downside of aggregated deltas is however that storage size increases due to the redundancies between the different deltas.
+The longer the delta chain, the larger these redundancies become.</p>
+
+      <p>In the context of this work,
+OSTRICH is an example that follows the unidirectional forward aggregated delta chain approach,
+while RCS follows the unidirectional reverse non-aggregated delta chain approach.
+In this work, we will make use of the bidirectional aggregated delta chain approach,
+which we will explain in the next section.</p>
+
+      <figure id="delta-chain-approaches" class="table">
+
+        <table class="delta-approaches">
+          <thead>
+            <tr>
+              <th> </th>
+              <th><strong>Non-aggregated</strong></th>
+              <th><strong>Aggregated</strong></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Forward Unidirectional</strong></td>
+              <td><img src="img/delta-chain-uni.svg" alt="Unidirectional delta chain" class="delta-approach" /></td>
+              <td><img src="img/delta-chain-uni-agg.svg" alt="Unidirectional aggregated delta chain" class="delta-approach" /></td>
+            </tr>
+            <tr>
+              <td><strong>Reverse Unidirectional</strong></td>
+              <td><img src="img/delta-chain-uni-rev.svg" alt="Unidirectional reverse delta chain" class="delta-approach" /></td>
+              <td><img src="img/delta-chain-uni-agg-rev.svg" alt="Unidirectional aggregated reverse delta chain" class="delta-approach" /></td>
+            </tr>
+            <tr>
+              <td><strong>Bidirectional</strong></td>
+              <td><img src="img/delta-chain-bi.svg" alt="Bidirectional delta chain" class="delta-approach" /></td>
+              <td><img src="img/delta-chain-bi-agg.svg" alt="Bidirectional aggregated delta chain" class="delta-approach" /></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <figcaption>
+          <p><span class="label">Table 1:</span> Overview of unidirectional forward, unidirectional reverse, and bidirectional delta chain approaches,
+both with and without aggregated deltas.</p>
+        </figcaption>
+      </figure>
+
+      <h3 id="solution-bidirectional">Motivations for a Bidirectional Delta Chain</h3>
+
+      <p><a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">Experiments on the unidirectional forward aggregated delta chain approach from OSTRICH</a> <span class="references">[<a href="#ref-3">3</a>]</span>
+have shown that this approach leads to linearly increasing ingestion times,
+the longer the chain becomes.
+This is an expected consequence of the aggregated delta approach,
+as they grow in size for each new version.</p>
+
+      <p>The goal of this work is to investigate how these problems can be solved,
+without losing the advantages of aggregated deltas with respect to query execution times.
+As such, we will not achieve any lower ingestion times by reversing our delta chain,
+as the additions and deletions would simply be reversed,
+without reducing size and effort.</p>
+
+      <p>One straightforward way of reducing ingestion time would be
+to create a new snapshot and delta chain once the ingestion time or size becomes too large.
+For instance, we can lower the total ingestion time to half the original time
+by splitting one delta chain into two delta chains,
+or even to one third by splitting it up into three delta chains.
+In the extreme, each version would be form its own snapshot,
+which would lead to the independent copies storage strategy,
+at the cost of increased storage size.
+As such, there is a trade-off between ingestion time and storage size,
+and new delta chains should only be started once ingestion times become much higher than desired.</p>
+
+      <p>Since the creation of a snapshot can be costly, it should be avoided until absolutely necessary.
+As explained in the last paragraph,
+splitting up a delta chain into two separate delta chains
+would lead to two snapshots, each followed by a chain of deltas.
+We can however reduce the number of required snapshots
+by combining the forward and reverse approaches into a <em>bidirectional</em> approach,
+by allowing two sets of deltas to make use of the same snapshot.
+Intuitively, a bidirectional delta chain is equivalent
+to two forward delta chains,
+where the second delta chain is reversed,
+and the snapshots of these two chains are therefore shared,
+so that it only has to be created and stored once.</p>
+
+      <p>As such, the main advantage of a bidirectional delta chain is that it can more optimally make use of the snapshot.
+Instead of only allowing deltas in one direction to make use of it,
+also deltas in the opposite direction can make use of it.
+This especially is advantageous for aggregated deltas,
+as these grow in size for longer chains.
+In the scope of this research,
+we continue working with a bidirectional aggregated delta chain
+due to the non-increasing query execution times for increasing numbers of versions.</p>
 
       <h3 id="solution-storage">Storage Approach</h3>
+
+      <p class="todo">Write me</p>
+
+      <h3 id="solution-ingestion">Ingestion Algorithm</h3>
 
       <p class="todo">Write me</p>
 
@@ -145,7 +297,20 @@ Donec quis lectus eget sem tempor tristique pellentesque in dolor.</p>
 
 </main>
 
-<footer></footer>
+<footer><section>
+<h2 id="references">References</h2>
+<dl class="references">
+  <dt id="ref-1">[1]</dt>
+  <dd resource="#vmrdf" typeof="schema:Article">Im, D.-H., Lee, S.-W., Kim, H.-J.: A version management framework for RDF triple stores. International Journal of Software Engineering and Knowledge Engineering. 22, 85–106 (2012).</dd>
+  <dt id="ref-2">[2]</dt>
+  <dd resource="#rcs" typeof="schema:Article">Tichy, W.F.: RCS—a system for version control. Software: Practice and Experience. 15, 637–654 (1985).</dd>
+  <dt id="ref-3">[3]</dt>
+  <dd resource="https://rdfostrich.github.io/article-jws2018-ostrich/" typeof="schema:Article">Taelman, R., Vander Sande, M., Van Herwegen, J., Mannens, E., Verborgh, R.: Triple storage for random-access versioned querying of RDF archives. Journal of Web Semantics. 54, 4–28 (2019).</dd>
+</dl>
+</section>
+</footer>
+
+
 
 </body>
 </html>
