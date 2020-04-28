@@ -38,6 +38,8 @@ The longer the delta chain, the larger these redundancies become.
 In the context of this work,
 OSTRICH is an example that follows the unidirectional forward aggregated delta chain approach,
 while RCS follows the unidirectional reverse non-aggregated delta chain approach.
+In this work, we will make use of the bidirectional aggregated delta chain approach,
+which we will explain in the next section.
 
 <figure id="delta-chain-approaches" class="table" markdown="1">
 
@@ -57,11 +59,59 @@ both with and without aggregated deltas.
 ### Motivations for a Bidirectional Delta Chain
 {:#solution-bidirectional}
 
-Write me
-{:.todo}
+[Experiments on the unidirectional forward aggregated delta chain approach from OSTRICH](cite:cites ostrich)
+have shown that this approach leads to linearly increasing ingestion times,
+the longer the chain becomes.
+This is an expected consequence of the aggregated delta approach,
+as they grow in size for each new version.
+
+The goal of this work is to investigate how these problems can be solved,
+without losing the advantages of aggregated deltas with respect to query execution times.
+As such, we will not achieve any lower ingestion times by reversing our delta chain,
+as the additions and deletions would simply be reversed,
+without reducing size and effort.
+
+One straightforward way of reducing ingestion time would be
+to create a new snapshot and delta chain once the ingestion time or size becomes too large.
+For instance, we can lower the total ingestion time to half the original time
+by splitting one delta chain into two delta chains,
+or even to one third by splitting it up into three delta chains.
+In the extreme, each version would be form its own snapshot,
+which would lead to the independent copies storage strategy,
+at the cost of increased storage size.
+As such, there is a trade-off between ingestion time and storage size,
+and new delta chains should only be started once ingestion times become much higher than desired.
+
+Since the creation of a snapshot can be costly, it should be avoided until absolutely necessary.
+As explained in the last paragraph,
+splitting up a delta chain into two separate delta chains
+would lead to two snapshots, each followed by a chain of deltas.
+We can however reduce the number of required snapshots
+by combining the forward and reverse approaches into a *bidirectional* approach,
+by allowing two sets of deltas to make use of the same snapshot.
+Intuitively, a bidirectional delta chain is equivalent
+to two forward delta chains,
+where the second delta chain is reversed,
+and the snapshots of these two chains are therefore shared,
+so that it only has to be created and stored once.
+
+As such, the main advantage of a bidirectional delta chain is that it can more optimally make use of the snapshot.
+Instead of only allowing deltas in one direction to make use of it,
+also deltas in the opposite direction can make use of it.
+This especially is advantageous for aggregated deltas,
+as these grow in size for longer chains.
+In the scope of this research,
+we continue working with a bidirectional aggregated delta chain
+due to the non-increasing query execution times for increasing numbers of versions.
 
 ### Storage Approach
 {:#solution-storage}
+
+Write me
+{:.todo}
+
+### Ingestion Algorithm
+{:#solution-ingestion}
 
 Write me
 {:.todo}
