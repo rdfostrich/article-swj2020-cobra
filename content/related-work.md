@@ -1,6 +1,12 @@
 ## Related Work
 {:#related-work}
 
+In this section, we discuss the fundamentals on RDF archiving,
+which RDF archiving solutions already exist,
+and benchmarks for RDF archiving.
+Finally, we discuss OSTRICH in more detail,
+since we build upon this approach in this work.
+
 ### RDF Archiving
 
 Various techniques have been introduced to store [RDF datasets](cite:cites hdt, rdf3x).
@@ -140,11 +146,8 @@ When the chain becomes too long, or other conditions are fulfilled,
 a new snapshot is created for the next version to avoid long version reconstruction times.
 [OSTRICH](cite:cites ostrich) is a hybrid IC/CB/TB approach that exploits the advantages of each strategy
 to provide a trade-off between storage requirements and querying efficiency.
-Experiments show that the hybrid strategy followed by OSTRICH is more beneficial than having just a single storage strategy,
-as it allows efficient execution of all query atoms.
-Furthermore, it has been shown that OSTRICH offers a good basis for exposing RDF archives via [low-cost Web APIs](cite:cites vtpf),
-and as an index in query engines such as [Comunica](cite:cites ostrich_comunica,comunica).
-The main disadvantage of OSTRICH is that it leads to scalability issues in terms of ingestion time for many versions.
+Experiments show that OSTRICH achieves good querying performance for all query atoms,
+but suffers from scalability issues in terms of ingestion time for many versions.
 As such, we build upon OSTRICH in this work, and attempt to solve this problem.
 
 ### RDF Archiving Benchmarks
@@ -174,3 +177,45 @@ The hybrid approaches are based on snapshots followed by delta chains, as implem
 Due to BEAR covering all query atoms we work with,
 and it providing baseline implementations for the different storage strategies,
 we make use of BEAR for our experiments.
+
+### OSTRICH
+
+As mentioned before, [OSTRICH](cite:cites ostrich) make us of a hybrid IC/CB/TB storage approach
+with the goal of providing a trade-off between storage size and querying efficiency.
+The main motivation for OSTRICH is to serve as a back-end of a [low-cost Web APIs for exposing RDF archives](cite:cites vtpf),
+where query execution must be sufficiently fast,
+without requiring too much storage.
+
+Concretely, OSTRICH always starts by storing the initial version as a fully materialized version, following the IC strategy.
+This initial version is stored using [HDT](cite:cites hdt), which enables high compression and efficient querying.
+Based on this initial version, all following versions are stored as deltas, following the CB strategy.
+To solve the problem of increasing query execution times for increasing numbers of versions,
+OSTRICH makes use of the [aggregated deltas](cite:cites vmrdf) approach,
+by making each delta relative to the initial snapshot instead of the previous version.
+Due to the storage redundancies that are introduced because of these aggregated deltas,
+OSTRICH uses a B+tree-based approach to store all aggregated deltas in a single store.
+This single store annotates each added and deleted triple with the delta version in which it exists,
+thereby following the timestamp-based strategy.
+To further reduce storage requirements and query execution times,
+all triple components inside this store are dictionary-encoded, similar to the approach followed by HDT.
+
+On top of this storage approach, OSTRICH introduces algorithms for VM, DM and VQ triple pattern queries.
+Only triple pattern queries are supported instead of full SPARQL queries,
+since triple pattern queries are the foundational building blocks for more expressive SPARQL queries.
+These query algorithms produce streaming results, where the streams can start from an arbitrary offset,
+which is valuable for SPARQL query features such as `OFFSET` and `LIMIT`.
+Additionally, OSTRICH provides algorithms for cardinality estimation for these queries,
+which are valuable for query planning within query engines.
+OSTRICH has been implemented in [C/C++](https://github.com/rdfostrich/ostrich),
+with bindings existing for [Node.JS (JavaScript)](https://github.com/rdfostrich/ostrich-node).
+The triple pattern index provided by OSTRICH has been demonstrated
+to be usable within a full SPARQL query engine such as [Comunica](cite:cites ostrich_comunica,comunica).
+
+Experimental results on OSTRICH with the BEAR benchmark show that this hybrid strategy
+is more beneficial than having just a single storage strategy,
+as it allows efficient execution of all query atoms.
+The main downside of this approach is that it leads to scalability issues in terms of ingestion time for many versions.
+Concretely, the BEAR-B-hourly dataset—which contains 1299 versions—
+starts showing high ingestion times starting around version 1100.
+The reason for this is that the aggregated deltas start becoming too large.
+As such, we build upon OSTRICH in this work, and attempt to solve this problem by modifying the delta chain structure.

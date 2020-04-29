@@ -1,8 +1,8 @@
 ## Problem Statement
-{:#problem-statement}
+{:#related-work}
 
-As mentioned in [](#introduction), the hybrid storage solution provided by OSTRICH leads to long unidirectional delta chains,
-which can become problematic for RDF archives with many versions in terms of ingestion time, storage size and query execution time.
+As mentioned in [](#introduction), the hybrid storage solution provided by OSTRICH leads to long delta chains,
+which can become problematic for RDF archives with many versions in terms of ingestion time and storage size.
 Our goal in this work is to investigate if these issues can be alleviated by modifying the delta chain structure.
 
 We formulate our research question as follows:
