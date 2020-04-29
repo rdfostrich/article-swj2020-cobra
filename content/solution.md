@@ -37,7 +37,7 @@ The longer the delta chain, the larger these redundancies become.
 
 In the context of this work,
 OSTRICH is an example that follows the unidirectional forward aggregated delta chain approach,
-while RCS follows the unidirectional reverse non-aggregated delta chain approach.
+while [RCS](cite:cites rcs) (non-RDF-based) follows the unidirectional reverse non-aggregated delta chain approach.
 In this work, we will make use of the bidirectional aggregated delta chain approach,
 which we will explain in the next section.
 
