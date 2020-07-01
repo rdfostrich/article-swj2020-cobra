@@ -1,0 +1,16 @@
+FUNCTION fixUp(store)
+  INPUT:
+    store: a storage object
+# Recreate deltas, but in reverse
+additions = [] 
+deletions = []
+FOR v IN store.getVersions()
+  deletions.push(store.getAdditions(v, v + 1))
+  additions.push(store.getDeletions(v, v + 1))
+# Ingest reversed deltas into a new delta chain
+newChain = store.newDeltaChain({ reversed: true })
+FOR v IN store.getVersions()
+  newChain.ingest(v, additions[v], deletions[v])
+# Replace delta chain
+existingChain = store.getDeltaChain(store.getVersions())
+store.replaceChain(existingChain, newChain)

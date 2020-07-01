@@ -109,8 +109,8 @@ due to the non-increasing query execution times for increasing numbers of versio
 As mentioned before, our storage approach builds upon that of OSTRICH.
 The only difference is that OSTRICH uses a unidirectional aggregated delta chain,
 and our approach uses a bidirectional aggregated delta chain.
-Concretely, this means that not only backward delta exist *after* the snapshot,
-but also forward deltas exist *before* the snapshot.
+Concretely, this means that not only deltas exist *after* the snapshot,
+but also deltas exist *before* the snapshot.
 
 <figure id="storage-overview" class="table">
 <img src="img/storage-overview.svg" alt="Storage overview" class="storage-overview">
@@ -139,8 +139,40 @@ For the sake of brevity, we omit further details about the components that can b
 ### Ingestion Algorithm
 {:#solution-ingestion}
 
-Write me (see 4.2)
-{:.todo}
+In this section, we introduce an algorithm to enable ingestion of new versions within our bidirectional aggregated storage approach.
+For this, we make use of the ingestion algorithm from OSTRICH, which enables ingestion within a unidirectional forward aggregated delta chain.
+As our approach extends from OSTRICH, we can already insert deltas *after* the snapshot,
+but not yet *before* the snapshot, i.e., the reverse part of the delta chain.
+
+Our approach for constructing the reverse delta chain involves a temporary forward delta chain.
+This is because we can not start building our reverse delta chain directly,
+as we can not predict what triples will be in the snapshot later down the line.
+For each new version, our temporary forward delta chain will be built up,
+and can be queried in the meantime.
+From the moment that this delta chain becomes too long, or some other treshold has been exceeded,
+then an offline fix-up algorithm is triggered that will effectively *reverse* this delta chain,
+and place a snapshot at the end, after which a new forward delta chain can build upon.
+
+[](#algorithm-fixup) shows a sketch of our fix-up algorithm in pseudo-code.
+First, the all aggregated deltas in the chain will be extracted as non-aggregated deltas by calling existing DM functionality in OSTRICH.
+We store the deletions as additions, and the additions as deletions.
+Next, we create a new delta chain, and insert these reversed deltas by calling existing ingestion functionality in OSTRICH.
+Once ingestion is done, the existing delta chain is replace by our new delta chain.
+
+<figure id="algorithm-fixup" class="algorithm numbered">
+````/algorithms/fixup.txt````
+<figcaption markdown="block">
+Fix-up algorithm for reversing an existing  bidirectional aggregated delta chain.
+</figcaption>
+</figure>
+
+The main advantage of this fix-up approach is that it avoids query unavailability of the archive.
+The fix-up algorithm can run at any time, preferably when the server is experiencing a lower query load.
+During the execution of this process, the temporary forward delta chain is still available,
+so queries are still possible during this time.
+Only after the fix-up process is done,
+query executions will be delegated to this new reverse delta chain, 
+nd the temporary forward delta chain can be deleted.
 
 ### Query Algorithms
 {:#solution-query}
