@@ -64,12 +64,11 @@ have shown that this approach leads to linearly increasing ingestion times,
 the longer the chain becomes.
 This is an expected consequence of the aggregated delta approach,
 as they grow in size for each new version.
-
 The goal of this work is to investigate how these problems can be solved,
 without losing the advantages of aggregated deltas with respect to query execution times.
 As such, we will not achieve any lower ingestion times by reversing our delta chain,
-as the additions and deletions would simply be reversed,
-without reducing size and effort.
+as the additions and deletions would simply be reversed.
+Instead, we aim to reduce overall storage by reducing the number of required snapshots.
 
 One straightforward way of reducing ingestion time would be
 to create a new snapshot and delta chain once the ingestion time or size becomes too large.
@@ -89,31 +88,58 @@ would lead to two snapshots, each followed by a chain of deltas.
 We can however reduce the number of required snapshots
 by combining the forward and reverse approaches into a *bidirectional* approach,
 by allowing two sets of deltas to make use of the same snapshot.
-Intuitively, a bidirectional delta chain is equivalent
+Intuitively, one bidirectional delta chain is equivalent
 to two forward delta chains,
 where the second delta chain is reversed,
 and the snapshots of these two chains are therefore shared,
 so that it only has to be created and stored once.
 
-As such, the main advantage of a bidirectional delta chain is that it can more optimally make use of the snapshot.
+As such, the main advantage of a bidirectional delta chain is that it can more optimally make use of snapshots.
 Instead of only allowing deltas in one direction to make use of it,
 also deltas in the opposite direction can make use of it.
-This especially is advantageous for aggregated deltas,
+This is especially advantageous for aggregated deltas,
 as these grow in size for longer chains.
 In the scope of this research,
-we continue working with a bidirectional aggregated delta chain
+we continue working with a bidirectional *aggregated* delta chain
 due to the non-increasing query execution times for increasing numbers of versions.
 
 ### Storage Approach
 {:#solution-storage}
 
-Write me
-{:.todo}
+As mentioned before, our storage approach builds upon that of OSTRICH.
+The only difference is that OSTRICH uses a unidirectional aggregated delta chain,
+and our approach uses a bidirectional aggregated delta chain.
+Concretely, this means that not only backward delta exist *after* the snapshot,
+but also forward deltas exist *before* the snapshot.
+
+<figure id="storage-overview" class="table">
+<img src="img/storage-overview.svg" alt="Storage overview" class="storage-overview">
+<figcaption markdown="block">
+Overview of the main components of our storage approach consisting of a bidirectional aggregated delta chain.
+</figcaption>
+</figure>
+
+[](#storage-overview) shows an overview of the main components of our storage approach,
+which are analogous to the components from OSTRICH, except for the delta chain on the left side of the snapshot.
+Like OSTRICH, the snapshot is stored using [HDT](cite:cites hdt),
+due to its highly performant triple pattern queries and cardinality estimates,
+and its high compression rate.
+Furthermore, metadata about the archive is stored, containing details such as the total number of versions.
+Next, each delta chain is compressed into timestamp-based B+tree indexes,
+where additions and deletions are stored separately.
+Each addition and deletion index is stored three times for different triple components orders (SPO, POS, OSP),
+to enable efficient triple pattern queries for all possible combinations.
+A shared dictionary is used to compress each triple component further.
+Following the OSTRICH storage approach,
+the SPO deletion index contains additional metadata about the relative position of each triple inside the snapshot.
+This metadata also allows cardinality estimates for deletions to be retrieved efficiently.
+To enable cardinality estimates for additions, we make use of the addition count index from OSTRICH.
+For the sake of brevity, we omit further details about the components that can be found in the [OSTRICH article](cite:cites ostrich).
 
 ### Ingestion Algorithm
 {:#solution-ingestion}
 
-Write me
+Write me (see 4.2)
 {:.todo}
 
 ### Query Algorithms
