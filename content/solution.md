@@ -154,15 +154,15 @@ then an offline fix-up algorithm is triggered that will effectively *reverse* th
 and place a snapshot at the end, after which a new forward delta chain can build upon.
 
 [](#algorithm-fixup) shows a sketch of our fix-up algorithm in pseudo-code.
-First, the all aggregated deltas in the chain will be extracted as non-aggregated deltas by calling existing DM functionality in OSTRICH.
+First, the all aggregated deltas in the chain will be extracted as non-aggregated deltas by calling [existing DM functionality in OSTRICH](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization).
 We store the deletions as additions, and the additions as deletions.
-Next, we create a new delta chain, and insert these reversed deltas by calling existing ingestion functionality in OSTRICH.
-Once ingestion is done, the existing delta chain is replace by our new delta chain.
+Next, we create a new delta chain, and insert these reversed deltas by calling [existing ingestion functionality in OSTRICH](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions).
+Once ingestion is done, the existing delta chain is replaced by our new delta chain.
 
 <figure id="algorithm-fixup" class="algorithm numbered">
 ````/algorithms/fixup.txt````
 <figcaption markdown="block">
-Fix-up algorithm for reversing an existing  bidirectional aggregated delta chain.
+Fix-up algorithm for reversing an existing bidirectional aggregated delta chain.
 </figcaption>
 </figure>
 
@@ -177,6 +177,82 @@ nd the temporary forward delta chain can be deleted.
 ### Query Algorithms
 {:#solution-query}
 
-Write me
-{:.todo}
+In this section, we discuss triple pattern query algorithms for the three query atoms discussed in [](#related-work) (VM, DM, VQ).
+For simplicity, we assume the existence of a single (bidirectional) delta chain.
+We consider multiple delta chains future work.
+Just like for OSTRICH, all of these algorithms work in a streaming manner with offset support,
+and offer cardinality estimators.
+Below, we briefly discuss the relevant parts of the OSTRICH algorithms.
+For more details, we refer to the [OSTRICH article](cite:cites ostrich).
 
+#### Version Materialization
+
+Version Materialization (VM) allows retrieval of triples in a given version.
+In summary, [OSTRICH enables VM](https://rdfostrich.github.io/article-jws2018-ostrich/#version-materialization)
+by either querying a snapshot directly, if the requested version is a snapshot,
+or applying a given delta on the closest preceding snapshot otherwise.
+In our case, a snapshot can not only exist before a delta, but also after a delta.
+Nevertheless, the algorithm itself remains the same as in OSTRICH,
+as the delta will have to be applied onto the snapshot in both cases.
+As such, we do not discuss this VM case any further.
+
+#### Delta Materialization
+
+Delta Materialization (DM) allows differences between to given versions to be retrieved.
+[OSTRICH distinguishes two cases for this](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization);
+either the start version to a snapshot, or to a delta.
+If the start version is a snapshot, then the result is simply a query within the delta of the end version.
+Otherwise, the addition and deletion indexes for the two delta versions are iterated in a sort-merge join-like operation,
+and only emits the triples that have a different addition/deletion flag for the two versions.
+
+In our bidirectional storage approach, one additional case can occur:
+when the start and end version correspond to deltas in the bidirectional delta chain *before* and *after* the snapshot,
+i.e., the DM query crosses the snapshot boundary.
+For this, we split up our query into two queries:
+a DM query from the start version until the snapshot,
+and a DM query from the snapshot until the end version.
+These two queries can be resolved over the two respective delta chains using [the existing DM functionality from OSTRICH](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization).
+As the results from these two queries are sorted,
+we can merge them in a sort-merge join way,
+where triples are only emitted if they don't exist in both streams.
+[](#algorithm-querying-dm) illustrates this algorithm in pseudocode.
+Following the patch notation for [DARCS](cite:cites darcs),
+with `o` being the start version, `e` being the end version and `s` being the snapshot,
+our delta splitting corresponds to <sup>`o`</sup>`D`<sup>`e`</sup> = <sup>`o`</sup>`D1`<sup>`s`</sup>`D2`<sup>`e`</sup>.
+
+<figure id="algorithm-querying-dm" class="algorithm numbered">
+````/algorithms/querying-dm.txt````
+<figcaption markdown="block">
+Delta Materialization algorithm for triple patterns that produces a triple stream
+when the version range crosses the snapshot boundary.
+</figcaption>
+</figure>
+
+In order to estimate the cardinality of this third case,
+the same idea is followed
+where the counts of the part of the delta chain before and after the snapshot are added.
+Just like the existing DM cardinality estimator from OSTRICH,
+this can be an overestimation, since certain triples may occur in both delta chains
+that would be omitted from the final result stream.
+
+#### Version Query
+
+A Version Query (VQ) enables querying across all versions,
+with results being annotated with the version in which they occur.
+[OSTRICH enables VQ](https://rdfostrich.github.io/article-jws2018-ostrich/#version-query)
+by iterating over the snapshot for a given triple pattern in a streaming manner.
+Every snapshot triple is queried within the deletion index.
+For every discovered deletion, their respective version annotations are removed from the result.
+If no such deletion value was found, the triple was never deleted, so the versions annotation will contain all versions of the store.
+Once the snapshot stream has finished,
+the addition index are iterated in a similar way,
+where the version annotation of every addition triple is again updated based on its presence in the deletion index.
+
+Our case is a trivial extension of this algorithm,
+where instead of checking single addition and deletion streams,
+two addition and deletion streams have to be checked,
+which will produce distinct version annotations.
+
+To estimate the cardinality, the OSTRICH approach can again be extended,
+by adding the snapshot cardinality with the addition cardinality for both delta chains for the given triple pattern.
+As some triples could occur in both delta chains, this can lead to an overestimation.

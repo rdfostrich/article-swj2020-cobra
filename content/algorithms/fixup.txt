@@ -1,6 +1,4 @@
 FUNCTION fixUp(store)
-  INPUT:
-    store: a storage object
 # Recreate deltas, but in reverse
 additions = [] 
 deletions = []
