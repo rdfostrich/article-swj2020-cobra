@@ -407,5 +407,20 @@ img.delta-approach {
   width: 13em;
 }
 
+img.results-triple {
+  width: 12em;
+  height: 12em;
+}
+
+img.results-legend {
+  width: 18em;
+}
+
+.subfigure {
+  float: left;
+  margin: 0;
+  padding: 1em;
+}
+
 @import "shared.scss";
 @import "shared_override.scss";

@@ -112,7 +112,7 @@ and our approach uses a bidirectional aggregated delta chain.
 Concretely, this means that not only deltas exist *after* the snapshot,
 but also deltas exist *before* the snapshot.
 
-<figure id="storage-overview" class="table">
+<figure id="storage-overview" class="figure">
 <img src="img/storage-overview.svg" alt="Storage overview" class="storage-overview">
 <figcaption markdown="block">
 Overview of the main components of our storage approach consisting of a bidirectional aggregated delta chain.
