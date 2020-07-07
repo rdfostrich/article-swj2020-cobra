@@ -442,9 +442,9 @@ to become lower with a bidirectional delta chain compared to a unidirectional de
 While this is true for BEAR-A and BEAR-B Hourly, this is not true for BEAR-B Daily.
 As such, we _reject_ this hypotheses.
 In our [second hypothesis](#hypothesis-qualitative-ingestion),
-we expected ingestion time to be higher with a bidirectional delta chain.
-Our results show that the opposite is true, and ingestion into a bidirectional delta chain is in fact _faster_ than for a unidirectional delta chain.
-As such, we also _reject_ this hypothesis.
+we expected ingestion time to be lower with a bidirectional delta chain.
+Our results show that this is true.
+As such, we _accept_ this hypothesis.
 Our other hypotheses expect that evaluation times for [VM](#hypothesis-qualitative-querying-vm),
 [DM](#hypothesis-qualitative-querying-dm) and [VQ](#hypothesis-qualitative-querying-vq)
 with a bidirectional delta chain would be lower.

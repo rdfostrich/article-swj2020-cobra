@@ -20,7 +20,7 @@ Based on this, we define the following hypotheses:
 1. {:#hypothesis-qualitative-storage}
 Storage size will be lower for a bidirectional delta chain compared to a unidirectional delta chain.
 2. {:#hypothesis-qualitative-ingestion}
-In-order ingestion time will be lower for a unidirectional delta chain compared to a bidirectional delta chain.
+In-order ingestion time will be lower for a bidirectional delta chain compared to a unidirectional delta chain.
 3. {:#hypothesis-qualitative-querying-vm}
 The mean VM query execution will be lower for a unidirectional delta chain compared to a bidirectional delta chain.
 4. {:#hypothesis-qualitative-querying-dm}
