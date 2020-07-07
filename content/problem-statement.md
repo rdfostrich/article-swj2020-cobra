@@ -1,5 +1,5 @@
 ## Problem Statement
-{:#related-work}
+{:#problem-statement}
 
 As mentioned in [](#introduction), the hybrid storage solution provided by OSTRICH leads to long delta chains,
 which can become problematic for RDF archives with many versions in terms of ingestion time and storage size.
@@ -18,7 +18,7 @@ we expect that this will reduce ingestion time, overall storage size, and averag
 Based on this, we define the following hypotheses:
 
 1. {:#hypothesis-qualitative-storage}
-Storage size will be significantly lower for a bidirectional delta chain compared to a unidirectional delta chain.
+Storage size will be lower for a bidirectional delta chain compared to a unidirectional delta chain.
 2. {:#hypothesis-qualitative-ingestion}
 In-order ingestion time will be lower for a unidirectional delta chain compared to a bidirectional delta chain.
 3. {:#hypothesis-qualitative-querying-vm}

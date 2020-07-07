@@ -201,7 +201,7 @@ As such, we do not discuss this VM case any further.
 Delta Materialization (DM) allows differences between to given versions to be retrieved.
 [OSTRICH distinguishes two cases for this](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization);
 either the start version to a snapshot, or to a delta.
-If the start version is a snapshot, then the result is simply a query within the delta of the end version.
+If the start (or end) version is a snapshot, then the result is simply a query within the delta of the end version.
 Otherwise, the addition and deletion indexes for the two delta versions are iterated in a sort-merge join-like operation,
 and only emits the triples that have a different addition/deletion flag for the two versions.
 

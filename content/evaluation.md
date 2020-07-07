@@ -233,7 +233,7 @@ Fix-up duration for the different datasets.
 #### Query Evaluation
 
 [](#query-vm), [](#query-dm) and [](#query-vq) show the query evaluation times
-for COBRA and OSTRICH for respectively VM, DM and VQ.
+for COBRA (after fix-up) and OSTRICH for respectively VM, DM and VQ.
 These figures show that for VM, COBRA is faster than OSTRICH minus a few outliers around the middle version.
 For DM, COBRA is always faster than OSTRICH when querying within the first half of its delta chain.
 For the second half, COBRA becomes slower, and for BEAR-B Daily even becomes slower than OSTRICH.
@@ -300,7 +300,7 @@ BEAR-B Hourly
 </figure>
 
 <figcaption markdown="block">
-Delta Materialization evaluation times between the middle version and all other versions
+Delta Materialization evaluation times between the first version and all other versions
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 For the first half of versions, COBRA is faster than OSTRICH.
 For the second half of versions, COBRA becomes slower, but still faster than OSTRICH for BEAR-A and BEAR-B Hourly.
@@ -336,14 +336,118 @@ COBRA is faster than OSTRICH for the BEAR-B datasets, but slower for BEAR-A.
 </figcaption>
 </figure>
 
+[](#query-avg-beara), [](#query-avg-bearbd) and [](#query-avg-bearbh) respectively show
+the average overall query evaluation times for BEAR-A, BEAR-B Daily and BEAR-B Hourly.
+This shows that on average, COBRA is faster than OSTRICH,
+except for VQ in BEAR-A.
+
+<figure id="query-avg-beara" class="table" markdown="1">
+
+| Dataset       | VM      | DM      | VQ      |
+|---------------|:--------|:--------|:--------|
+| OSTRICH       | 5.64    | 4,15    | *8,60*  |
+| COBRA         | *4.37*  | *2,93*  | 10,62   |
+
+<figcaption markdown="block">
+Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for BEAR-A (ms).
+</figcaption>
+</figure>
+
+<figure id="query-avg-bearbd" class="table" markdown="1">
+| Dataset       | VM      | DM      | VQ      |
+|---------------|:--------|:--------|:--------|
+| OSTRICH       | 0,71    | 0,38    | 0.90.   |
+| COBRA         | *0,51*  | *0,31*  | *0.89*  |
+
+<figcaption markdown="block">
+Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for BEAR-B Daily (ms).
+</figcaption>
+</figure>
+
+<figure id="query-avg-bearbh" class="table" markdown="1">
+
+| Dataset       | VM      | DM      | VQ      |
+|---------------|:--------|:--------|:--------|
+| OSTRICH       | 0.73    | 0.27    | 1,72    |
+| COBRA         | *0.53*  | *0.19*  | *1,34*  |
+
+<figcaption markdown="block">
+Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for BEAR-B Hourly (ms).
+</figcaption>
+</figure>
+
 ### Discussion
 {:#evaluation-discussion}
 
-Write me
-{:.todo}
+In this section, we discuss the findings of our results regarding ingestion and query evaluation,
+and we test our hypotheses.
 
-Interestingly, for BEAR-B-Hourly, it is only around version 360 that OSTRICH starts requiring more storage space than COBRA,
-which confirms that long delta chains have a negative impact on both storage size and ingestion time.
+#### Ingestion
 
-As such, when out of order ingestion is possible, it is preferred over fix-up.
-However, since the fix-up process can happen in an offline process, this additional time is typically not a problem.
+Our experimental results show that the usage of a bidirectional delta chain has a significant impact
+on storage size and ingestion time compared to a unidirectional delta chain.
+While the unidirectional delta chain leads to increasing ingestion times for every new version,
+initiating a new snapshot (COBRA\*) can effectively _reset_ these ingestion times.
+The downside of this is that there is a clear increase in storage size due to this,
+which is more significant for datasets that have many small versions (BEAR-B).
+As such, for such datasets (BEAR-B), it is recommended to wait longer before initiating a new snapshot in the delta chain,
+since ingestion times are typically much lower compared to datasets with fewer large versions (BEAR-A).
+Given the capabilities and query load of the server and affordable storage overhead,
+a certain ingestion time threshold could be defined,
+which would initiate a new snapshot when this threshold is exceeded.
+
+Once there are two unidirectional delta chains,
+the first one could optionally be reversed so that both can share one snapshot through a fix-up process (COBRA).
+Our results show that this can further reduce storage size for datasets with few large versions (BEAR-A).
+However, for many small versions (BEAR-B), this leads to additional storage overhead.
+This fix-up process does however require a significant execution time.
+However, since this could easily run in a separate process can happen in an offline process,
+this additional time is typically not a problem.
+As such, when the server encounters a dataset with large versions (millions of triples per version),
+then the fix-up process should be applied.
+
+The results also show that if all versions are known beforehand,
+they should be ingested out-of-order into a bidirectional delta chain.
+Because this leads to a significantly lower total ingestion time
+compared to in-order ingestion followed by the fix-up process.
+
+#### Query Evaluation
+
+Regarding query performance, our results show that the bidirectional delta chain also has a large impact here.
+Since two shorter delta chains lead to two smaller addition and deletion indexes compared to one longer delta chain,
+VM and DM times become lower, since less data needs to be iterated.
+We see that DM times for the second half of the bidirectional delta chain become slower compared to the first half.
+This is because in these cases we need to query within the two parts of the delta chain,
+i.e., we need to search through two addition and deletion indexes instead of just one.
+For datasets with many small versions (BEAR-B),
+VQ also becomes faster with a bidirectional delta chain,
+but this does not apply when the dataset has few large versions (BEAR-A).
+The reason for this again has to do with the fact that we now have two delta chains,
+and two addition and deletion indexes to query in.
+When we have many small versions, these two delta chains are worth it,
+as their impact on performance outweighs the impact of the snapshot.
+However, for few large versions,
+the overhead of two delta chains is too large for VQ,
+and one delta chain is more performant.
+In summary, a bidirectional delta chain is most effective for optimizing VM,
+largely beneficial for DM,
+and beneficial for VQ (assuming many small versions).
+
+#### Hypotheses
+
+In [](#problem-statement), we defined research hypotheses,
+which we will now answer based on our experimental results.
+In our [first hypothesis](#hypothesis-qualitative-storage), we expected storage size
+to become lower with a bidirectional delta chain compared to a unidirectional delta chain.
+While this is true for BEAR-A and BEAR-B Hourly, this is not true for BEAR-B Daily.
+As such, we _reject_ this hypotheses.
+In our [second hypothesis](#hypothesis-qualitative-ingestion),
+we expected ingestion time to be higher with a bidirectional delta chain.
+Our results show that the opposite is true, and ingestion into a bidirectional delta chain is in fact _faster_ than for a unidirectional delta chain.
+As such, we also _reject_ this hypothesis.
+Our other hypotheses expect that evaluation times for [VM](#hypothesis-qualitative-querying-vm),
+[DM](#hypothesis-qualitative-querying-dm) and [VQ](#hypothesis-qualitative-querying-vq)
+with a bidirectional delta chain would be lower.
+Our results show that this is true, expect for VQ.
+As such, we _accept_ our [third](#hypothesis-qualitative-querying-vm) and [fourth](#hypothesis-qualitative-querying-dm) hypothesis,
+and _reject_ our [fifth](#hypothesis-qualitative-querying-vq) hypothesis.
