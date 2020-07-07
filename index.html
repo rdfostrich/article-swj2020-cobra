@@ -12,7 +12,7 @@
   <meta name="citation_author" content="Thibault Mahieu" />
   <meta name="citation_author" content="Ruben Verborgh" />
   
-  <meta name="citation_publication_date" content="2020/07/03" />
+  <meta name="citation_publication_date" content="2020/07/07" />
 </head>
 
 <body prefix="dctypes: http://purl.org/dc/dcmitype/ pimspace: http://www.w3.org/ns/pim/space# rsa: http://www.w3.org/ns/auth/rsa# cert: http://www.w3.org/ns/auth/cert# wgs: http://www.w3.org/2003/01/geo/wgs84_pos# biblio: http://purl.org/net/biblio# bibo: http://purl.org/ontology/bibo/ book: http://purl.org/NET/book/vocab# ov: http://open.vocab.org/terms/ doap: http://usefulinc.com/ns/doap# dbr: http://dbpedia.org/resource/ dbp: http://dbpedia.org/property/ sio: http://semanticscience.org/resource/ opmw: http://www.opmw.org/ontology/ deo: http://purl.org/spar/deo/ doco: http://purl.org/spar/doco/ cito: http://purl.org/spar/cito/ fabio: http://purl.org/spar/fabio/ solid: http://www.w3.org/ns/solid/terms# acl: http://www.w3.org/ns/auth/acl# dio: https://w3id.org/dio# lsc: http://linkedscience.org/lsc/ns#" typeof="schema:CreativeWork sioc:Post prov:Entity lsc:Research">
@@ -920,7 +920,7 @@ but the ingestion times for all later versions significantly reset.</p>
       <figure id="ingestion-size" class="figure">
 
 <center>
-<img src="img/results/legend.png" alt="Legend" class="results-legend" />
+<img src="img/results/legend-ingestion.png" alt="Legend" class="results-legend" />
 </center>
 
 <figure id="ingestion-size-beara" class="subfigure">
@@ -954,7 +954,7 @@ For BEAR-B Daily and Hourly, the middle snapshot leads to a significant increase
       <figure id="ingestion-time" class="figure">
 
 <center>
-<img src="img/results/legend.png" alt="Legend" class="results-legend" />
+<img src="img/results/legend-ingestion.png" alt="Legend" class="results-legend" />
 </center>
 
 <figure id="ingestion-time-beara" class="subfigure">
@@ -996,7 +996,7 @@ On average, this fix-up requires 3,6 times more time compared to the additional 
           <thead>
             <tr>
               <th>Dataset</th>
-              <th style="text-align: left">Time.</th>
+              <th style="text-align: left">Time</th>
             </tr>
           </thead>
           <tbody>
@@ -1021,6 +1021,110 @@ On average, this fix-up requires 3,6 times more time compared to the additional 
       </figure>
 
       <h4 id="query-evaluation">Query Evaluation</h4>
+
+      <p><a href="#query-vm">Fig. 5</a>, <a href="#query-dm">Fig. 6</a> and <a href="#query-vq">Fig. 7</a> show the query evaluation times
+for COBRA and OSTRICH for respectively VM, DM and VQ.
+These figures show that for VM, COBRA is faster than OSTRICH minus a few outliers around the middle version.
+For DM, COBRA is always faster than OSTRICH when querying within the first half of its delta chain.
+For the second half, COBRA becomes slower, and for BEAR-B Daily even becomes slower than OSTRICH.
+For VQ, COBRA is faster than OSTRICH for BEAR-B Hourly, slightly faster for BEAR-B Daily, and slower for BEAR-A.</p>
+
+      <figure id="query-vm" class="figure">
+
+<center>
+<img src="img/results/legend-query.png" alt="Legend" class="results-legend" />
+</center>
+
+<figure id="query-vm-beara" class="subfigure">
+<img src="img/results/beara-query-vm.png" alt="BEAR-A VM" class="results-triple" />
+<figcaption class="for-subfigure">
+            <p><span class="label">Subfig. 5.1:</span> BEAR-A</p>
+          </figcaption>
+</figure>
+
+<figure id="query-vm-bearbd" class="subfigure">
+<img src="img/results/bearbd-query-vm.png" alt="BEAR-B Daily VM" class="results-triple" />
+<figcaption class="for-subfigure">
+            <p><span class="label">Subfig. 5.2:</span> BEAR-B Daily</p>
+          </figcaption>
+</figure>
+
+<figure id="query-vm-bearbh" class="subfigure">
+<img src="img/results/bearbh-query-vm.png" alt="BEAR-B Hourly VM" class="results-triple" />
+<figcaption class="for-subfigure">
+            <p><span class="label">Subfig. 5.3:</span> BEAR-B Hourly</p>
+          </figcaption>
+</figure>
+
+<figcaption>
+          <p><span class="label">Fig. 5:</span> Version Materialization evaluation times per version for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
+For most versions, COBRA has is faster than OSTRICH.</p>
+        </figcaption>
+</figure>
+
+      <figure id="query-dm" class="figure">
+
+<center>
+<img src="img/results/legend-query.png" alt="Legend" class="results-legend" />
+</center>
+
+<figure id="query-dm-beara" class="subfigure">
+<img src="img/results/beara-query-dm.png" alt="BEAR-A DM" class="results-triple" />
+<figcaption class="for-subfigure">
+            <p><span class="label">Subfig. 6.1:</span> BEAR-A</p>
+          </figcaption>
+</figure>
+
+<figure id="query-dm-bearbd" class="subfigure">
+<img src="img/results/bearbd-query-dm.png" alt="BEAR-B Daily DM" class="results-triple" />
+<figcaption class="for-subfigure">
+            <p><span class="label">Subfig. 6.2:</span> BEAR-B Daily</p>
+          </figcaption>
+</figure>
+
+<figure id="query-dm-bearbh" class="subfigure">
+<img src="img/results/bearbh-query-dm.png" alt="BEAR-B Hourly DM" class="results-triple" />
+<figcaption class="for-subfigure">
+            <p><span class="label">Subfig. 6.3:</span> BEAR-B Hourly</p>
+          </figcaption>
+</figure>
+
+<figcaption>
+          <p><span class="label">Fig. 6:</span> Delta Materialization evaluation times between the middle version and all other versions
+for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
+For the first half of versions, COBRA is faster than OSTRICH.
+For the second half of versions, COBRA becomes slower, but still faster than OSTRICH for BEAR-A and BEAR-B Hourly.</p>
+        </figcaption>
+</figure>
+
+      <figure id="query-vq" class="figure">
+
+<figure id="query-vq-beara" class="subfigure">
+<img src="img/results/beara-query-vq.png" alt="BEAR-A VQ" class="results-triple" />
+<figcaption class="for-subfigure">
+            <p><span class="label">Subfig. 7.1:</span> BEAR-A</p>
+          </figcaption>
+</figure>
+
+<figure id="query-vq-bearbd" class="subfigure">
+<img src="img/results/bearbd-query-vq.png" alt="BEAR-B Daily VQ" class="results-triple" />
+<figcaption class="for-subfigure">
+            <p><span class="label">Subfig. 7.2:</span> BEAR-B Daily</p>
+          </figcaption>
+</figure>
+
+<figure id="query-vq-bearbh" class="subfigure">
+<img src="img/results/bearbh-query-vq.png" alt="BEAR-B Hourly VQ" class="results-triple" />
+<figcaption class="for-subfigure">
+            <p><span class="label">Subfig. 7.3:</span> BEAR-B Hourly</p>
+          </figcaption>
+</figure>
+
+<figcaption>
+          <p><span class="label">Fig. 7:</span> Version Query evaluation times across all versions for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
+COBRA is faster than OSTRICH for the BEAR-B datasets, but slower for BEAR-A.</p>
+        </figcaption>
+</figure>
 
       <h3 id="evaluation-discussion">Discussion</h3>
 
