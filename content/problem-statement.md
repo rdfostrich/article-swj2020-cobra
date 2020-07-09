@@ -8,12 +8,11 @@ Our goal in this work is to investigate if these issues can be alleviated by mod
 We formulate our research question as follows:
 <q id="research-question">How can we improve the storage of RDF archives under the hybrid storage strategy by modification of the delta chain structure?</q>
 
-Concretely, we start from the storage approach from OSTRICH, and we apply two modifications:
-
-1. Creation of new snapshots, which leads to multiple delta chains.
-2. Introduction of bidirectional delta chains using reverse deltas.
-
-Since both of these modifications will reduce the length of delta chains,
+Concretely, we start from the hybrid storage approach from OSTRICH,
+and we modify its current unidirectional delta chain into a *bidirectional delta chain*.
+This bidirectional delta chain consists of two smaller delta chains,
+with respectively reverse and forward deltas, all pointing to one common intermediary snapshot.
+Since this modifications will reduce the maximum length of a delta chain, without requiring more snapshot,
 we expect that this will reduce ingestion time, overall storage size, and average query execution time for all query atoms.
 Based on this, we define the following hypotheses:
 
