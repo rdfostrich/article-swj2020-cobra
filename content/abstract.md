@@ -1,15 +1,27 @@
 ## Abstract
 <!-- Context      -->
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+In a Web where RDF datasets are continuously evolving,
+the ability to store and query multiple RDF dataset versions is crucial.
+While the hybrid storage strategy of RDF archives is able to achieve a good trade-off
+between ingestion and query performance in the context of Web querying,
+it suffers from scalability problems after ingesting many versions.
 <!-- Need         -->
-Vestibulum finibus dignissim augue, id pellentesque est facilisis non.
+As such, there is a need for an improved storage strategy that scales better in terms of ingestion time.
 <!-- Task         -->
-Donec fringilla dolor non neque iaculis blandit.
+In this article, we propose a change to the hybrid storage strategy
+where we make use of of _bidirectional delta chain_
+instead of the default _unidirectional delta chain_.
 <!-- Object       -->
-Praesent aliquet eleifend iaculis.
+We introduce a concrete architecture for this change,
+together with accompanying ingestion and querying algorithms.
 <!-- Findings     -->
-Quisque pellentesque at odio ac bibendum.
+Based on our implementation of this new approach,
+experimental results show that the ingestion scalability issue is solved,
+and that total storage size and query execution performance
+are even improved for most cases.
 <!-- Conclusion   -->
-Pellentesque imperdiet felis urna, quis facilisis lacus gravida non.
+This work shows that modifying the structure of the delta chain within the hybrid storage strategy
+can be highly beneficial for RDF archives.
 <!-- Perspectives -->
-Donec quis lectus eget sem tempor tristique pellentesque in dolor.
+We foresee that applying other modifications to this delta chain structure
+may be able to provide additional benefits.
