@@ -12,15 +12,15 @@ more direct and efficient access to prior versions is desired.
 While RDF archiving systems have emerged that can handle such evolving datasets,
 [a recent survey on archiving Linked Open Data](cite:cites archiving)
 illustrated the need for improved versioning capabilities.
-Concretely, there is a need for systems that can store and query such datasets on average machines,
+Concretely, there is a need for systems that can store and query such datasets on average Web servers,
 without requiring expensive high-end machines.
 Recently, a [new archiving approach (OSTRICH)](cite:cites ostrich) was introduced
 that offers highly efficient triple pattern queries for different versioned query types,
 while still keeping storage requirements reasonable.
 OSTRICH was designed to run on average machines,
-so it can be used as a back-end for low-cost query interfaces such as [Triple Pattern Fragments](cite:cites ldf).
+so it can be used as a back-end for low-cost Web query interfaces such as [Triple Pattern Fragments](cite:cites ldf).
 Since OSTRICH exposes a triple pattern query interface,
-it can be used as an index inside [SPARQL query engines](cite:cites spec:sparqllang).
+it can also be used as an index inside [SPARQL query engines](cite:cites spec:sparqllang).
 
 The main problem of OSTRICH is that it suffers from scalability issues during ingestion,
 which are caused by the storage strategy that is followed to achieve performant query execution.
