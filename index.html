@@ -12,7 +12,7 @@
   <meta name="citation_author" content="Thibault Mahieu" />
   <meta name="citation_author" content="Ruben Verborgh" />
   
-  <meta name="citation_publication_date" content="2020/07/07" />
+  <meta name="citation_publication_date" content="2020/07/09" />
 </head>
 
 <body prefix="dctypes: http://purl.org/dc/dcmitype/ pimspace: http://www.w3.org/ns/pim/space# rsa: http://www.w3.org/ns/auth/rsa# cert: http://www.w3.org/ns/auth/cert# wgs: http://www.w3.org/2003/01/geo/wgs84_pos# biblio: http://purl.org/net/biblio# bibo: http://purl.org/ontology/bibo/ book: http://purl.org/NET/book/vocab# ov: http://open.vocab.org/terms/ doap: http://usefulinc.com/ns/doap# dbr: http://dbpedia.org/resource/ dbp: http://dbpedia.org/property/ sio: http://semanticscience.org/resource/ opmw: http://www.opmw.org/ontology/ deo: http://purl.org/spar/deo/ doco: http://purl.org/spar/doco/ cito: http://purl.org/spar/cito/ fabio: http://purl.org/spar/fabio/ solid: http://www.w3.org/ns/solid/terms# acl: http://www.w3.org/ns/auth/acl# dio: https://w3id.org/dio# lsc: http://linkedscience.org/lsc/ns#" typeof="schema:CreativeWork sioc:Post prov:Entity lsc:Research">
@@ -43,19 +43,31 @@
 <div datatype="rdf:HTML" property="schema:description">
       <h2 property="schema:name">Abstract</h2>
       <!-- Context      -->
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      <p>In a Web where RDF datasets are continuously evolving,
+the ability to store and query multiple RDF dataset versions is crucial.
+While the hybrid storage strategy of RDF archives is able to achieve a good trade-off
+between ingestion and query performance in the context of Web querying,
+it suffers from scalability problems after ingesting many versions.
 <!-- Need         -->
-Vestibulum finibus dignissim augue, id pellentesque est facilisis non.
+As such, there is a need for an improved storage strategy that scales better in terms of ingestion time.
 <!-- Task         -->
-Donec fringilla dolor non neque iaculis blandit.
+In this article, we propose a change to the hybrid storage strategy
+where we make use of of <em>bidirectional delta chain</em>
+instead of the default <em>unidirectional delta chain</em>.
 <!-- Object       -->
-Praesent aliquet eleifend iaculis.
+We introduce a concrete architecture for this change,
+together with accompanying ingestion and querying algorithms.
 <!-- Findings     -->
-Quisque pellentesque at odio ac bibendum.
+Based on our implementation of this new approach,
+experimental results show that the ingestion scalability issue is solved,
+and that total storage size and query execution performance
+are even improved for most cases.
 <!-- Conclusion   -->
-Pellentesque imperdiet felis urna, quis facilisis lacus gravida non.
+This work shows that modifying the structure of the delta chain within the hybrid storage strategy
+can be highly beneficial for RDF archives.
 <!-- Perspectives -->
-Donec quis lectus eget sem tempor tristique pellentesque in dolor.</p>
+We foresee that applying other modifications to this delta chain structure
+may be able to provide additional benefits.</p>
 
     </div>
 </section>
@@ -79,15 +91,15 @@ more direct and efficient access to prior versions is desired.</p>
       <p>While RDF archiving systems have emerged that can handle such evolving datasets,
 <a property="schema:citation http://purl.org/spar/cito/cites" href="http://ceur-ws.org/Vol-1377/paper6.pdf">a recent survey on archiving Linked Open Data</a> <span class="references">[<a href="#ref-4">4</a>]</span>
 illustrated the need for improved versioning capabilities.
-Concretely, there is a need for systems that can store and query such datasets on average machines,
+Concretely, there is a need for systems that can store and query such datasets on average Web servers,
 without requiring expensive high-end machines.
 Recently, a <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">new archiving approach (OSTRICH)</a> <span class="references">[<a href="#ref-5">5</a>]</span> was introduced
 that offers highly efficient triple pattern queries for different versioned query types,
 while still keeping storage requirements reasonable.
 OSTRICH was designed to run on average machines,
-so it can be used as a back-end for low-cost query interfaces such as <span property="schema:citation http://purl.org/spar/cito/cites" resource="https://dx.doi.org/doi:10.1016/j.websem.2016.03.003"><a href="http://linkeddatafragments.org/publications/jws2016.pdf">Triple Pattern Fragments</a></span> <span class="references">[<a href="#ref-6">6</a>]</span>.
+so it can be used as a back-end for low-cost Web query interfaces such as <span property="schema:citation http://purl.org/spar/cito/cites" resource="https://dx.doi.org/doi:10.1016/j.websem.2016.03.003"><a href="http://linkeddatafragments.org/publications/jws2016.pdf">Triple Pattern Fragments</a></span> <span class="references">[<a href="#ref-6">6</a>]</span>.
 Since OSTRICH exposes a triple pattern query interface,
-it can be used as an index inside <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.w3.org/TR/2013/REC-sparql11-query-20130321/">SPARQL query engines</a> <span class="references">[<a href="#ref-7">7</a>]</span>.</p>
+it can also be used as an index inside <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.w3.org/TR/2013/REC-sparql11-query-20130321/">SPARQL query engines</a> <span class="references">[<a href="#ref-7">7</a>]</span>.</p>
 
       <p>The main problem of OSTRICH is that it suffers from scalability issues during ingestion,
 which are caused by the storage strategy that is followed to achieve performant query execution.
@@ -427,23 +439,20 @@ Our goal in this work is to investigate if these issues can be alleviated by mod
       <p>We formulate our research question as follows:
 <q id="research-question">How can we improve the storage of RDF archives under the hybrid storage strategy by modification of the delta chain structure?</q></p>
 
-      <p>Concretely, we start from the storage approach from OSTRICH, and we apply two modifications:</p>
-
-      <ol>
-        <li>Creation of new snapshots, which leads to multiple delta chains.</li>
-        <li>Introduction of bidirectional delta chains using reverse deltas.</li>
-      </ol>
-
-      <p>Since both of these modifications will reduce the length of delta chains,
+      <p>Concretely, we start from the hybrid storage approach from OSTRICH,
+and we modify its current unidirectional delta chain into a <em>bidirectional delta chain</em>.
+This bidirectional delta chain consists of two smaller delta chains,
+with respectively reverse and forward deltas, all pointing to one common intermediary snapshot.
+Since this modifications will reduce the maximum length of a delta chain, without requiring more snapshot,
 we expect that this will reduce ingestion time, overall storage size, and average query execution time for all query atoms.
 Based on this, we define the following hypotheses:</p>
 
       <ol>
-        <li id="hypothesis-qualitative-storage">Storage size will be lower for a bidirectional delta chain compared to a unidirectional delta chain.</li>
-        <li id="hypothesis-qualitative-ingestion">In-order ingestion time will be lower for a bidirectional delta chain compared to a unidirectional delta chain.</li>
-        <li id="hypothesis-qualitative-querying-vm">The mean VM query execution will be lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
-        <li id="hypothesis-qualitative-querying-dm">The mean DM query execution will be lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
-        <li id="hypothesis-qualitative-querying-vq">The mean VQ query execution will be lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
+        <li id="hypothesis-qualitative-storage">Storage size is lower for a bidirectional delta chain compared to a unidirectional delta chain.</li>
+        <li id="hypothesis-qualitative-ingestion">In-order ingestion time is lower for a bidirectional delta chain compared to a unidirectional delta chain.</li>
+        <li id="hypothesis-qualitative-querying-vm">The mean VM query execution is lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
+        <li id="hypothesis-qualitative-querying-dm">The mean DM query execution is lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
+        <li id="hypothesis-qualitative-querying-vq">The mean VQ query execution is lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
       </ol>
 
     </div>
@@ -1346,11 +1355,28 @@ and <em>reject</em> our <a href="#hypothesis-qualitative-querying-vq">fifth</a> 
 <div datatype="rdf:HTML" property="schema:description">
       <h2 property="schema:name">Conclusions</h2>
 
-      <p class="todo">Conclusions and future work</p>
+      <p>In this work, we improved the storage of RDF archives
+under the hybrid storage strategy (OSTRICH)
+by making use of a <em>bidirectional delta chain</em>.
+Based on our implementation of this new approach (COBRA),
+our experimental results show that this modification solves
+the main scalability problem of OSTRICH regarding its ingestion times.
+This change also allows COBRA to reduce total storage size for two out of three datasets.
+Furthermore, all versioned query types achieve a performance boost with COBRA,
+except for VQ under the BEAR-A dataset.
+With query execution times in the order of 1 millisecond or less,
+the bidirectional delta chain strategy from COBRA is an ideal back-end in the context of Web querying,
+as network latency is typically slower than that.</p>
 
-      <p>Future work:
-* heuristics to define snapshot creation time.
-* optimize fix-up</p>
+      <p>This work shows the importance of delta directionality and snapshot placement in the delta chain.
+While we have measured the impact of a bidirectional delta chain,
+other strategies still remain to be investigated.
+First, deltas may inherit from the two or more surrounding versions, instead of just one.
+Second, aggregated and non-aggregated deltas are just two extremes of delta organization,
+a range of valuable possibilities inbetween may exist,
+such as inheriting from the n<sup>th</sup> largest preceding version.
+Third, the impact of multiple snapshots and strategies to decide when to create them still remain as open questions.
+Through such incremental work, we can grow towards a truly <em>evolving</em> Semantic Web.</p>
 
     </div>
 </section>
