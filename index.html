@@ -12,7 +12,7 @@
   <meta name="citation_author" content="Thibault Mahieu" />
   <meta name="citation_author" content="Ruben Verborgh" />
   
-  <meta name="citation_publication_date" content="2020/07/09" />
+  <meta name="citation_publication_date" content="2020/07/14" />
 </head>
 
 <body prefix="dctypes: http://purl.org/dc/dcmitype/ pimspace: http://www.w3.org/ns/pim/space# rsa: http://www.w3.org/ns/auth/rsa# cert: http://www.w3.org/ns/auth/cert# wgs: http://www.w3.org/2003/01/geo/wgs84_pos# biblio: http://purl.org/net/biblio# bibo: http://purl.org/ontology/bibo/ book: http://purl.org/NET/book/vocab# ov: http://open.vocab.org/terms/ doap: http://usefulinc.com/ns/doap# dbr: http://dbpedia.org/resource/ dbp: http://dbpedia.org/property/ sio: http://semanticscience.org/resource/ opmw: http://www.opmw.org/ontology/ deo: http://purl.org/spar/deo/ doco: http://purl.org/spar/doco/ cito: http://purl.org/spar/cito/ fabio: http://purl.org/spar/fabio/ solid: http://www.w3.org/ns/solid/terms# acl: http://www.w3.org/ns/auth/acl# dio: https://w3id.org/dio# lsc: http://linkedscience.org/lsc/ns#" typeof="schema:CreativeWork sioc:Post prov:Entity lsc:Research">
@@ -102,21 +102,21 @@ Since OSTRICH exposes a triple pattern query interface,
 it can also be used as an index inside <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.w3.org/TR/2013/REC-sparql11-query-20130321/">SPARQL query engines</a> <span class="references">[<a href="#ref-7">7</a>]</span>.</p>
 
       <p>The main problem of OSTRICH is that it suffers from scalability issues during ingestion,
-which are caused by the storage strategy that is followed to achieve performant query execution.
+which are caused by its hybrid storage strategy that is followed to achieve performant query execution.
 Concretely, after ingesting many versions, the ingestion process starts slowing down significantly,
 which makes OSTRICH unusable for datasets with a large number of versions.
-The reason for this is that OSTRICH makes use of a single version <em>snapshot</em>
+The reason for this is that the hybrid storage approach from OSTRICH consists of a single version <em>snapshot</em>
 followed by a <em>aggregated delta chain</em> that keeps growing longer for every new version.
 Since every additional delta requires all preceding deltas to be checked during ingestion,
 this process becomes slower for every new version.
-In order to solve this problem, we propose a modification to this storage strategy,
+In order to solve this problem, we propose a storage strategy modification,
 where there still is a single version snapshot,
 but we place it in the middle of the delta chain,
 instead of at the beginning,
 leading to a <em>bidirectional delta chain</em>.
 While this complicates ingestion and querying,
 it leads to two shorter delta chains,
-which we expect will require less effort than the single long delta chain.</p>
+which will require less effort than one long delta chain.</p>
 
       <p>In the next section, we discuss the related work,
 and give more details on OSTRICH.
@@ -145,16 +145,10 @@ These techniques make use of various indexing and compression techniques
 to optimize query execution and storage size.
 Since RDF datasets typically change over time <span class="references">[<a href="#ref-2">2</a>]</span>,
 there is a need to <a property="schema:citation http://purl.org/spar/cito/cites" href="http://ceur-ws.org/Vol-1377/paper6.pdf">maintain the history of these datasets</a> <span class="references">[<a href="#ref-4">4</a>]</span>,
-which gave rise to the research domain of <em>RDF archiving</em>.</p>
-
-      <p>An <a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf"><em>RDF archive</em></a> <span class="references">[<a href="#ref-10">10</a>]</span> has been defined as follows:
-<em>An RDF archive graph A is a set of version-annotated triples.</em>
-Where a <em>version-annotated triple</em> <em>(s, p, o):[i]</em> is defined as <em>an RDF triple (s, p, o) with a label i ∈ N representing the version in which this triple holds.</em>
-The set of all <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.w3.org/TR/2014/REC-rdf11-concepts-20140225/">RDF triples</a> <span class="references">[<a href="#ref-1">1</a>]</span> is defined as <em>(U ∪ B) × U × (U ∪ B ∪ L)</em>,
-where <em>U</em>, <em>B</em>, and <em>L</em>, respectively represent the disjoint, infinite sets of URIs, blank nodes, and literals.
-Furthermore,
-<em>an RDF version of an RDF archive A at snapshot i is the RDF graph A(i) = {(s, p, o)|(s, p, o):[i] ∈ A}.</em>
-For the remainder of this article, we use the notation <em>V<sub>i</sub></em> to refer to the RDF version <em>A(i)</em>.</p>
+which gave rise to the research domain of <em>RDF archiving</em>.
+An <a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf"><em>RDF archive</em></a> <span class="references">[<a href="#ref-10">10</a>]</span> has been defined as <em>a set of version-annotated triples.</em>
+Where a <em>version-annotated triple</em> is defined as <em>an RDF triple with a label representing the version in which this triple holds.</em>
+Furthermore, an RDF version of an RDF archive is composed of all triples with a given version label.</p>
 
       <p>RDF archives allow multiple versions to exist in parallel,
 which leads to a range of new querying possibilities.
@@ -164,35 +158,19 @@ or even differences between different versions.
 To cover this new range of querying possibilities,
 <a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf">five foundational query types were introduced</a> <span class="references">[<a href="#ref-10">10</a>]</span>,
 which are referred to as <em>query atoms</em>.
-These query atoms make use of concepts from the
-the <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.w3.org/TR/2014/REC-rdf11-concepts-20140225/">RDF data model</a> <span class="references">[<a href="#ref-1">1</a>]</span> and <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.w3.org/TR/2013/REC-sparql11-query-20130321/">SPARQL query language</a> <span class="references">[<a href="#ref-7">7</a>]</span>.
-In these models, a <em>triple pattern</em> is defined as <em>(U ∪ V) × (U ∪ V) × (U ∪ L ∪ V)</em>, with <em>V</em> being the infinite set of variables.
-A set of triple patterns is called a <em>Basic Graph Pattern</em>, which forms the basis of a SPARQL query.
-The evaluation of a SPARQL query <em>Q</em> on an RDF graph <em>G</em> containing RDF triples,
-produces a bag of solution mappings <em>[[Q]]<sub>G</sub></em>.
-The five query atoms are defined as follows:</p>
+For brevity, we refer to <a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf">the article in which they were introduced</a> <span class="references">[<a href="#ref-10">10</a>]</span> their formal details.
+In this scope of this article, we only discuss three of the five query atoms,
+as they can be expressed in <a property="schema:citation http://purl.org/spar/cito/cites" href="http://rubensworks.net/raw/publications/2016/ExposingRdfArchivesUsingTpf.pdf">terms of each other</a> <span class="references">[<a href="#ref-11">11</a>]</span>.
+The three relevant query atoms are defined as follows:</p>
 
       <ol>
-        <li><strong>Version materialization (VM)</strong> retrieves data using a query <em>Q</em> targeted at a single version <em>V<sub>i</sub></em>.
-Formally: <em>VM(Q, V<sub>i</sub>) = [[Q]]<sub>V<sub>i</sub></sub></em>.
+        <li><strong>Version materialization (VM)</strong> retrieves data using a query targeted at a single version.
 Example: <em>Which books were present in the library yesterday?</em></li>
-        <li><strong>Delta materialization (DM)</strong> retrieves query <em>Q</em>’s result change sets between two versions <em>V<sub>i</sub></em> and <em>V<sub>j</sub></em>.
-Formally: <em>DM(Q, V<sub>i</sub>, V<sub>j</sub>)=(Ω<sup>+</sup>, Ω<sup>−</sup>). With Ω<sup>+</sup> = [[Q]]<sub>V<sub>i</sub></sub> \ [[Q]]<sub>V<sub>j</sub></sub> and Ω<sup>−</sup> = [[Q]]<sub>V<sub>j</sub></sub> \ [[Q]]<sub>V<sub>i</sub></sub></em>.
+        <li><strong>Delta materialization (DM)</strong> retrieves query result change sets between two versions.
 Example: <em>Which books were returned or taken from the library between yesterday and now?</em></li>
-        <li><strong>Version query (VQ)</strong> annotates query <em>Q</em>’s results with the versions (of RDF archive A) in which they are valid.
-Formally: <em>VQ(Q, A) = {(Ω, W) | W = {A(i) | Ω=[[Q]]<sub>A(i)</sub>, i ∈ N} ∧ Ω ≠ ∅}</em>.
+        <li><strong>Version query (VQ)</strong> annotates query results with the versions in which they are valid.
 Example: <em>At what times was book X present in the library?</em></li>
-        <li><strong>Cross-version join (CV)</strong> joins the results of two queries (<em>Q1</em> and <em>Q2</em>) between versions <em>V<sub>i</sub></em> and <em>V<sub>j</sub></em>.
-Formally: <em>VM(Q1, V<sub>i</sub>) ⨝ VM(Q2, V<sub>j</sub>)</em>.
-Example: <em>What books were present in the library yesterday and today?</em></li>
-        <li><strong>Change materialization (CM)</strong> returns a list of versions in which a given query <em>Q</em> produces
-consecutively different results.
-Formally: <em>{(i, j) | i,j ∈ ℕ, i &lt; j, DM(Q, A(i), A(j)) = (Ω<sup>+</sup>, Ω<sup>−</sup>), Ω<sup>+</sup> ∪ Ω<sup>−</sup> ≠ ∅, ∄ k ∈ ℕ : i &lt; k &lt; j}</em>.
-Example: <em>At what times was book X returned or taken from the library?</em></li>
       </ol>
-
-      <p>In the remainder of this article, we focus on version materialization (VM), delta materialization (DM), and version (VQ) queries,
-as CV and CM queries can be expressed in <a property="schema:citation http://purl.org/spar/cito/cites" href="http://rubensworks.net/raw/publications/2016/ExposingRdfArchivesUsingTpf.pdf">terms of the other ones</a> <span class="references">[<a href="#ref-11">11</a>]</span>.</p>
 
       <h3 id="rdf-archiving-solutions">RDF Archiving Solutions</h3>
 
@@ -213,101 +191,34 @@ CB is better for DM queries,
 and TB is best for VQ queries.
 No single strategy leads to good performance of all query atoms.</p>
 
-      <p><a href="#rdf-archive-systems">Table 1</a> shows an overview of the primary RDF archiving systems,
+      <p>In the following, we summarize the primary known RDF archiving systems,
 and which storage strategy they follow.</p>
 
-      <figure id="rdf-archive-systems" class="table">
+      <!-- [](#rdf-archive-systems) shows an overview of the primary RDF archiving systems,
+and which storage strategy they follow.
 
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>IC</th>
-              <th>CB</th>
-              <th>TB</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>SemVersion <span class="references">[<a href="#ref-12">12</a>]</span></td>
-              <td>✓</td>
-              <td> </td>
-              <td> </td>
-            </tr>
-            <tr>
-              <td>Cassidy et. al. <span class="references">[<a href="#ref-13">13</a>]</span></td>
-              <td> </td>
-              <td>✓</td>
-              <td> </td>
-            </tr>
-            <tr>
-              <td>R&amp;WBase <span class="references">[<a href="#ref-14">14</a>]</span></td>
-              <td> </td>
-              <td>✓</td>
-              <td> </td>
-            </tr>
-            <tr>
-              <td>R43ples <span class="references">[<a href="#ref-15">15</a>]</span></td>
-              <td> </td>
-              <td>✓</td>
-              <td> </td>
-            </tr>
-            <tr>
-              <td>Hauptman et. al. <span class="references">[<a href="#ref-16">16</a>]</span></td>
-              <td> </td>
-              <td> </td>
-              <td>✓</td>
-            </tr>
-            <tr>
-              <td>X-RDF-3X <span class="references">[<a href="#ref-17">17</a>]</span></td>
-              <td> </td>
-              <td> </td>
-              <td>✓</td>
-            </tr>
-            <tr>
-              <td><a property="schema:citation http://purl.org/spar/cito/cites" href="https://pdfs.semanticscholar.org/8efc/acc920a6329bda5508c65c84d69f52eb5ac1.pdf">RDF-TX</a> <span class="references">[<a href="#ref-18">18</a>]</span></td>
-              <td> </td>
-              <td> </td>
-              <td>✓</td>
-            </tr>
-            <tr>
-              <td>v-RDFCSA <span class="references">[<a href="#ref-19">19</a>]</span></td>
-              <td> </td>
-              <td> </td>
-              <td>✓</td>
-            </tr>
-            <tr>
-              <td>Dydra <span class="references">[<a href="#ref-20">20</a>]</span></td>
-              <td> </td>
-              <td> </td>
-              <td>✓</td>
-            </tr>
-            <tr>
-              <td><span property="schema:citation http://purl.org/spar/cito/cites" resource="https://dx.doi.org/10.1016/j.websem.2018.08.002"><a href="https://arxiv.org/pdf/1805.03721">Quit Store</a></span> <span class="references">[<a href="#ref-21">21</a>]</span></td>
-              <td>✓</td>
-              <td> </td>
-              <td> </td>
-            </tr>
-            <tr>
-              <td>TailR <span class="references">[<a href="#ref-22">22</a>]</span></td>
-              <td>✓</td>
-              <td>✓</td>
-              <td> </td>
-            </tr>
-            <tr>
-              <td><a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH</a> <span class="references">[<a href="#ref-5">5</a>]</span></td>
-              <td>✓</td>
-              <td>✓</td>
-              <td>✓</td>
-            </tr>
-          </tbody>
-        </table>
+figure id="rdf-archive-systems" class="table" markdown="1">
 
-        <figcaption>
-          <p><span class="label">Table 1:</span> Overview of RDF archiving solutions with their corresponding storage strategy:
-Individual copies (IC), Change-based (CB), or Timestamp-based (TB).</p>
-        </figcaption>
-      </figure>
+| Name                                        | IC | CB | TB |
+| ------------------------------------------- |----|----|----|
+| SemVersion <span class="references">\[<a href="#ref-12">12</a>\]</span>         | ✓  |    |    |
+| Cassidy et. al. <span class="references">\[<a href="#ref-13">13</a>\]</span>         |    | ✓  |    |
+| R&WBase <span class="references">\[<a href="#ref-14">14</a>\]</span>                |    | ✓  |    |
+| R43ples <span class="references">\[<a href="#ref-15">15</a>\]</span>               |    | ✓  |    |
+| Hauptman et. al. <span class="references">\[<a href="#ref-16">16</a>\]</span>         |    |    | ✓  |
+| X-RDF-3X <span class="references">\[<a href="#ref-17">17</a>\]</span>               |    |    | ✓  |
+| <a property="schema:citation http://purl.org/spar/cito/cites" href="https://pdfs.semanticscholar.org/8efc/acc920a6329bda5508c65c84d69f52eb5ac1.pdf">RDF-TX</a> <span class="references">\[<a href="#ref-18">18</a>\]</span>                  |    |    | ✓  |
+| v-RDFCSA <span class="references">\[<a href="#ref-19">19</a>\]</span> |    |    | ✓  |
+| Dydra <span class="references">\[<a href="#ref-20">20</a>\]</span>                   |    |    | ✓  |
+| <span property="schema:citation http://purl.org/spar/cito/cites" resource="https://dx.doi.org/10.1016/j.websem.2018.08.002"><a href="https://arxiv.org/pdf/1805.03721">Quit Store</a></span> <span class="references">\[<a href="#ref-21">21</a>\]</span>               | ✓  |    |    |
+| TailR <span class="references">\[<a href="#ref-22">22</a>\]</span>                   | ✓  | ✓  |    |
+| <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH</a> <span class="references">\[<a href="#ref-5">5</a>\]</span>               | ✓  | ✓  | ✓  |
+
+<figcaption markdown="block">
+Overview of RDF archiving solutions with their corresponding storage strategy:
+Individual copies (IC), Change-based (CB), or Timestamp-based (TB).
+</figcaption>
+</figure>-->
 
       <h4 id="independent-copies-approaches">Independent copies approaches</h4>
       <p>SemVersion <span class="references">[<a href="#ref-12">12</a>]</span> tracks different versions of RDF graphs,
@@ -358,28 +269,12 @@ As such, we build upon OSTRICH in this work, and attempt to solve this problem.<
       <h3 id="rdf-archiving-benchmarks">RDF Archiving Benchmarks</h3>
 
       <p><a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf">BEAR</a> <span class="references">[<a href="#ref-10">10</a>]</span> is a benchmark for RDF archive systems.
-that is based on three real-world datasets from different domains:</p>
-
-      <dl>
-        <dt>BEAR-A</dt>
-        <dd>58 weekly snapshots from the Dynamic Linked Data Observatory <span class="references">[<a href="#ref-2">2</a>]</span>.</dd>
-        <dt>BEAR-B</dt>
-        <dd>The 100 most volatile resources from DBpedia Live <span class="references">[<a href="#ref-24">24</a>]</span> over the course of three months
-as three different granularities: instant, hour and day.</dd>
-        <dt>BEAR-C</dt>
-        <dd>Dataset descriptions from the Open Data Portal Watch <span class="references">[<a href="#ref-25">25</a>]</span> project over the course of 32 weeks.</dd>
-      </dl>
-
-      <p>The 58 versions of BEAR-A contain between 30M and 66M triples per version, with an average change ratio of 31%.
+that is based on real-world datasets from different domains.
+The 58 versions of BEAR-A contain between 30M and 66M triples per version, with an average change ratio of 31%.
 BEAR-A provides triple pattern queries for three different query atoms for both result sets with a low and a high cardinality.
-BEAR-B provides a small collection of triple pattern queries corresponding to the real-world usage of DBpedia.
-Finally, BEAR-C provides 10 complex SPARQL queries that were created with the help of Open Data experts.</p>
-
-      <p>BEAR provides baseline RDF archive implementations based on <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-8">8</a>]</span> and Jena <span class="references">[<a href="#ref-26">26</a>]</span>
-for the IC, CB, and TB approaches, but also hybrid IC/CB and TB/CB approaches.
-The hybrid approaches are based on snapshots followed by delta chains, as implemented by TailR <span class="references">[<a href="#ref-22">22</a>]</span>.</p>
-
-      <p>Due to BEAR covering all query atoms we work with,
+The BEAR-B dataset contains the 100 most volatile resources from DBpedia Live as three different granularities (instant, hour and day),
+and provides a small collection of triple pattern queries corresponding to the real-world usage of DBpedia.
+Due to BEAR covering all query atoms we work with,
 and it providing baseline implementations for the different storage strategies,
 we make use of BEAR for our experiments.</p>
 
@@ -387,7 +282,7 @@ we make use of BEAR for our experiments.</p>
 
       <p>As mentioned before, <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH</a> <span class="references">[<a href="#ref-5">5</a>]</span> make us of a hybrid IC/CB/TB storage approach
 with the goal of providing a trade-off between storage size and querying efficiency.
-The main motivation for OSTRICH is to serve as a back-end of a <a property="schema:citation http://purl.org/spar/cito/cites" href="http://rubensworks.net/raw/publications/2017/vtpf.pdf">low-cost Web APIs for exposing RDF archives</a> <span class="references">[<a href="#ref-27">27</a>]</span>,
+The main motivation for OSTRICH is to serve as a back-end of a <a property="schema:citation http://purl.org/spar/cito/cites" href="http://rubensworks.net/raw/publications/2017/vtpf.pdf">low-cost Web APIs for exposing RDF archives</a> <span class="references">[<a href="#ref-24">24</a>]</span>,
 where query execution must be sufficiently fast,
 without requiring too much storage.</p>
 
@@ -414,7 +309,7 @@ which are valuable for query planning within query engines.
 OSTRICH has been implemented in <a href="https://github.com/rdfostrich/ostrich">C/C++</a>,
 with bindings existing for <a href="https://github.com/rdfostrich/ostrich-node">Node.JS (JavaScript)</a>.
 The triple pattern index provided by OSTRICH has been demonstrated
-to be usable within a full SPARQL query engine such as <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-mocha-2018/">Comunica</a> <span class="references">[<a href="#ref-28">28</a>, <a href="#ref-29">29</a>]</span>.</p>
+to be usable within a full SPARQL query engine such as <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-mocha-2018/">Comunica</a> <span class="references">[<a href="#ref-25">25</a>, <a href="#ref-26">26</a>]</span>.</p>
 
       <p>Experimental results on OSTRICH with the BEAR benchmark show that this hybrid strategy
 is more beneficial than having just a single storage strategy,
@@ -433,26 +328,26 @@ As such, we build upon OSTRICH in this work, and attempt to solve this problem b
       <h2 property="schema:name">Problem Statement</h2>
 
       <p>As mentioned in <a href="#introduction">Section 1</a>, the hybrid storage solution provided by OSTRICH leads to long delta chains,
-which can become problematic for RDF archives with many versions in terms of ingestion time and storage size.
+which can become problematic for RDF archives with many versions.
 Our goal in this work is to investigate if these issues can be alleviated by modifying the delta chain structure.</p>
 
       <p>We formulate our research question as follows:
 <q id="research-question">How can we improve the storage of RDF archives under the hybrid storage strategy by modification of the delta chain structure?</q></p>
 
       <p>Concretely, we start from the hybrid storage approach from OSTRICH,
-and we modify its current unidirectional delta chain into a <em>bidirectional delta chain</em>.
+and we modify its current <em>unidirectional delta chain</em> (UDC) into a <em>bidirectional delta chain</em> (BDC).
 This bidirectional delta chain consists of two smaller delta chains,
 with respectively reverse and forward deltas, all pointing to one common intermediary snapshot.
-Since this modifications will reduce the maximum length of a delta chain, without requiring more snapshot,
-we expect that this will reduce ingestion time, overall storage size, and average query execution time for all query atoms.
+Since this modifications will reduce the maximum length of a delta chain, without requiring more snapshots,
+we expect that this will reduce ingestion time, overall storage size, and query execution time for all query atoms.
 Based on this, we define the following hypotheses:</p>
 
       <ol>
-        <li id="hypothesis-qualitative-storage">Storage size is lower for a bidirectional delta chain compared to a unidirectional delta chain.</li>
-        <li id="hypothesis-qualitative-ingestion">In-order ingestion time is lower for a bidirectional delta chain compared to a unidirectional delta chain.</li>
-        <li id="hypothesis-qualitative-querying-vm">The mean VM query execution is lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
-        <li id="hypothesis-qualitative-querying-dm">The mean DM query execution is lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
-        <li id="hypothesis-qualitative-querying-vq">The mean VQ query execution is lower for a unidirectional delta chain compared to a bidirectional delta chain.</li>
+        <li id="hypothesis-qualitative-storage">Storage size is lower for a BDC compared to a UDC.</li>
+        <li id="hypothesis-qualitative-ingestion">In-order ingestion time is lower for a BDC compared to a UDC.</li>
+        <li id="hypothesis-qualitative-querying-vm">VM query execution is faster for a BDC compared to a UDC.</li>
+        <li id="hypothesis-qualitative-querying-dm">DM query execution is faster for a BDC to a UDC.</li>
+        <li id="hypothesis-qualitative-querying-vq">VQ query execution is faster for a BDC to a UDC.</li>
       </ol>
 
     </div>
@@ -470,36 +365,8 @@ Finally, we discuss querying algorithms for the foundational query atoms based o
       <h3 id="solution-approaches">Delta Chain Approaches</h3>
 
       <p>In the scope of this work, we distinguish between six different delta chain approaches,
-as can be seen in <a href="#delta-chain-approaches">Table 2</a>.
+as can be seen in <a href="#delta-chain-approaches">Table 1</a>.
 We decompose these approaches into 2 axes: directionality and aggregation.</p>
-
-      <p>In terms of directionality, we distinguish three forms.
-The simplest form is the <em>forward unidirectional</em> delta chain,
-where the snapshot comes first, and is followed by deltas that are relative to the previous delta.
-The <em>reverse unidirectional</em> delta chain is a variant of this where everything is reversed.
-Concretely, the snapshot comes last, and is preceded by deltas, where each delta is relative to the next delta.
-These forward and reverse unidirectional approaches can be combined with each other to form a <em>bidirectional delta chain</em>,
-where a first set of deltas exist before the snapshot,
-and a second set of deltas exists after the snapshot.</p>
-
-      <p>In terms of aggregation, we consider the default non-aggregated form and the aggregated form.
-In the non-aggregated form, each delta is relative to the delta immediately before or after it.
-In the aggregated form <span class="references">[<a href="#ref-23">23</a>]</span>, each delta is relative to the snapshot before or after it,
-where other deltas may occur inbetween.
-This aggregated delta approach leads to lower version materialization times,
-since each delta can be directly applied to a snapshot,
-as opposed to non-aggregated deltas where multiple deltas need to be combined before a version can be materialized.
-As such, the version materialization time for aggregated deltas is <code>O(1)</code> with respect to the number of versions,
-while it is <code>O(n)</code> for non-aggregated deltas with respect to the number of versions.
-This shows how aggregated deltas lead to better query execution times.
-The major downside of aggregated deltas is however that storage size increases due to the redundancies between the different deltas.
-The longer the delta chain, the larger these redundancies become.</p>
-
-      <p>In the context of this work,
-OSTRICH is an example that follows the unidirectional forward aggregated delta chain approach,
-while RCS <span class="references">[<a href="#ref-30">30</a>]</span> (non-RDF-based) follows the unidirectional reverse non-aggregated delta chain approach.
-In this work, we will make use of the bidirectional aggregated delta chain approach,
-which we will explain in the next section.</p>
 
       <figure id="delta-chain-approaches" class="table">
 
@@ -531,10 +398,38 @@ which we will explain in the next section.</p>
         </table>
 
         <figcaption>
-          <p><span class="label">Table 2:</span> Overview of unidirectional forward, unidirectional reverse, and bidirectional delta chain approaches,
+          <p><span class="label">Table 1:</span> Overview of unidirectional forward, unidirectional reverse, and bidirectional delta chain approaches,
 both with and without aggregated deltas.</p>
         </figcaption>
       </figure>
+
+      <p>In terms of directionality, we distinguish three forms.
+The simplest form is the <em>forward unidirectional</em> delta chain,
+where the snapshot comes first, and is followed by deltas that are relative to the previous delta.
+The <em>reverse unidirectional</em> delta chain is a variant of this where everything is reversed.
+Concretely, the snapshot comes last, and is preceded by deltas, where each delta is relative to the next delta.
+These forward and reverse unidirectional approaches can be combined with each other to form a <em>bidirectional delta chain</em>,
+where a first set of deltas exist before the snapshot,
+and a second set of deltas exists after the snapshot.</p>
+
+      <p>In terms of aggregation, we consider the default non-aggregated form and the aggregated form.
+In the non-aggregated form, each delta is relative to the delta immediately before or after it.
+In the aggregated form <span class="references">[<a href="#ref-23">23</a>]</span>, each delta is relative to the snapshot before or after it,
+where other deltas may occur inbetween.
+This aggregated delta approach leads to lower version materialization times,
+since each delta can be directly applied to a snapshot,
+as opposed to non-aggregated deltas where multiple deltas need to be combined before a version can be materialized.
+As such, the version materialization time for aggregated deltas is <code>O(1)</code> with respect to the number of versions,
+while it is <code>O(n)</code> for non-aggregated deltas with respect to the number of versions.
+This shows how aggregated deltas lead to better query execution times.
+The major downside of aggregated deltas is however that storage size increases due to the redundancies between the different deltas.
+The longer the delta chain, the larger these redundancies become.</p>
+
+      <p>In the context of this work,
+OSTRICH is an example that follows the unidirectional forward aggregated delta chain approach,
+while RCS <span class="references">[<a href="#ref-27">27</a>]</span> (non-RDF-based) follows the unidirectional reverse non-aggregated delta chain approach.
+In this work, we will make use of the bidirectional aggregated delta chain approach,
+which we will explain in the next section.</p>
 
       <h3 id="solution-bidirectional">Motivations for a Bidirectional Delta Chain</h3>
 
@@ -546,7 +441,7 @@ as they grow in size for each new version.
 The goal of this work is to investigate how these problems can be solved,
 without losing the advantages of aggregated deltas with respect to query execution times.
 As such, we will not achieve any lower ingestion times by reversing our delta chain,
-as the additions and deletions would simply be reversed.
+as the additions and deletions would just be swapped, but would not be smaller.
 Instead, we aim to reduce overall storage by reducing the number of required snapshots.</p>
 
       <p>One straightforward way of reducing ingestion time would be
@@ -561,7 +456,7 @@ As such, there is a trade-off between ingestion time and storage size,
 and new delta chains should only be started once ingestion times become much higher than desired.</p>
 
       <p>Since the creation of a snapshot can be costly, it should be avoided until absolutely necessary.
-As explained in the last paragraph,
+As explained in the previous paragraph,
 splitting up a delta chain into two separate delta chains
 would lead to two snapshots, each followed by a chain of deltas.
 We can however reduce the number of required snapshots
@@ -569,8 +464,8 @@ by combining the forward and reverse approaches into a <em>bidirectional</em> ap
 by allowing two sets of deltas to make use of the same snapshot.
 Intuitively, one bidirectional delta chain is equivalent
 to two forward delta chains,
-where the second delta chain is reversed,
-and the snapshots of these two chains are therefore shared,
+where the second delta chain is reversed.
+The snapshots of these two chains are therefore shared,
 so that it only has to be created and stored once.</p>
 
       <p>As such, the main advantage of a bidirectional delta chain is that it can more optimally make use of snapshots.
@@ -588,7 +483,7 @@ due to the non-increasing query execution times for increasing numbers of versio
 The only difference is that OSTRICH uses a unidirectional aggregated delta chain,
 and our approach uses a bidirectional aggregated delta chain.
 Concretely, this means that not only deltas exist <em>after</em> the snapshot,
-but also deltas exist <em>before</em> the snapshot.</p>
+but also <em>before</em> the snapshot.</p>
 
       <figure id="storage-overview" class="figure">
 <img src="img/storage-overview.svg" alt="Storage overview" class="storage-overview" />
@@ -599,9 +494,9 @@ but also deltas exist <em>before</em> the snapshot.</p>
 
       <p><a href="#storage-overview">Fig. 1</a> shows an overview of the main components of our storage approach,
 which are analogous to the components from OSTRICH, except for the delta chain on the left side of the snapshot.
-Like OSTRICH, the snapshot is stored using <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-8">8</a>]</span>,
-due to its highly performant triple pattern queries and cardinality estimates,
-and its high compression rate.
+Like OSTRICH, the snapshot can be stored using <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-8">8</a>]</span>,
+due to its highly performant triple pattern queries, cardinality estimates,
+and high compression rate.
 Furthermore, metadata about the archive is stored, containing details such as the total number of versions.
 Next, each delta chain is compressed into timestamp-based B+tree indexes,
 where additions and deletions are stored separately.
@@ -614,9 +509,9 @@ This metadata also allows cardinality estimates for deletions to be retrieved ef
 To enable cardinality estimates for additions, we make use of the addition count index from OSTRICH.
 For the sake of brevity, we omit further details about the components that can be found in the <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH article</a> <span class="references">[<a href="#ref-5">5</a>]</span>.</p>
 
-      <h3 id="solution-ingestion">Ingestion Algorithm</h3>
+      <h3 id="solution-ingestion">Ingestion Approach</h3>
 
-      <p>In this section, we introduce an algorithm to enable ingestion of new versions within our bidirectional aggregated storage approach.
+      <p>In this section, we introduce an approach to enable ingestion of new versions within our bidirectional aggregated storage approach.
 For this, we make use of the ingestion algorithm from OSTRICH, which enables ingestion within a unidirectional forward aggregated delta chain.
 As our approach extends from OSTRICH, we can already insert deltas <em>after</em> the snapshot,
 but not yet <em>before</em> the snapshot, i.e., the reverse part of the delta chain.</p>
@@ -628,10 +523,10 @@ For each new version, our temporary forward delta chain will be built up,
 and can be queried in the meantime.
 From the moment that this delta chain becomes too long, or some other treshold has been exceeded,
 then an offline fix-up algorithm is triggered that will effectively <em>reverse</em> this delta chain,
-and place a snapshot at the end, after which a new forward delta chain can build upon.</p>
+and place a snapshot at the end, where a new forward delta chain can be built upon.</p>
 
       <p><a href="#algorithm-fixup">Algorithm 1</a> shows a sketch of our fix-up algorithm in pseudo-code.
-First, the all aggregated deltas in the chain will be extracted as non-aggregated deltas by calling <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization">existing DM functionality in OSTRICH</a>.
+First, the aggregated deltas in the chain will be extracted as non-aggregated deltas by calling <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization">existing DM functionality in OSTRICH</a>.
 We store the deletions as additions, and the additions as deletions.
 Next, we create a new delta chain, and insert these reversed deltas by calling <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions">existing ingestion functionality in OSTRICH</a>.
 Once ingestion is done, the existing delta chain is replaced by our new delta chain.</p>
@@ -663,13 +558,13 @@ During the execution of this process, the temporary forward delta chain is still
 so queries are still possible during this time.
 Only after the fix-up process is done,
 query executions will be delegated to this new reverse delta chain, 
-nd the temporary forward delta chain can be deleted.</p>
+and the temporary forward delta chain can be deleted.</p>
 
       <h3 id="solution-query">Query Algorithms</h3>
 
       <p>In this section, we discuss triple pattern query algorithms for the three query atoms discussed in <a href="#related-work">Section 2</a> (VM, DM, VQ).
-For simplicity, we assume the existence of a single (bidirectional) delta chain.
-We consider multiple delta chains future work.
+For simplicity, we assume the existence of a (bidirectional) delta chain with one snapshot.
+We consider multiple snapshots and delta chains future work.
 Just like for OSTRICH, all of these algorithms work in a streaming manner with offset support,
 and offer cardinality estimators.
 Below, we briefly discuss the relevant parts of the OSTRICH algorithms.
@@ -688,10 +583,11 @@ As such, we do not discuss this VM case any further.</p>
 
       <h4 id="delta-materialization">Delta Materialization</h4>
 
-      <p>Delta Materialization (DM) allows differences between to given versions to be retrieved.
+      <p>Delta Materialization (DM) allows differences between two given versions to be retrieved.
 <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization">OSTRICH distinguishes two cases for this</a>;
-either the start version to a snapshot, or to a delta.
-If the start (or end) version is a snapshot, then the result is simply a query within the delta of the end version.
+either the start version is a snapshot or a delta,
+where the end version will always be a delta.
+If the start (or end) version is a snapshot, then the result is simply a query within the aggregated delta of the end version.
 Otherwise, the addition and deletion indexes for the two delta versions are iterated in a sort-merge join-like operation,
 and only emits the triples that have a different addition/deletion flag for the two versions.</p>
 
@@ -704,11 +600,11 @@ and a DM query from the snapshot until the end version.
 These two queries can be resolved over the two respective delta chains using <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization">the existing DM functionality from OSTRICH</a>.
 As the results from these two queries are sorted,
 we can merge them in a sort-merge join way,
-where triples are only emitted if they don’t exist in both streams.
+where triples are only emitted if they don’t exist in both streams (ignoring the addition/deletion flag).
 <a href="#algorithm-querying-dm">Algorithm 2</a> illustrates this algorithm in pseudocode.
-Following the patch notation for <a property="schema:citation http://purl.org/spar/cito/cites" href="http://darcs.net">DARCS</a> <span class="references">[<a href="#ref-31">31</a>]</span>,
+Following the patch notation for <a property="schema:citation http://purl.org/spar/cito/cites" href="http://darcs.net">DARCS</a> <span class="references">[<a href="#ref-28">28</a>]</span>,
 with <code>o</code> being the start version, <code>e</code> being the end version and <code>s</code> being the snapshot,
-our delta splitting corresponds to <sup><code>o</code></sup><code>D</code><sup><code>e</code></sup> = <sup><code>o</code></sup><code>D1</code><sup><code>s</code></sup><code>D2</code><sup><code>e</code></sup>.</p>
+our delta split corresponds to <sup><code>o</code></sup><code>D</code><sup><code>e</code></sup> = <sup><code>o</code></sup><code>D1</code><sup><code>s</code></sup><code>D2</code><sup><code>e</code></sup>.</p>
 
       <figure id="algorithm-querying-dm" class="algorithm numbered">
 <pre><code>FUNCTION queryDmCase3(store, start, end)
@@ -743,12 +639,12 @@ Once the snapshot stream has finished,
 the addition index are iterated in a similar way,
 where the version annotation of every addition triple is again updated based on its presence in the deletion index.</p>
 
-      <p>Our case is a trivial extension of this algorithm,
-where instead of checking single addition and deletion streams,
-two addition and deletion streams have to be checked,
-which will produce distinct version annotations.</p>
+      <p>Our case is a trivial extension of this algorithm.
+Instead of checking single addition and deletion streams,
+two addition and deletion streams have to be checked.
+This will produce distinct version annotations, for which we apply the union.</p>
 
-      <p>To estimate the cardinality, the OSTRICH approach can again be extended,
+      <p>To estimate the cardinality, the OSTRICH approach can again be extended
 by adding the snapshot cardinality with the addition cardinality for both delta chains for the given triple pattern.
 As some triples could occur in both delta chains, this can lead to an overestimation.</p>
 
@@ -763,7 +659,7 @@ As some triples could occur in both delta chains, this can lead to an overestima
 
       <h3 id="evaluation-implementation">Implementation</h3>
 
-      <p>We have implemented our storage approach and query algorithms in a tool called COBRA (Change-Based Offset-Enabled Bidirectional RDF Archive).
+      <p>We have implemented our storage approach and query algorithms as a tool called COBRA (Change-Based Offset-Enabled Bidirectional RDF Archive).
 COBRA is an extension of OSTRICH, has been implemented in C/C++, and is available under the MIT license on <a href="https://github.com/rdfostrich/cobra" class="mandatory" data-link-text="https:/​/​github.com/​rdfostrich/​cobra">GitHub</a>.
 Our implementation uses <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-8">8</a>]</span> as snapshot technology,
 and makes use of the highly efficient memory-mapped B+Tree implementation <a href="http://fallabs.com/kyotocabinet/" class="mandatory" data-link-text="http:/​/​fallabs.com/​kyotocabinet/​">Kyoto Cabinet</a> for storing our indexes.
@@ -774,49 +670,46 @@ The delta dictionary is encoded with <a href="http://www.gzip.org/">gzip</a>, wh
       <p>In order to evaluate the ingestion and triple pattern query execution of COBRA,
 we make use of the <a href="https://aic.ai.wu.ac.at/qadlod/bear.html" class="mandatory" data-link-text="https:/​/​aic.ai.wu.ac.at/​qadlod/​bear.html">BEAR benchmark</a>.
 To test the scalability of our approach for datasets with few and large versions, we use the BEAR-A benchmark.
-We use the ten eight versions of the BEAR-A dataset (more versions cause memory issues),
+We use the first eight versions of the BEAR-A dataset (more versions cause memory issues),
 which contains 30M to 66M triples per version.
 This dataset was compiled from the <a href="http://swse.deri.org/dyldo/">Dynamic Linked Data Observatory</a>.
 To test for datasets with many smaller versions, we use BEAR-B with the daily and hourly granularities.
-The daily dataset contains 89 versions and the hourly dataset contains 1,299 versions,
+For the daily dataset we use 89 versions and for hourly dataset 400 versions,
 both of them have around 48K triples per version.
 All experiments were performed on a 64-bit Ubuntu 14.04 machine with a 6-core 2.40 GHz CPU and 48 GB of RAM.
-Our experimental setup and its raw results are available on <a href="https://github.com/rdfostrich/cobra/tree/master/Experiments/Results" class="mandatory" data-link-text="https:/​/​github.com/​rdfostrich/​cobra/​tree/​master/​Experiments/​Results">GitHub</a>.</p>
+Our experimental setup and its raw results are available on <a href="https://github.com/rdfostrich/cobra/tree/master/Experiments/" class="mandatory" data-link-text="https:/​/​github.com/​rdfostrich/​cobra/​tree/​master/​Experiments/​">GitHub</a>.</p>
 
-      <p>During our experiments, we distinguish between the following storage approaches:</p>
+      <p>Considering we aim to measure the benefits of the bidirectional aggregated delta chain
+compared to the unidirectional aggregated delta chain under the hybrid storage strategy,
+we distinguish between the following storage approaches:</p>
 
       <ul>
-        <li><strong>OSTRICH</strong>: OSTRICH with a forward unidirectional aggregated delta chain (<a href="#evaluation-storage-approaches-ostrich">Subfig. 2.1</a>)</li>
-        <li><strong>COBRA*</strong>: COBRA with a bidirectional aggregated delta chain before fix-up (<a href="#evaluation-storage-approaches-cobra-star">Subfig. 2.2</a>)</li>
-        <li><strong>COBRA</strong>: COBRA with a bidirectional aggregated delta chain after fix-up (<a href="#evaluation-storage-approaches-cobra">Subfig. 2.3</a>)</li>
+        <li><strong>OSTRICH</strong>: Forward unidirectional aggregated delta chain (<a href="#evaluation-storage-approaches-ostrich">Subfig. 2.1</a>)</li>
+        <li><strong>COBRA*</strong>: Bidirectional aggregated delta chain before fix-up (<a href="#evaluation-storage-approaches-cobra-star">Subfig. 2.2</a>)</li>
+        <li><strong>COBRA</strong>: Bidirectional aggregated delta chain after fix-up (<a href="#evaluation-storage-approaches-cobra">Subfig. 2.3</a>)</li>
       </ul>
 
-      <p>In the scope of this work, we work with at most two delta chains.
-For simplicity of these experiments, we always start a new delta chain in the middle version of the dataset
-(4 for BEAR-A, 45 for BEAR-B Daily, 200 for BEAR-B Hourly).
-Note that for the COBRA storage approach, we assume that all versions are available beforehand,
-so they can be stored out of order, starting with the middle snapshot.
-In practise, this may not always be possible, which is why we report on the additional fix-up time during ingestion separately
-that would be required when ingestion in order (COBRA*).</p>
+      <p>As such, we consider comparing against other systems with different storage strategies out of scope for this work.
+For an extensive comparison of the hybrid storage strategy with other systems, we refer to the <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH article</a> <span class="references">[<a href="#ref-5">5</a>]</span>.</p>
 
       <figure id="evaluation-storage-approaches" class="figure">
 
 <figure id="evaluation-storage-approaches-ostrich" class="subfigure">
-<img src="img/approach-ostrich.png" alt="OSTRICH storage approach" />
+<img src="img/approach-ostrich.png" alt="OSTRICH storage approach" class="eval-storage-approach" />
 <figcaption class="for-subfigure">
-            <p><span class="label">Subfig. 2.1:</span> OSTRICH with a forward unidirectional aggregated delta chain</p>
+            <p><span class="label">Subfig. 2.1:</span> OSTRICH with a forward unidirectional aggregated delta chain    </p>
           </figcaption>
 </figure>
 
 <figure id="evaluation-storage-approaches-cobra-star" class="subfigure">
-<img src="img/approach-cobra-star.png" alt="COBRA* storage approach" />
+<img src="img/approach-cobra-star.png" alt="COBRA* storage approach" class="eval-storage-approach" />
 <figcaption class="for-subfigure">
-            <p><span class="label">Subfig. 2.2:</span> COBRA with a bidirectional aggregated delta chain before fix-up</p>
+            <p><span class="label">Subfig. 2.2:</span> COBRA with a bidirectional aggregated delta chain before fix-up    </p>
           </figcaption>
 </figure>
 
 <figure id="evaluation-storage-approaches-cobra" class="subfigure">
-<img src="img/approach-cobra.png" alt="COBRA storage approach" />
+<img src="img/approach-cobra.png" alt="COBRA storage approach" class="eval-storage-approach" />
 <figcaption class="for-subfigure">
             <p><span class="label">Subfig. 2.3:</span> COBRA with a bidirectional aggregated delta chain after fix-up (ingested out-of-order starting with snapshot)</p>
           </figcaption>
@@ -827,11 +720,19 @@ that would be required when ingestion in order (COBRA*).</p>
         </figcaption>
 </figure>
 
+      <p>In the scope of this work, we work with at most two delta chains.
+For simplicity of these experiments, we always start a new delta chain in the middle version of the dataset
+(4 for BEAR-A, 45 for BEAR-B Daily, 200 for BEAR-B Hourly).
+Note that for the COBRA storage approach, we assume that all versions are available beforehand,
+so they can be stored out of order, starting with the middle snapshot.
+In practise, this may not always be possible, which is why we report on the additional fix-up time during ingestion separately
+that would be required when ingestion in order (COBRA*).</p>
+
       <p>To evaluate triple pattern query performance,
 we make use of the query sets provided by BEAR.
-BEAR-A provides 7 query sets containing around 100 triple patterns that are further divided in high result cardinality and low result cardinality. 
+BEAR-A provides 7 query sets containing around 100 triple patterns that are further divided into high result cardinality and low result cardinality. 
 BEAR-B provides two query sets that contain ?P? and ?PO queries.
-We evaluate these queries as VM queries for all version, DM queries between all versions and a VQ query.
+We evaluate these queries as VM queries for all version, DM queries between the first and all other versions and a VQ query.
 In order to minimize outliers, we replicate the queries five times and take the mean results.
 Furthermore, we perform a warm-up period before the first query of each triple pattern.
 Since neither OSTRICH nor COBRA support multiple snapshots for all query atoms,
@@ -843,126 +744,88 @@ we limit our experiments to OSTRICH’s unidrectional storage layout and COBRA�
 
       <h4 id="ingestion">Ingestion</h4>
 
-      <p><a href="#ingestion-beara">Table 3</a>, <a href="#ingestion-bearbd">Table 4</a> and <a href="#ingestion-bearbh">Table 5</a> show the total storage sizes and ingestion times
+      <p><a href="#ingestion-total">Table 2</a> show the total storage sizes and ingestion times
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
-These tables show that COBRA less ingestion time than OSTRICH in all cases (41% less on average).
+These tables show that COBRA requires less ingestion time than OSTRICH in all cases (41% less on average).
 Furthermore, COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly, but not for BEAR-B Daily.
 COBRA* requires more storage space than both COBRA and OSTRICH with BEAR-A, but it requires less ingestion time.
 For BEAR-B Daily, OSTRICH requires less storage, but COBRA* has the lowest ingestion time.
 For BEAR-B Hourly, COBRA* is lower in terms of storage size and ingestion time than both COBRA and OSTRICH.</p>
 
-      <figure id="ingestion-beara" class="table">
+      <figure id="ingestion-total" class="table">
 
         <table>
           <thead>
             <tr>
-              <th>Approach</th>
-              <th style="text-align: left">Storage Size (GB)</th>
-              <th style="text-align: left">Ingestion Time (hours)</th>
+              <th> </th>
+              <th style="text-align: left">OSTRICH</th>
+              <th style="text-align: left">COBRA*</th>
+              <th style="text-align: left">COBRA</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>OSTRICH</td>
+              <td><strong>BEAR-A</strong></td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
+            </tr>
+            <tr>
+              <td>Storage Size (GB)</td>
               <td style="text-align: left">3.92</td>
-              <td style="text-align: left">23.66</td>
-            </tr>
-            <tr>
-              <td>COBRA*</td>
               <td style="text-align: left">4.31</td>
-              <td style="text-align: left"><em>12.92</em></td>
+              <td style="text-align: left"><em>3.36</em></td>
             </tr>
             <tr>
-              <td>COBRA</td>
-              <td style="text-align: left"><em>3.36</em></td>
+              <td>Ingestion Time (hours)</td>
+              <td style="text-align: left">23.66</td>
+              <td style="text-align: left"><em>12.92</em></td>
               <td style="text-align: left">14.63</td>
             </tr>
-          </tbody>
-        </table>
-
-        <figcaption>
-          <p><span class="label">Table 3:</span> Total storage size and ingestion time for BEAR-A,
-with COBRA requiring the least storage size,
-and COBRA* the least ingestion time.</p>
-        </figcaption>
-      </figure>
-
-      <figure id="ingestion-bearbd" class="table">
-
-        <table>
-          <thead>
             <tr>
-              <th>Approach</th>
-              <th style="text-align: left">Storage Size (MB)</th>
-              <th style="text-align: left">Ingestion Time (minutes)</th>
+              <td><strong>BEAR-B Daily</strong></td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
             </tr>
-          </thead>
-          <tbody>
             <tr>
-              <td>OSTRICH</td>
+              <td>Storage Size (MB)</td>
               <td style="text-align: left"><em>19.37</em></td>
-              <td style="text-align: left">6.53</td>
-            </tr>
-            <tr>
-              <td>COBRA*</td>
               <td style="text-align: left">26.01</td>
-              <td style="text-align: left"><em>3.28</em></td>
+              <td style="text-align: left">28.44</td>
             </tr>
             <tr>
-              <td>COBRA</td>
-              <td style="text-align: left">28.44</td>
+              <td>Ingestion Time (minutes)</td>
+              <td style="text-align: left">6.53</td>
+              <td style="text-align: left"><em>3.28</em></td>
               <td style="text-align: left">4.24</td>
             </tr>
-          </tbody>
-        </table>
-
-        <figcaption>
-          <p><span class="label">Table 4:</span> Total storage size and ingestion time for BEAR-B Daily,
-with COBRA* being the smallest and fastest.</p>
-        </figcaption>
-      </figure>
-
-      <figure id="ingestion-bearbh" class="table">
-
-        <table>
-          <thead>
             <tr>
-              <th>Approach</th>
-              <th style="text-align: left">Storage Size (MB)</th>
-              <th style="text-align: left">Ingestion Time (minutes)</th>
+              <td><strong>BEAR-B Hourly</strong></td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
             </tr>
-          </thead>
-          <tbody>
             <tr>
-              <td>OSTRICH</td>
+              <td>Storage Size (MB)</td>
               <td style="text-align: left">61.02</td>
-              <td style="text-align: left">34.47</td>
-            </tr>
-            <tr>
-              <td>COBRA*</td>
               <td style="text-align: left"><em>46.42</em></td>
-              <td style="text-align: left"><em>14.87</em></td>
+              <td style="text-align: left">53.26</td>
             </tr>
             <tr>
-              <td>COBRA</td>
-              <td style="text-align: left">53.26</td>
+              <td>Ingestion Time (minutes)</td>
+              <td style="text-align: left">34.47</td>
+              <td style="text-align: left"><em>14.87</em></td>
               <td style="text-align: left">18.30</td>
             </tr>
           </tbody>
         </table>
 
         <figcaption>
-          <p><span class="label">Table 5:</span> Total storage size and ingestion time for BEAR-B Hourly,
-with COBRA* being the smallest and fastest.</p>
+          <p><span class="label">Table 2:</span> Total storage size and ingestion time for the different datasets.
+COBRA* is always the fastest, with no consistent winner for total storage size.</p>
         </figcaption>
       </figure>
-
-      <p>In order to provide more details on the evolution of storage size and ingestion time,
-<a href="#ingestion-size">Fig. 3</a> shows the cumulative storage size for the different datasets,
-and <a href="#ingestion-time">Fig. 4</a> shows the ingestion time for these datasets.
-These figures show the impact of the middle snapshots within the bidirectional chain.
-For BEAR-B Daily and Hourly, the storage size significantly increases at the middle version,
-but the ingestion times for all later versions significantly reset.</p>
 
       <figure id="ingestion-size" class="figure">
 
@@ -1031,11 +894,19 @@ COBRA resets ingestion time from the snapshot version, while ingestion time for 
         </figcaption>
 </figure>
 
-      <p>Finally, <a href="#ingestion-fixup-time">Table 6</a> show the fix-up times,
+      <p>In order to provide more details on the evolution of storage size and ingestion time,
+<a href="#ingestion-size">Fig. 3</a> shows the cumulative storage size for the different datasets,
+and <a href="#ingestion-time">Fig. 4</a> shows the ingestion time for these datasets.
+These figures show the impact of the middle snapshots within the bidirectional chain.
+For BEAR-B Daily and Hourly, the storage size significantly increases at the middle version,
+but the ingestion times for all later versions reset to low values.</p>
+
+      <p>Finally, <a href="#ingestion-fixup-time">Table 3</a> show the fix-up times,
 which are measured as a separate offline process.
 This is the time it would take to transition from the COBRA* to COBRA storage approach,
 when the versions could not be inserted out of order.
-On average, this fix-up requires 3,6 times more time compared to the additional time out of order ingestion takes.</p>
+On average, this fix-up requires 3,6 times more time relative to to the overhead of COBRA compared to COBRA*,
+showing that out of order ingestion is still preferred when possible.</p>
 
       <figure id="ingestion-fixup-time" class="table">
 
@@ -1063,7 +934,7 @@ On average, this fix-up requires 3,6 times more time compared to the additional 
         </table>
 
         <figcaption>
-          <p><span class="label">Table 6:</span> Fix-up duration for the different datasets.</p>
+          <p><span class="label">Table 3:</span> Fix-up duration for the different datasets.</p>
         </figcaption>
       </figure>
 
@@ -1079,7 +950,7 @@ For VQ, COBRA is faster than OSTRICH for BEAR-B Hourly, slightly faster for BEAR
       <figure id="query-vm" class="figure">
 
 <center>
-<img src="img/results/legend-query.png" alt="Legend" class="results-legend" />
+<img src="img/results/legend-query.png" alt="Legend" class="results-legend-small" />
 </center>
 
 <figure id="query-vm-beara" class="subfigure">
@@ -1112,7 +983,7 @@ For most versions, COBRA has is faster than OSTRICH.</p>
       <figure id="query-dm" class="figure">
 
 <center>
-<img src="img/results/legend-query.png" alt="Legend" class="results-legend" />
+<img src="img/results/legend-query.png" alt="Legend" class="results-legend-small" />
 </center>
 
 <figure id="query-dm-beara" class="subfigure">
@@ -1139,8 +1010,7 @@ For most versions, COBRA has is faster than OSTRICH.</p>
 <figcaption>
           <p><span class="label">Fig. 6:</span> Delta Materialization evaluation times between the first version and all other versions
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
-For the first half of versions, COBRA is faster than OSTRICH.
-For the second half of versions, COBRA becomes slower, but still faster than OSTRICH for BEAR-A and BEAR-B Hourly.</p>
+For the first half of versions, COBRA is faster than OSTRICH, but slows down in the second half.</p>
         </figcaption>
 </figure>
 
@@ -1173,23 +1043,28 @@ COBRA is faster than OSTRICH for the BEAR-B datasets, but slower for BEAR-A.</p>
         </figcaption>
 </figure>
 
-      <p><a href="#query-avg-beara">Table 7</a>, <a href="#query-avg-bearbd">Table 8</a> and <a href="#query-avg-bearbh">Table 9</a> respectively show
-the average overall query evaluation times for BEAR-A, BEAR-B Daily and BEAR-B Hourly.
+      <p><a href="#query-avg">Table 4</a> show the average overall query evaluation times for BEAR-A, BEAR-B Daily and BEAR-B Hourly.
 This shows that on average, COBRA is faster than OSTRICH,
 except for VQ in BEAR-A.</p>
 
-      <figure id="query-avg-beara" class="table">
+      <figure id="query-avg" class="table">
 
         <table>
           <thead>
             <tr>
-              <th>Dataset</th>
+              <th> </th>
               <th style="text-align: left">VM</th>
               <th style="text-align: left">DM</th>
-              <th style="text-align: left">VQ</th>
+              <th style="text-align: left">VA</th>
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><strong>BEAR-A</strong></td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
+            </tr>
             <tr>
               <td>OSTRICH</td>
               <td style="text-align: left">5.64</td>
@@ -1202,30 +1077,17 @@ except for VQ in BEAR-A.</p>
               <td style="text-align: left"><em>2,93</em></td>
               <td style="text-align: left">10,62</td>
             </tr>
-          </tbody>
-        </table>
-
-        <figcaption>
-          <p><span class="label">Table 7:</span> Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for BEAR-A (ms).</p>
-        </figcaption>
-      </figure>
-
-      <figure id="query-avg-bearbd" class="table">
-        <table>
-          <thead>
             <tr>
-              <th>Dataset</th>
-              <th style="text-align: left">VM</th>
-              <th style="text-align: left">DM</th>
-              <th style="text-align: left">VQ</th>
+              <td><strong>BEAR-B Daily</strong></td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
             </tr>
-          </thead>
-          <tbody>
             <tr>
               <td>OSTRICH</td>
               <td style="text-align: left">0,71</td>
               <td style="text-align: left">0,38</td>
-              <td style="text-align: left">0.90.</td>
+              <td style="text-align: left">0.90</td>
             </tr>
             <tr>
               <td>COBRA</td>
@@ -1233,26 +1095,12 @@ except for VQ in BEAR-A.</p>
               <td style="text-align: left"><em>0,31</em></td>
               <td style="text-align: left"><em>0.89</em></td>
             </tr>
-          </tbody>
-        </table>
-
-        <figcaption>
-          <p><span class="label">Table 8:</span> Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for BEAR-B Daily (ms).</p>
-        </figcaption>
-      </figure>
-
-      <figure id="query-avg-bearbh" class="table">
-
-        <table>
-          <thead>
             <tr>
-              <th>Dataset</th>
-              <th style="text-align: left">VM</th>
-              <th style="text-align: left">DM</th>
-              <th style="text-align: left">VQ</th>
+              <td><strong>BEAR-B Hourly</strong></td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
+              <td style="text-align: left"> </td>
             </tr>
-          </thead>
-          <tbody>
             <tr>
               <td>OSTRICH</td>
               <td style="text-align: left">0.73</td>
@@ -1269,7 +1117,7 @@ except for VQ in BEAR-A.</p>
         </table>
 
         <figcaption>
-          <p><span class="label">Table 9:</span> Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for BEAR-B Hourly (ms).</p>
+          <p><span class="label">Table 4:</span> Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for the different datasets (ms).</p>
         </figcaption>
       </figure>
 
@@ -1284,9 +1132,9 @@ and we test our hypotheses.</p>
 on storage size and ingestion time compared to a unidirectional delta chain.
 While the unidirectional delta chain leads to increasing ingestion times for every new version,
 initiating a new snapshot (COBRA*) can effectively <em>reset</em> these ingestion times.
-The downside of this is that there is a clear increase in storage size due to this,
+The downside of this is that there can be an increase in storage size due to this,
 which is more significant for datasets that have many small versions (BEAR-B).
-As such, for such datasets (BEAR-B), it is recommended to wait longer before initiating a new snapshot in the delta chain,
+As such, for those datasets (BEAR-B), it is recommended to wait longer before initiating a new snapshot in the delta chain,
 since ingestion times are typically much lower compared to datasets with fewer large versions (BEAR-A).
 Given the capabilities and query load of the server and affordable storage overhead,
 a certain ingestion time threshold could be defined,
@@ -1295,12 +1143,12 @@ which would initiate a new snapshot when this threshold is exceeded.</p>
       <p>Once there are two unidirectional delta chains,
 the first one could optionally be reversed so that both can share one snapshot through a fix-up process (COBRA).
 Our results show that this can further reduce storage size for datasets with few large versions (BEAR-A).
-However, for many small versions (BEAR-B), this leads to additional storage overhead.
+However, for many small versions (BEAR-B), this leads to overhead in terms of storage size.
 This fix-up process does however require a significant execution time.
-However, since this could easily run in a separate process can happen in an offline process,
+Since this could easily run in a separate process can happen in an offline process,
 this additional time is typically not a problem.
 As such, when the server encounters a dataset with large versions (millions of triples per version),
-then the fix-up process should be applied.</p>
+then the fix-up approach should be followed.</p>
 
       <p>The results also show that if all versions are known beforehand,
 they should be ingested out-of-order into a bidirectional delta chain.
@@ -1318,10 +1166,10 @@ i.e., we need to search through two addition and deletion indexes instead of jus
 For datasets with many small versions (BEAR-B),
 VQ also becomes faster with a bidirectional delta chain,
 but this does not apply when the dataset has few large versions (BEAR-A).
-The reason for this again has to do with the fact that we now have two delta chains,
+This is again caused by the fact that we now have two delta chains,
 and two addition and deletion indexes to query in.
 When we have many small versions, these two delta chains are worth it,
-as their impact on performance outweighs the impact of the snapshot.
+as the benefit of the shared snapshot outweighs the overhead of the delta chains.
 However, for few large versions,
 the overhead of two delta chains is too large for VQ,
 and one delta chain is more performant.
@@ -1371,12 +1219,12 @@ as network latency is typically slower than that.</p>
       <p>This work shows the importance of delta directionality and snapshot placement in the delta chain.
 While we have measured the impact of a bidirectional delta chain,
 other strategies still remain to be investigated.
-First, deltas may inherit from the two or more surrounding versions, instead of just one.
-Second, aggregated and non-aggregated deltas are just two extremes of delta organization,
-a range of valuable possibilities inbetween may exist,
+First, deltas may inherit from two or more surrounding versions, instead of just one.
+Second, aggregated and non-aggregated deltas are just two extremes of delta organization.
+A range of valuable possibilities in between may exist,
 such as inheriting from the n<sup>th</sup> largest preceding version.
 Third, the impact of multiple snapshots and strategies to decide when to create them still remain as open questions.
-Through such incremental work, we can grow towards a truly <em>evolving</em> Semantic Web.</p>
+By investigating these different strategies, we can grow towards a truly <em>evolving</em> Semantic Web.</p>
 
     </div>
 </section>
@@ -1393,7 +1241,7 @@ Through such incremental work, we can grow towards a truly <em>evolving</em> Sem
   <dt id="ref-3">[3]</dt>
   <dd resource="#dbpedia" typeof="schema:Article">Auer, S., Bizer, C., Kobilarov, G., Lehmann, J., Cyganiak, R., Ives, Z.: Dbpedia: A nucleus for a web of open data. The semantic web. 722–735 (2007).</dd>
   <dt id="ref-4">[4]</dt>
-  <dd resource="http://ceur-ws.org/Vol-1377/paper6.pdf" typeof="schema:Article">Fernández, J.D., Polleres, A., Umbrich, J.: Towards efficient archiving of Dynamic Linked Open Data. In: Debattista, J., d’Aquin, M., and Lange, C. (eds.) Proceedings of te First DIACHRON Workshop on Managing the Evolution and Preservation of the Data Web. pp. 34–49 (2015).</dd>
+  <dd resource="http://ceur-ws.org/Vol-1377/paper6.pdf" typeof="schema:Article">Fernández, J.D., Polleres, A., Umbrich, J.: Towards efficient archiving of Dynamic Linked Open Data. In: Proceedings of te First DIACHRON Workshop on Managing the Evolution and Preservation of the Data Web. pp. 34–49 (2015).</dd>
   <dt id="ref-5">[5]</dt>
   <dd resource="https://rdfostrich.github.io/article-jws2018-ostrich/" typeof="schema:Article">Taelman, R., Vander Sande, M., Van Herwegen, J., Mannens, E., Verborgh, R.: Triple storage for random-access versioned querying of RDF archives. Journal of Web Semantics. 54, 4–28 (2019).</dd>
   <dt id="ref-6">[6]</dt>
@@ -1417,7 +1265,7 @@ Through such incremental work, we can grow towards a truly <em>evolving</em> Sem
   <dt id="ref-15">[15]</dt>
   <dd resource="#r43ples" typeof="schema:Article">Graube, M., Hensel, S., Urbas, L.: R43ples: Revisions for triples. In: Proceedings of the 1st Workshop on Linked Data Quality co-located with 10th International Conference on Semantic Systems (SEMANTiCS 2014) (2014).</dd>
   <dt id="ref-16">[16]</dt>
-  <dd resource="#vcld" typeof="schema:Article">Hauptmann, C., Brocco, M., Wörndl, W.: Scalable Semantic Version Control for Linked Data Management. In: Proceedings of the 2nd Workshop on Linked Data Quality co-located with 12th Extended Semantic Web Conference (ESWC 2015), Portorož, Slovenia (2015).</dd>
+  <dd resource="#vcld" typeof="schema:Article">Hauptmann, C., Brocco, M., Wörndl, W.: Scalable Semantic Version Control for Linked Data Management. In: Proceedings of the 2nd Workshop on Linked Data Quality co-located with 12th Extended Semantic Web Conference (ESWC 2015) (2015).</dd>
   <dt id="ref-17">[17]</dt>
   <dd resource="#xrdf3x" typeof="schema:Article">Neumann, T., Weikum, G.: x-RDF-3X: fast querying, high update rates, and consistency for RDF databases. Proceedings of the VLDB Endowment. 3, 256–263 (2010).</dd>
   <dt id="ref-18">[18]</dt>
@@ -1425,7 +1273,7 @@ Through such incremental work, we can grow towards a truly <em>evolving</em> Sem
   <dt id="ref-19">[19]</dt>
   <dd resource="#selfindexingarchives" typeof="schema:Article">Cerdeira-Pena, A., Farina, A., Fernández, J.D., Martı́nez-Prieto Miguel A: Self-indexing RDF archives. In: Data Compression Conference (DCC), 2016. pp. 526–535. IEEE (2016).</dd>
   <dt id="ref-20">[20]</dt>
-  <dd resource="#dydra" typeof="schema:Article">Anderson, J., Bendiken, A.: Transaction-time queries in dydra. In: Joint Proceedings of the 2nd Workshop on Managing the Evolution and Preservation of the Data Web (MEPDaW 2016) and the 3rd Workshop on Linked Data Quality (LDQ 2016) co-located with 13th European Semantic Web Conference (ESWC 2016): MEPDaW-LDQ. pp. 11–19 (2016).</dd>
+  <dd resource="#dydra" typeof="schema:Article">Anderson, J., Bendiken, A.: Transaction-time queries in dydra. In: Joint Proceedings of the 2nd Workshop on Managing the Evolution and Preservation of the Data Web (MEPDaW 2016) and the 3rd Workshop on Linked Data Quality (LDQ 2016). pp. 11–19 (2016).</dd>
   <dt id="ref-21">[21]</dt>
   <dd resource="https://dx.doi.org/10.1016/j.websem.2018.08.002" typeof="schema:Article">Arndt, N., Naumann, P., Radtke, N., Martin, M., Marx, E.: Decentralized Collaborative Knowledge Management using Git. Journal of Web Semantics. (2018).</dd>
   <dt id="ref-22">[22]</dt>
@@ -1433,20 +1281,14 @@ Through such incremental work, we can grow towards a truly <em>evolving</em> Sem
   <dt id="ref-23">[23]</dt>
   <dd resource="#vmrdf" typeof="schema:Article">Im, D.-H., Lee, S.-W., Kim, H.-J.: A version management framework for RDF triple stores. International Journal of Software Engineering and Knowledge Engineering. 22, 85–106 (2012).</dd>
   <dt id="ref-24">[24]</dt>
-  <dd resource="#dbpedialive" typeof="schema:Article">Morsey, M., Lehmann, J., Auer, S., Stadler, C., Hellmann, S.: DBpedia and the live extraction of structured data from wikipedia. Program. 46, 157–181 (2012).</dd>
-  <dt id="ref-25">[25]</dt>
-  <dd resource="#opendataportalwatch" typeof="schema:Article">Neumaier, S., Umbrich, J., Polleres, A.: Automated quality assessment of metadata across open data portals. Journal of Data and Information Quality (JDIQ). 8, 2 (2016).</dd>
-  <dt id="ref-26">[26]</dt>
-  <dd resource="#jena" typeof="schema:Article">McBride, B.: Jena: A semantic web toolkit. IEEE Internet computing. 6, 55–59 (2002).</dd>
-  <dt id="ref-27">[27]</dt>
   <dd resource="http://rubensworks.net/raw/publications/2017/vtpf.pdf" typeof="schema:Article">Taelman, R., Vander Sande, M., Verborgh, R., Mannens, E.: Versioned Triple Pattern Fragments: A Low-cost Linked Data Interface Feature for Web Archives. In: Proceedings of the 3rd Workshop on Managing the Evolution and Preservation of the Data Web (2017).</dd>
-  <dt id="ref-28">[28]</dt>
+  <dt id="ref-25">[25]</dt>
   <dd resource="https://rdfostrich.github.io/article-mocha-2018/" typeof="schema:Article">Taelman, R., Vander Sande, M., Verborgh, R.: Versioned Querying with OSTRICH and Comunica in MOCHA 2018. In: Proceedings of the 5th SemWebEval Challenge at ESWC 2018 (2018).</dd>
-  <dt id="ref-29">[29]</dt>
+  <dt id="ref-26">[26]</dt>
   <dd resource="https://comunica.github.io/Article-ISWC2018-Resource/" typeof="schema:Article">Taelman, R., Van Herwegen, J., Vander Sande, M., Verborgh, R.: Comunica: a Modular SPARQL Query Engine for the Web. In: Proceedings of the 17th International Semantic Web Conference (2018).</dd>
-  <dt id="ref-30">[30]</dt>
+  <dt id="ref-27">[27]</dt>
   <dd resource="#rcs" typeof="schema:Article">Tichy, W.F.: RCS—a system for version control. Software: Practice and Experience. 15, 637–654 (1985).</dd>
-  <dt id="ref-31">[31]</dt>
+  <dt id="ref-28">[28]</dt>
   <dd resource="http://darcs.net" typeof="schema:CreativeWork">Roundy, D.: Darcs. <a href="http://darcs.net">http:/​/​darcs.net</a> (2008).</dd>
 </dl>
 </section>
