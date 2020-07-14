@@ -15,15 +15,9 @@ to optimize query execution and storage size.
 Since RDF datasets typically [change over time](cite:cites datasetdynamics),
 there is a need to [maintain the history of these datasets](cite:cites archiving),
 which gave rise to the research domain of *RDF archiving*.
-
-An [_RDF archive_](cite:cites bear) has been defined as follows:
-_An RDF archive graph A is a set of version-annotated triples._
-Where a _version-annotated triple_ _(s, p, o):\[i\]_ is defined as _an RDF triple (s, p, o) with a label i ∈ N representing the version in which this triple holds._
-The set of all [RDF triples](cite:cites spec:rdf) is defined as _(U ∪ B) × U × (U ∪ B ∪ L)_,
-where _U_, _B_, and _L_, respectively represent the disjoint, infinite sets of URIs, blank nodes, and literals.
-Furthermore,
-_an RDF version of an RDF archive A at snapshot i is the RDF graph A(i) = {(s, p, o)|(s, p, o):\[i\] ∈ A}._
-For the remainder of this article, we use the notation _V<sub>i</sub>_ to refer to the RDF version _A(i)_.
+An [_RDF archive_](cite:cites bear) has been defined as _a set of version-annotated triples._
+Where a _version-annotated triple_ is defined as _an RDF triple with a label representing the version in which this triple holds._
+Furthermore, an RDF version of an RDF archive is composed of all triples with a given version label.
 
 RDF archives allow multiple versions to exist in parallel,
 which leads to a range of new querying possibilities.
@@ -33,33 +27,17 @@ or even differences between different versions.
 To cover this new range of querying possibilities,
 [five foundational query types were introduced](cite:cites bear),
 which are referred to as _query atoms_.
-These query atoms make use of concepts from the
-the [RDF data model](cite:cites spec:rdf) and [SPARQL query language](cite:cites spec:sparqllang).
-In these models, a _triple pattern_ is defined as _(U ∪ V) × (U ∪ V) × (U ∪ L ∪ V)_, with _V_ being the infinite set of variables.
-A set of triple patterns is called a _Basic Graph Pattern_, which forms the basis of a SPARQL query.
-The evaluation of a SPARQL query _Q_ on an RDF graph _G_ containing RDF triples,
-produces a bag of solution mappings _\[\[Q\]\]<sub>G</sub>_.
-The five query atoms are defined as follows:
+For brevity, we refer to [the article in which they were introduced](cite:cites bear) their formal details.
+In this scope of this article, we only discuss three of the five query atoms,
+as they can be expressed in [terms of each other](cite:cites tpfarchives).
+The three relevant query atoms are defined as follows:
 
-1. **Version materialization (VM)** retrieves data using a query _Q_ targeted at a single version _V<sub>i</sub>_.
-Formally: _VM(Q, V<sub>i</sub>) = \[\[Q\]\]<sub>V<sub>i</sub></sub>_.
+1. **Version materialization (VM)** retrieves data using a query targeted at a single version.
 Example: _Which books were present in the library yesterday?_
-2. **Delta materialization (DM)** retrieves query _Q_'s result change sets between two versions _V<sub>i</sub>_ and _V<sub>j</sub>_.
-Formally: _DM(Q, V<sub>i</sub>, V<sub>j</sub>)=(Ω<sup>+</sup>, Ω<sup>−</sup>). With Ω<sup>+</sup> = \[\[Q\]\]<sub>V<sub>i</sub></sub> \ \[\[Q\]\]<sub>V<sub>j</sub></sub> and Ω<sup>−</sup> = \[\[Q\]\]<sub>V<sub>j</sub></sub> \ \[\[Q\]\]<sub>V<sub>i</sub></sub>_.
+2. **Delta materialization (DM)** retrieves query result change sets between two versions.
 Example: _Which books were returned or taken from the library between yesterday and now?_
-3. **Version query (VQ)** annotates query _Q_'s results with the versions (of RDF archive A) in which they are valid.
-Formally: _VQ(Q, A) = {(Ω, W) | W = {A(i) | Ω=\[\[Q\]\]<sub>A(i)</sub>, i ∈ N} ∧ Ω ≠ ∅}_.
+3. **Version query (VQ)** annotates query results with the versions in which they are valid.
 Example: _At what times was book X present in the library?_
-4. **Cross-version join (CV)** joins the results of two queries (_Q1_ and _Q2_) between versions _V<sub>i</sub>_ and _V<sub>j</sub>_.
-Formally: _VM(Q1, V<sub>i</sub>) ⨝ VM(Q2, V<sub>j</sub>)_.
-Example: _What books were present in the library yesterday and today?_
-5. **Change materialization (CM)** returns a list of versions in which a given query _Q_ produces
-consecutively different results.
-Formally: _{(i, j) | i,j ∈ ℕ, i < j, DM(Q, A(i), A(j)) = (Ω<sup>+</sup>, Ω<sup>−</sup>), Ω<sup>+</sup> ∪ Ω<sup>−</sup> ≠ ∅, ∄ k ∈ ℕ : i < k < j}_.
-Example: _At what times was book X returned or taken from the library?_
-
-In the remainder of this article, we focus on version materialization (VM), delta materialization (DM), and version (VQ) queries,
-as CV and CM queries can be expressed in [terms of the other ones](cite:cites tpfarchives).
 
 ### RDF Archiving Solutions
 
@@ -78,7 +56,10 @@ CB is better for DM queries,
 and TB is best for VQ queries.
 No single strategy leads to good performance of all query atoms.
 
-[](#rdf-archive-systems) shows an overview of the primary RDF archiving systems,
+In the following, we summarize the primary known RDF archiving systems,
+and which storage strategy they follow.
+
+<!-- [](#rdf-archive-systems) shows an overview of the primary RDF archiving systems,
 and which storage strategy they follow.
 
 <figure id="rdf-archive-systems" class="table" markdown="1">
@@ -102,7 +83,7 @@ and which storage strategy they follow.
 Overview of RDF archiving solutions with their corresponding storage strategy:
 Individual copies (IC), Change-based (CB), or Timestamp-based (TB).
 </figcaption>
-</figure>
+</figure>-->
 
 #### Independent copies approaches
 [SemVersion](cite:cites semversion) tracks different versions of RDF graphs,

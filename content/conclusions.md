@@ -17,9 +17,9 @@ as network latency is typically slower than that.
 This work shows the importance of delta directionality and snapshot placement in the delta chain.
 While we have measured the impact of a bidirectional delta chain,
 other strategies still remain to be investigated.
-First, deltas may inherit from the two or more surrounding versions, instead of just one.
-Second, aggregated and non-aggregated deltas are just two extremes of delta organization,
-a range of valuable possibilities inbetween may exist,
+First, deltas may inherit from two or more surrounding versions, instead of just one.
+Second, aggregated and non-aggregated deltas are just two extremes of delta organization.
+A range of valuable possibilities in between may exist,
 such as inheriting from the n<sup>th</sup> largest preceding version.
 Third, the impact of multiple snapshots and strategies to decide when to create them still remain as open questions.
-Through such incremental work, we can grow towards a truly _evolving_ Semantic Web.
+By investigating these different strategies, we can grow towards a truly _evolving_ Semantic Web.

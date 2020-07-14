@@ -67,7 +67,7 @@ as they grow in size for each new version.
 The goal of this work is to investigate how these problems can be solved,
 without losing the advantages of aggregated deltas with respect to query execution times.
 As such, we will not achieve any lower ingestion times by reversing our delta chain,
-as the additions and deletions would simply be reversed.
+as the additions and deletions would just be swapped, but would not be smaller.
 Instead, we aim to reduce overall storage by reducing the number of required snapshots.
 
 One straightforward way of reducing ingestion time would be
@@ -82,7 +82,7 @@ As such, there is a trade-off between ingestion time and storage size,
 and new delta chains should only be started once ingestion times become much higher than desired.
 
 Since the creation of a snapshot can be costly, it should be avoided until absolutely necessary.
-As explained in the last paragraph,
+As explained in the previous paragraph,
 splitting up a delta chain into two separate delta chains
 would lead to two snapshots, each followed by a chain of deltas.
 We can however reduce the number of required snapshots
@@ -90,8 +90,8 @@ by combining the forward and reverse approaches into a *bidirectional* approach,
 by allowing two sets of deltas to make use of the same snapshot.
 Intuitively, one bidirectional delta chain is equivalent
 to two forward delta chains,
-where the second delta chain is reversed,
-and the snapshots of these two chains are therefore shared,
+where the second delta chain is reversed.
+The snapshots of these two chains are therefore shared,
 so that it only has to be created and stored once.
 
 As such, the main advantage of a bidirectional delta chain is that it can more optimally make use of snapshots.
@@ -110,7 +110,7 @@ As mentioned before, our storage approach builds upon that of OSTRICH.
 The only difference is that OSTRICH uses a unidirectional aggregated delta chain,
 and our approach uses a bidirectional aggregated delta chain.
 Concretely, this means that not only deltas exist *after* the snapshot,
-but also deltas exist *before* the snapshot.
+but also *before* the snapshot.
 
 <figure id="storage-overview" class="figure">
 <img src="img/storage-overview.svg" alt="Storage overview" class="storage-overview">
@@ -121,9 +121,9 @@ Overview of the main components of our storage approach consisting of a bidirect
 
 [](#storage-overview) shows an overview of the main components of our storage approach,
 which are analogous to the components from OSTRICH, except for the delta chain on the left side of the snapshot.
-Like OSTRICH, the snapshot is stored using [HDT](cite:cites hdt),
-due to its highly performant triple pattern queries and cardinality estimates,
-and its high compression rate.
+Like OSTRICH, the snapshot can be stored using [HDT](cite:cites hdt),
+due to its highly performant triple pattern queries, cardinality estimates,
+and high compression rate.
 Furthermore, metadata about the archive is stored, containing details such as the total number of versions.
 Next, each delta chain is compressed into timestamp-based B+tree indexes,
 where additions and deletions are stored separately.
@@ -136,10 +136,10 @@ This metadata also allows cardinality estimates for deletions to be retrieved ef
 To enable cardinality estimates for additions, we make use of the addition count index from OSTRICH.
 For the sake of brevity, we omit further details about the components that can be found in the [OSTRICH article](cite:cites ostrich).
 
-### Ingestion Algorithm
+### Ingestion Approach
 {:#solution-ingestion}
 
-In this section, we introduce an algorithm to enable ingestion of new versions within our bidirectional aggregated storage approach.
+In this section, we introduce an approach to enable ingestion of new versions within our bidirectional aggregated storage approach.
 For this, we make use of the ingestion algorithm from OSTRICH, which enables ingestion within a unidirectional forward aggregated delta chain.
 As our approach extends from OSTRICH, we can already insert deltas *after* the snapshot,
 but not yet *before* the snapshot, i.e., the reverse part of the delta chain.
@@ -151,10 +151,10 @@ For each new version, our temporary forward delta chain will be built up,
 and can be queried in the meantime.
 From the moment that this delta chain becomes too long, or some other treshold has been exceeded,
 then an offline fix-up algorithm is triggered that will effectively *reverse* this delta chain,
-and place a snapshot at the end, after which a new forward delta chain can build upon.
+and place a snapshot at the end, where a new forward delta chain can be built upon.
 
 [](#algorithm-fixup) shows a sketch of our fix-up algorithm in pseudo-code.
-First, the all aggregated deltas in the chain will be extracted as non-aggregated deltas by calling [existing DM functionality in OSTRICH](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization).
+First, the aggregated deltas in the chain will be extracted as non-aggregated deltas by calling [existing DM functionality in OSTRICH](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization).
 We store the deletions as additions, and the additions as deletions.
 Next, we create a new delta chain, and insert these reversed deltas by calling [existing ingestion functionality in OSTRICH](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions).
 Once ingestion is done, the existing delta chain is replaced by our new delta chain.
@@ -172,14 +172,14 @@ During the execution of this process, the temporary forward delta chain is still
 so queries are still possible during this time.
 Only after the fix-up process is done,
 query executions will be delegated to this new reverse delta chain, 
-nd the temporary forward delta chain can be deleted.
+and the temporary forward delta chain can be deleted.
 
 ### Query Algorithms
 {:#solution-query}
 
 In this section, we discuss triple pattern query algorithms for the three query atoms discussed in [](#related-work) (VM, DM, VQ).
-For simplicity, we assume the existence of a single (bidirectional) delta chain.
-We consider multiple delta chains future work.
+For simplicity, we assume the existence of a (bidirectional) delta chain with one snapshot.
+We consider multiple snapshots and delta chains future work.
 Just like for OSTRICH, all of these algorithms work in a streaming manner with offset support,
 and offer cardinality estimators.
 Below, we briefly discuss the relevant parts of the OSTRICH algorithms.
@@ -198,10 +198,11 @@ As such, we do not discuss this VM case any further.
 
 #### Delta Materialization
 
-Delta Materialization (DM) allows differences between to given versions to be retrieved.
+Delta Materialization (DM) allows differences between two given versions to be retrieved.
 [OSTRICH distinguishes two cases for this](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization);
-either the start version to a snapshot, or to a delta.
-If the start (or end) version is a snapshot, then the result is simply a query within the delta of the end version.
+either the start version is a snapshot or a delta,
+where the end version will always be a delta.
+If the start (or end) version is a snapshot, then the result is simply a query within the aggregated delta of the end version.
 Otherwise, the addition and deletion indexes for the two delta versions are iterated in a sort-merge join-like operation,
 and only emits the triples that have a different addition/deletion flag for the two versions.
 
@@ -214,11 +215,11 @@ and a DM query from the snapshot until the end version.
 These two queries can be resolved over the two respective delta chains using [the existing DM functionality from OSTRICH](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization).
 As the results from these two queries are sorted,
 we can merge them in a sort-merge join way,
-where triples are only emitted if they don't exist in both streams.
+where triples are only emitted if they don't exist in both streams (ignoring the addition/deletion flag).
 [](#algorithm-querying-dm) illustrates this algorithm in pseudocode.
 Following the patch notation for [DARCS](cite:cites darcs),
 with `o` being the start version, `e` being the end version and `s` being the snapshot,
-our delta splitting corresponds to <sup>`o`</sup>`D`<sup>`e`</sup> = <sup>`o`</sup>`D1`<sup>`s`</sup>`D2`<sup>`e`</sup>.
+our delta split corresponds to <sup>`o`</sup>`D`<sup>`e`</sup> = <sup>`o`</sup>`D1`<sup>`s`</sup>`D2`<sup>`e`</sup>.
 
 <figure id="algorithm-querying-dm" class="algorithm numbered">
 ````/algorithms/querying-dm.txt````
@@ -248,11 +249,11 @@ Once the snapshot stream has finished,
 the addition index are iterated in a similar way,
 where the version annotation of every addition triple is again updated based on its presence in the deletion index.
 
-Our case is a trivial extension of this algorithm,
-where instead of checking single addition and deletion streams,
-two addition and deletion streams have to be checked,
-which will produce distinct version annotations.
+Our case is a trivial extension of this algorithm.
+Instead of checking single addition and deletion streams,
+two addition and deletion streams have to be checked.
+This will produce distinct version annotations, for which we apply the union.
 
-To estimate the cardinality, the OSTRICH approach can again be extended,
+To estimate the cardinality, the OSTRICH approach can again be extended
 by adding the snapshot cardinality with the addition cardinality for both delta chains for the given triple pattern.
 As some triples could occur in both delta chains, this can lead to an overestimation.

@@ -6,7 +6,7 @@ In this section, we evaluate our bidirectional archiving approach by comparing o
 ### Implementation
 {:#evaluation-implementation}
 
-We have implemented our storage approach and query algorithms in a tool called COBRA (Change-Based Offset-Enabled Bidirectional RDF Archive).
+We have implemented our storage approach and query algorithms as a tool called COBRA (Change-Based Offset-Enabled Bidirectional RDF Archive).
 COBRA is an extension of OSTRICH, has been implemented in C/C++, and is available under the MIT license on [GitHub](https://github.com/rdfostrich/cobra){:.mandatory}.
 Our implementation uses [HDT](cite:cites hdt) as snapshot technology,
 and makes use of the highly efficient memory-mapped B+Tree implementation [Kyoto Cabinet](http://fallabs.com/kyotocabinet/){:.mandatory} for storing our indexes.
@@ -18,20 +18,25 @@ The delta dictionary is encoded with [gzip](http://www.gzip.org/), which require
 In order to evaluate the ingestion and triple pattern query execution of COBRA,
 we make use of the [BEAR benchmark](https://aic.ai.wu.ac.at/qadlod/bear.html){:.mandatory}.
 To test the scalability of our approach for datasets with few and large versions, we use the BEAR-A benchmark.
-We use the ten eight versions of the BEAR-A dataset (more versions cause memory issues),
+We use the first eight versions of the BEAR-A dataset (more versions cause memory issues),
 which contains 30M to 66M triples per version.
 This dataset was compiled from the [Dynamic Linked Data Observatory](http://swse.deri.org/dyldo/).
 To test for datasets with many smaller versions, we use BEAR-B with the daily and hourly granularities.
-The daily dataset contains 89 versions and the hourly dataset contains 1,299 versions,
+For the daily dataset we use 89 versions and for hourly dataset 400 versions,
 both of them have around 48K triples per version.
 All experiments were performed on a 64-bit Ubuntu 14.04 machine with a 6-core 2.40 GHz CPU and 48 GB of RAM.
-Our experimental setup and its raw results are available on [GitHub](https://github.com/rdfostrich/cobra/tree/master/Experiments/Results){:.mandatory}.
+Our experimental setup and its raw results are available on [GitHub](https://github.com/rdfostrich/cobra/tree/master/Experiments/){:.mandatory}.
 
-During our experiments, we distinguish between the following storage approaches:
+Considering we aim to measure the benefits of the bidirectional aggregated delta chain
+compared to the unidirectional aggregated delta chain under the hybrid storage strategy,
+we distinguish between the following storage approaches:
 
 * **OSTRICH**: OSTRICH with a forward unidirectional aggregated delta chain ([](#evaluation-storage-approaches-ostrich))
 * **COBRA\***: COBRA with a bidirectional aggregated delta chain before fix-up ([](#evaluation-storage-approaches-cobra-star))
 * **COBRA**: COBRA with a bidirectional aggregated delta chain after fix-up ([](#evaluation-storage-approaches-cobra))
+
+As such, we consider comparing against other systems with different storage strategies out of scope for this work.
+For an extensive comparison of the hybrid storage strategy with other systems, we refer to the [OSTRICH article](cite:cites ostrich).
 
 In the scope of this work, we work with at most two delta chains.
 For simplicity of these experiments, we always start a new delta chain in the middle version of the dataset
@@ -71,9 +76,9 @@ The different storage approaches used in our experiments.
 
 To evaluate triple pattern query performance,
 we make use of the query sets provided by BEAR.
-BEAR-A provides 7 query sets containing around 100 triple patterns that are further divided in high result cardinality and low result cardinality. 
+BEAR-A provides 7 query sets containing around 100 triple patterns that are further divided into high result cardinality and low result cardinality. 
 BEAR-B provides two query sets that contain ?P? and ?PO queries.
-We evaluate these queries as VM queries for all version, DM queries between all versions and a VQ query.
+We evaluate these queries as VM queries for all version, DM queries between the first and all other versions and a VQ query.
 In order to minimize outliers, we replicate the queries five times and take the mean results.
 Furthermore, we perform a warm-up period before the first query of each triple pattern.
 Since neither OSTRICH nor COBRA support multiple snapshots for all query atoms,
@@ -88,7 +93,7 @@ In this section, we discuss the results of our experiments on ingestion and quer
 
 [](#ingestion-beara), [](#ingestion-bearbd) and [](#ingestion-bearbh) show the total storage sizes and ingestion times
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
-These tables show that COBRA less ingestion time than OSTRICH in all cases (41% less on average).
+These tables show that COBRA requires less ingestion time than OSTRICH in all cases (41% less on average).
 Furthermore, COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly, but not for BEAR-B Daily.
 COBRA* requires more storage space than both COBRA and OSTRICH with BEAR-A, but it requires less ingestion time.
 For BEAR-B Daily, OSTRICH requires less storage, but COBRA* has the lowest ingestion time.
@@ -142,7 +147,7 @@ In order to provide more details on the evolution of storage size and ingestion 
 and [](#ingestion-time) shows the ingestion time for these datasets.
 These figures show the impact of the middle snapshots within the bidirectional chain.
 For BEAR-B Daily and Hourly, the storage size significantly increases at the middle version,
-but the ingestion times for all later versions significantly reset.
+but the ingestion times for all later versions reset to low values.
 
 <figure id="ingestion-size" class="figure">
 
@@ -215,7 +220,8 @@ Finally, [](#ingestion-fixup-time) show the fix-up times,
 which are measured as a separate offline process.
 This is the time it would take to transition from the COBRA\* to COBRA storage approach,
 when the versions could not be inserted out of order.
-On average, this fix-up requires 3,6 times more time compared to the additional time out of order ingestion takes.
+On average, this fix-up requires 3,6 times more time relative to to the overhead of COBRA compared to COBRA*,
+showing that out of order ingestion is still preferred when possible.
 
 <figure id="ingestion-fixup-time" class="table" markdown="1">
 
@@ -388,9 +394,9 @@ Our experimental results show that the usage of a bidirectional delta chain has 
 on storage size and ingestion time compared to a unidirectional delta chain.
 While the unidirectional delta chain leads to increasing ingestion times for every new version,
 initiating a new snapshot (COBRA\*) can effectively _reset_ these ingestion times.
-The downside of this is that there is a clear increase in storage size due to this,
+The downside of this is that there can be an increase in storage size due to this,
 which is more significant for datasets that have many small versions (BEAR-B).
-As such, for such datasets (BEAR-B), it is recommended to wait longer before initiating a new snapshot in the delta chain,
+As such, for those datasets (BEAR-B), it is recommended to wait longer before initiating a new snapshot in the delta chain,
 since ingestion times are typically much lower compared to datasets with fewer large versions (BEAR-A).
 Given the capabilities and query load of the server and affordable storage overhead,
 a certain ingestion time threshold could be defined,
@@ -399,12 +405,12 @@ which would initiate a new snapshot when this threshold is exceeded.
 Once there are two unidirectional delta chains,
 the first one could optionally be reversed so that both can share one snapshot through a fix-up process (COBRA).
 Our results show that this can further reduce storage size for datasets with few large versions (BEAR-A).
-However, for many small versions (BEAR-B), this leads to additional storage overhead.
+However, for many small versions (BEAR-B), this leads to overhead in terms of storage size.
 This fix-up process does however require a significant execution time.
-However, since this could easily run in a separate process can happen in an offline process,
+Since this could easily run in a separate process can happen in an offline process,
 this additional time is typically not a problem.
 As such, when the server encounters a dataset with large versions (millions of triples per version),
-then the fix-up process should be applied.
+then the fix-up approach should be followed.
 
 The results also show that if all versions are known beforehand,
 they should be ingested out-of-order into a bidirectional delta chain.
@@ -422,10 +428,10 @@ i.e., we need to search through two addition and deletion indexes instead of jus
 For datasets with many small versions (BEAR-B),
 VQ also becomes faster with a bidirectional delta chain,
 but this does not apply when the dataset has few large versions (BEAR-A).
-The reason for this again has to do with the fact that we now have two delta chains,
+This is again caused by the fact that we now have two delta chains,
 and two addition and deletion indexes to query in.
 When we have many small versions, these two delta chains are worth it,
-as their impact on performance outweighs the impact of the snapshot.
+as the benefit of the shared snapshot outweighs the overhead of the delta chains.
 However, for few large versions,
 the overhead of two delta chains is too large for VQ,
 and one delta chain is more performant.
