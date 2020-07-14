@@ -31,39 +31,31 @@ Considering we aim to measure the benefits of the bidirectional aggregated delta
 compared to the unidirectional aggregated delta chain under the hybrid storage strategy,
 we distinguish between the following storage approaches:
 
-* **OSTRICH**: OSTRICH with a forward unidirectional aggregated delta chain ([](#evaluation-storage-approaches-ostrich))
-* **COBRA\***: COBRA with a bidirectional aggregated delta chain before fix-up ([](#evaluation-storage-approaches-cobra-star))
-* **COBRA**: COBRA with a bidirectional aggregated delta chain after fix-up ([](#evaluation-storage-approaches-cobra))
+* **OSTRICH**: Forward unidirectional aggregated delta chain ([](#evaluation-storage-approaches-ostrich))
+* **COBRA\***: Bidirectional aggregated delta chain before fix-up ([](#evaluation-storage-approaches-cobra-star))
+* **COBRA**: Bidirectional aggregated delta chain after fix-up ([](#evaluation-storage-approaches-cobra))
 
 As such, we consider comparing against other systems with different storage strategies out of scope for this work.
 For an extensive comparison of the hybrid storage strategy with other systems, we refer to the [OSTRICH article](cite:cites ostrich).
 
-In the scope of this work, we work with at most two delta chains.
-For simplicity of these experiments, we always start a new delta chain in the middle version of the dataset
-(4 for BEAR-A, 45 for BEAR-B Daily, 200 for BEAR-B Hourly).
-Note that for the COBRA storage approach, we assume that all versions are available beforehand,
-so they can be stored out of order, starting with the middle snapshot.
-In practise, this may not always be possible, which is why we report on the additional fix-up time during ingestion separately
-that would be required when ingestion in order (COBRA\*).
-
 <figure id="evaluation-storage-approaches" class="figure">
 
 <figure id="evaluation-storage-approaches-ostrich" class="subfigure">
-<img src="img/approach-ostrich.png" alt="OSTRICH storage approach">
+<img src="img/approach-ostrich.png" alt="OSTRICH storage approach" class="eval-storage-approach">
 <figcaption markdown="block">
-OSTRICH with a forward unidirectional aggregated delta chain
+OSTRICH with a forward unidirectional aggregated delta chain &nbsp;&nbsp;&nbsp;
 </figcaption>
 </figure>
 
 <figure id="evaluation-storage-approaches-cobra-star" class="subfigure">
-<img src="img/approach-cobra-star.png" alt="COBRA* storage approach">
+<img src="img/approach-cobra-star.png" alt="COBRA* storage approach" class="eval-storage-approach">
 <figcaption markdown="block">
-COBRA with a bidirectional aggregated delta chain before fix-up
+COBRA with a bidirectional aggregated delta chain before fix-up &nbsp;&nbsp;&nbsp;
 </figcaption>
 </figure>
 
 <figure id="evaluation-storage-approaches-cobra" class="subfigure">
-<img src="img/approach-cobra.png" alt="COBRA storage approach">
+<img src="img/approach-cobra.png" alt="COBRA storage approach" class="eval-storage-approach">
 <figcaption markdown="block">
 COBRA with a bidirectional aggregated delta chain after fix-up (ingested out-of-order starting with snapshot)
 </figcaption>
@@ -73,6 +65,14 @@ COBRA with a bidirectional aggregated delta chain after fix-up (ingested out-of-
 The different storage approaches used in our experiments.
 </figcaption>
 </figure>
+
+In the scope of this work, we work with at most two delta chains.
+For simplicity of these experiments, we always start a new delta chain in the middle version of the dataset
+(4 for BEAR-A, 45 for BEAR-B Daily, 200 for BEAR-B Hourly).
+Note that for the COBRA storage approach, we assume that all versions are available beforehand,
+so they can be stored out of order, starting with the middle snapshot.
+In practise, this may not always be possible, which is why we report on the additional fix-up time during ingestion separately
+that would be required when ingestion in order (COBRA\*).
 
 To evaluate triple pattern query performance,
 we make use of the query sets provided by BEAR.
@@ -91,7 +91,7 @@ In this section, we discuss the results of our experiments on ingestion and quer
 
 #### Ingestion
 
-[](#ingestion-beara), [](#ingestion-bearbd) and [](#ingestion-bearbh) show the total storage sizes and ingestion times
+[](#ingestion-total) show the total storage sizes and ingestion times
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 These tables show that COBRA requires less ingestion time than OSTRICH in all cases (41% less on average).
 Furthermore, COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly, but not for BEAR-B Daily.
@@ -99,55 +99,25 @@ COBRA* requires more storage space than both COBRA and OSTRICH with BEAR-A, but 
 For BEAR-B Daily, OSTRICH requires less storage, but COBRA* has the lowest ingestion time.
 For BEAR-B Hourly, COBRA* is lower in terms of storage size and ingestion time than both COBRA and OSTRICH.
 
-<figure id="ingestion-beara" class="table" markdown="1">
+<figure id="ingestion-total" class="table" markdown="1">
 
-| Approach | Storage Size (GB) | Ingestion Time (hours) |
-|----------|:------------------|:-----------------------|
-| OSTRICH  | 3.92              | 23.66                  |
-| COBRA*   | 4.31              | *12.92*                |
-| COBRA    | *3.36*            | 14.63                  |
-
-<figcaption markdown="block">
-Total storage size and ingestion time for BEAR-A,
-with COBRA requiring the least storage size,
-and COBRA* the least ingestion time.
-</figcaption>
-</figure>
-
-<figure id="ingestion-bearbd" class="table" markdown="1">
-
-| Approach | Storage Size (MB) | Ingestion Time (minutes) |
-|----------|:------------------|:-------------------------|
-| OSTRICH  | *19.37*           | 6.53                     |
-| COBRA*   | 26.01             | *3.28*                   |
-| COBRA    | 28.44             | 4.24                     |
+|                          | OSTRICH | COBRA*  | COBRA  |
+|--------------------------|:--------|:--------|:-------|
+| **BEAR-A** | | |
+| Storage Size (GB)        | 3.92    | 4.31    | *3.36* |
+| Ingestion Time (hours)   | 23.66   | *12.92* | 14.63  |
+| **BEAR-B Daily** | | |
+| Storage Size (MB)        | *19.37* | 26.01   | 28.44  |
+| Ingestion Time (minutes) | 6.53    | *3.28*  | 4.24   |
+| **BEAR-B Hourly** | | |
+| Storage Size (MB)        | 61.02   | *46.42* | 53.26  |
+| Ingestion Time (minutes) | 34.47   | *14.87* | 18.30  |
 
 <figcaption markdown="block">
-Total storage size and ingestion time for BEAR-B Daily,
-with COBRA* being the smallest and fastest.
+Total storage size and ingestion time for the different datasets.
+COBRA* is always the fastest, with no consistent winner for total storage size.
 </figcaption>
 </figure>
-
-<figure id="ingestion-bearbh" class="table" markdown="1">
-
-| Approach | Storage Size (MB) | Ingestion Time (minutes) |
-|----------|:------------------|:-------------------------|
-| OSTRICH  | 61.02             | 34.47                    |
-| COBRA*   | *46.42*           | *14.87*                  |
-| COBRA    | 53.26             | 18.30                    |
-
-<figcaption markdown="block">
-Total storage size and ingestion time for BEAR-B Hourly,
-with COBRA* being the smallest and fastest.
-</figcaption>
-</figure>
-
-In order to provide more details on the evolution of storage size and ingestion time,
-[](#ingestion-size) shows the cumulative storage size for the different datasets,
-and [](#ingestion-time) shows the ingestion time for these datasets.
-These figures show the impact of the middle snapshots within the bidirectional chain.
-For BEAR-B Daily and Hourly, the storage size significantly increases at the middle version,
-but the ingestion times for all later versions reset to low values.
 
 <figure id="ingestion-size" class="figure">
 
@@ -216,6 +186,13 @@ COBRA resets ingestion time from the snapshot version, while ingestion time for 
 </figcaption>
 </figure>
 
+In order to provide more details on the evolution of storage size and ingestion time,
+[](#ingestion-size) shows the cumulative storage size for the different datasets,
+and [](#ingestion-time) shows the ingestion time for these datasets.
+These figures show the impact of the middle snapshots within the bidirectional chain.
+For BEAR-B Daily and Hourly, the storage size significantly increases at the middle version,
+but the ingestion times for all later versions reset to low values.
+
 Finally, [](#ingestion-fixup-time) show the fix-up times,
 which are measured as a separate offline process.
 This is the time it would take to transition from the COBRA\* to COBRA storage approach,
@@ -248,7 +225,7 @@ For VQ, COBRA is faster than OSTRICH for BEAR-B Hourly, slightly faster for BEAR
 <figure id="query-vm" class="figure">
 
 <center>
-<img src="img/results/legend-query.png" alt="Legend" class="results-legend">
+<img src="img/results/legend-query.png" alt="Legend" class="results-legend-small">
 </center>
 
 <figure id="query-vm-beara" class="subfigure">
@@ -281,7 +258,7 @@ For most versions, COBRA has is faster than OSTRICH.
 <figure id="query-dm" class="figure">
 
 <center>
-<img src="img/results/legend-query.png" alt="Legend" class="results-legend">
+<img src="img/results/legend-query.png" alt="Legend" class="results-legend-small">
 </center>
 
 <figure id="query-dm-beara" class="subfigure">
@@ -308,8 +285,7 @@ BEAR-B Hourly
 <figcaption markdown="block">
 Delta Materialization evaluation times between the first version and all other versions
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
-For the first half of versions, COBRA is faster than OSTRICH.
-For the second half of versions, COBRA becomes slower, but still faster than OSTRICH for BEAR-A and BEAR-B Hourly.
+For the first half of versions, COBRA is faster than OSTRICH, but slows down in the second half.
 </figcaption>
 </figure>
 
@@ -342,43 +318,26 @@ COBRA is faster than OSTRICH for the BEAR-B datasets, but slower for BEAR-A.
 </figcaption>
 </figure>
 
-[](#query-avg-beara), [](#query-avg-bearbd) and [](#query-avg-bearbh) respectively show
-the average overall query evaluation times for BEAR-A, BEAR-B Daily and BEAR-B Hourly.
+[](#query-avg) show the average overall query evaluation times for BEAR-A, BEAR-B Daily and BEAR-B Hourly.
 This shows that on average, COBRA is faster than OSTRICH,
 except for VQ in BEAR-A.
 
-<figure id="query-avg-beara" class="table" markdown="1">
+<figure id="query-avg" class="table" markdown="1">
 
-| Dataset       | VM      | DM      | VQ      |
-|---------------|:--------|:--------|:--------|
+|               | VM      | DM      | VA     |
+|---------------|:--------|:--------|:-------|
+| **BEAR-A** | | |
 | OSTRICH       | 5.64    | 4,15    | *8,60*  |
 | COBRA         | *4.37*  | *2,93*  | 10,62   |
-
-<figcaption markdown="block">
-Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for BEAR-A (ms).
-</figcaption>
-</figure>
-
-<figure id="query-avg-bearbd" class="table" markdown="1">
-| Dataset       | VM      | DM      | VQ      |
-|---------------|:--------|:--------|:--------|
-| OSTRICH       | 0,71    | 0,38    | 0.90.   |
+| **BEAR-B Daily** | | |
+| OSTRICH       | 0,71    | 0,38    | 0.90    |
 | COBRA         | *0,51*  | *0,31*  | *0.89*  |
-
-<figcaption markdown="block">
-Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for BEAR-B Daily (ms).
-</figcaption>
-</figure>
-
-<figure id="query-avg-bearbh" class="table" markdown="1">
-
-| Dataset       | VM      | DM      | VQ      |
-|---------------|:--------|:--------|:--------|
+| **BEAR-B Hourly** | | |
 | OSTRICH       | 0.73    | 0.27    | 1,72    |
 | COBRA         | *0.53*  | *0.19*  | *1,34*  |
 
 <figcaption markdown="block">
-Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for BEAR-B Hourly (ms).
+Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for the different datasets (ms).
 </figcaption>
 </figure>
 

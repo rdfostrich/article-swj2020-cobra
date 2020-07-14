@@ -51,8 +51,25 @@ img.results-legend {
   width: 18em;
 }
 
+img.results-legend-small {
+  width: 12em;
+}
+
+img.storage-overview {
+  width: 25em;
+}
+
+img.eval-storage-approach {
+  width: auto;
+  height: 3em;
+}
+
 .subfigure {
   float: left;
   margin: 0;
   padding: 2px;
+}
+
+dl.references {
+  font-size: 0.9em;
 }

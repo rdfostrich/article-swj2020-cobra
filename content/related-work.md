@@ -62,7 +62,7 @@ and which storage strategy they follow.
 <!-- [](#rdf-archive-systems) shows an overview of the primary RDF archiving systems,
 and which storage strategy they follow.
 
-<figure id="rdf-archive-systems" class="table" markdown="1">
+figure id="rdf-archive-systems" class="table" markdown="1">
 
 | Name                                        | IC | CB | TB |
 | ------------------------------------------- |----|----|----|
@@ -134,27 +134,11 @@ As such, we build upon OSTRICH in this work, and attempt to solve this problem.
 ### RDF Archiving Benchmarks
 
 [BEAR](cite:cites bear) is a benchmark for RDF archive systems.
-that is based on three real-world datasets from different domains:
-
-BEAR-A
-: 58 weekly snapshots from the [Dynamic Linked Data Observatory](cite:cites datasetdynamics).
-
-BEAR-B
-: The 100 most volatile resources from [DBpedia Live](cite:cites dbpedialive) over the course of three months
-as three different granularities: instant, hour and day.
-
-BEAR-C
-: Dataset descriptions from the [Open Data Portal Watch](cite:cites opendataportalwatch) project over the course of 32 weeks.
-
+that is based on real-world datasets from different domains.
 The 58 versions of BEAR-A contain between 30M and 66M triples per version, with an average change ratio of 31%.
 BEAR-A provides triple pattern queries for three different query atoms for both result sets with a low and a high cardinality.
-BEAR-B provides a small collection of triple pattern queries corresponding to the real-world usage of DBpedia.
-Finally, BEAR-C provides 10 complex SPARQL queries that were created with the help of Open Data experts.
-
-BEAR provides baseline RDF archive implementations based on [HDT](cite:cites hdt) and [Jena](cite:cites jena)
-for the IC, CB, and TB approaches, but also hybrid IC/CB and TB/CB approaches.
-The hybrid approaches are based on snapshots followed by delta chains, as implemented by [TailR](cite:cites tailr).
-
+The BEAR-B dataset contains the 100 most volatile resources from DBpedia Live as three different granularities (instant, hour and day),
+and provides a small collection of triple pattern queries corresponding to the real-world usage of DBpedia.
 Due to BEAR covering all query atoms we work with,
 and it providing baseline implementations for the different storage strategies,
 we make use of BEAR for our experiments.

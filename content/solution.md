@@ -13,6 +13,21 @@ In the scope of this work, we distinguish between six different delta chain appr
 as can be seen in [](#delta-chain-approaches).
 We decompose these approaches into 2 axes: directionality and aggregation.
 
+<figure id="delta-chain-approaches" class="table" markdown="1">
+
+|  | **Non-aggregated** | **Aggregated** |
+|--|----------------|------------|
+| **Forward Unidirectional** | <img src="img/delta-chain-uni.svg" alt="Unidirectional delta chain" class="delta-approach"> | <img src="img/delta-chain-uni-agg.svg" alt="Unidirectional aggregated delta chain" class="delta-approach"> |
+| **Reverse Unidirectional** | <img src="img/delta-chain-uni-rev.svg" alt="Unidirectional reverse delta chain" class="delta-approach"> | <img src="img/delta-chain-uni-agg-rev.svg" alt="Unidirectional aggregated reverse delta chain" class="delta-approach"> |
+| **Bidirectional**          | <img src="img/delta-chain-bi.svg" alt="Bidirectional delta chain" class="delta-approach"> | <img src="img/delta-chain-bi-agg.svg" alt="Bidirectional aggregated delta chain" class="delta-approach"> |
+{:.delta-approaches}
+
+<figcaption markdown="block">
+Overview of unidirectional forward, unidirectional reverse, and bidirectional delta chain approaches,
+both with and without aggregated deltas.
+</figcaption>
+</figure>
+
 In terms of directionality, we distinguish three forms.
 The simplest form is the *forward unidirectional* delta chain,
 where the snapshot comes first, and is followed by deltas that are relative to the previous delta.
@@ -40,21 +55,6 @@ OSTRICH is an example that follows the unidirectional forward aggregated delta c
 while [RCS](cite:cites rcs) (non-RDF-based) follows the unidirectional reverse non-aggregated delta chain approach.
 In this work, we will make use of the bidirectional aggregated delta chain approach,
 which we will explain in the next section.
-
-<figure id="delta-chain-approaches" class="table" markdown="1">
-
-|  | **Non-aggregated** | **Aggregated** |
-|--|----------------|------------|
-| **Forward Unidirectional** | <img src="img/delta-chain-uni.svg" alt="Unidirectional delta chain" class="delta-approach"> | <img src="img/delta-chain-uni-agg.svg" alt="Unidirectional aggregated delta chain" class="delta-approach"> |
-| **Reverse Unidirectional** | <img src="img/delta-chain-uni-rev.svg" alt="Unidirectional reverse delta chain" class="delta-approach"> | <img src="img/delta-chain-uni-agg-rev.svg" alt="Unidirectional aggregated reverse delta chain" class="delta-approach"> |
-| **Bidirectional**          | <img src="img/delta-chain-bi.svg" alt="Bidirectional delta chain" class="delta-approach"> | <img src="img/delta-chain-bi-agg.svg" alt="Bidirectional aggregated delta chain" class="delta-approach"> |
-{:.delta-approaches}
-
-<figcaption markdown="block">
-Overview of unidirectional forward, unidirectional reverse, and bidirectional delta chain approaches,
-both with and without aggregated deltas.
-</figcaption>
-</figure>
 
 ### Motivations for a Bidirectional Delta Chain
 {:#solution-bidirectional}
