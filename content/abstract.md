@@ -25,3 +25,5 @@ can be highly beneficial for RDF archives.
 <!-- Perspectives -->
 We foresee that applying other modifications to this delta chain structure
 may be able to provide additional benefits.
+
+<span id="keywords"><span class="title">Keywords:</span> Linked Data, RDF archiving, Semantic Data Versioning, storage, indexing</span>
