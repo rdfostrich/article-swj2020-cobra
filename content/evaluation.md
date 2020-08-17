@@ -104,14 +104,14 @@ For BEAR-B Hourly, COBRA* is lower in terms of storage size and ingestion time t
 |                          | OSTRICH | COBRA*  | COBRA  |
 |--------------------------|:--------|:--------|:-------|
 | **BEAR-A** | | |
-| Storage Size (GB)        | 3.92    | 4.31    | *3.36* |
-| Ingestion Time (hours)   | 23.66   | *12.92* | 14.63  |
+| Size (GB)        | 3.92    | 4.31    | *3.36* |
+| Time (hours)   | 23.66   | *12.92* | 14.63  |
 | **BEAR-B Daily** | | |
-| Storage Size (MB)        | *19.37* | 26.01   | 28.44  |
-| Ingestion Time (minutes) | 6.53    | *3.28*  | 4.24   |
+| Size (MB)        | *19.37* | 26.01   | 28.44  |
+| Time (minutes) | 6.53    | *3.28*  | 4.24   |
 | **BEAR-B Hourly** | | |
-| Storage Size (MB)        | 61.02   | *46.42* | 53.26  |
-| Ingestion Time (minutes) | 34.47   | *14.87* | 18.30  |
+| Size (MB)        | 61.02   | *46.42* | 53.26  |
+| Time (minutes) | 34.47   | *14.87* | 18.30  |
 
 <figcaption markdown="block">
 Total storage size and ingestion time for the different datasets.

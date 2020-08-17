@@ -42,17 +42,21 @@ figure.numbered pre {
   }
 }
 
+img.delta-approach {
+  width: 11em;
+}
+
 img.results-triple {
-  width: 10em;
-  height: 10em;
+  width: 13em;
+  height: 13em;
 }
 
 img.results-legend {
-  width: 18em;
+  width: 27em;
 }
 
 img.results-legend-small {
-  width: 12em;
+  width: 18em;
 }
 
 img.storage-overview {
@@ -65,11 +69,14 @@ img.eval-storage-approach {
 }
 
 .subfigure {
-  float: left;
   margin: 0;
   padding: 2px;
 }
 
 dl.references {
   font-size: 0.9em;
+}
+
+.col-span {
+  column-span: all;
 }
