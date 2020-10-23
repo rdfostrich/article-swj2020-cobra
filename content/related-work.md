@@ -12,8 +12,7 @@ since we build upon this approach in this work.
 Various techniques have been introduced to store [RDF datasets](cite:cites hdt, rdf3x).
 These techniques make use of various indexing and compression techniques
 to optimize query execution and storage size.
-Since RDF datasets typically [change over time](cite:cites datasetdynamics),
-there is a need to [maintain the history of these datasets](cite:cites archiving),
+There is a need to [maintain the history of these datasets](cite:cites datasetdynamics, archiving),
 which gave rise to the research domain of *RDF archiving*.
 An [_RDF archive_](cite:cites bear) has been defined as _a set of version-annotated triples._
 Where a _version-annotated triple_ is defined as _an RDF triple with a label representing the version in which this triple holds._
@@ -67,10 +66,10 @@ figure id="rdf-archive-systems" class="table" markdown="1">
 | Name                                        | IC | CB | TB |
 | ------------------------------------------- |----|----|----|
 | [SemVersion](cite:cites semversion)         | ✓  |    |    |
-| [Cassidy et. al.](cite:cites vcrdf)         |    | ✓  |    |
+| [Cassidy et al.](cite:cites vcrdf)          |    | ✓  |    |
 | [R&WBase](cite:cites rwbase)                |    | ✓  |    |
 | [R43ples](cite:cites r43ples)               |    | ✓  |    |
-| [Hauptman et. al.](cite:cites vcld)         |    |    | ✓  |
+| [Hauptman et al.](cite:cites vcld)          |    |    | ✓  |
 | [X-RDF-3X](cite:cites xrdf3x)               |    |    | ✓  |
 | [RDF-TX](cite:cites rdftx)                  |    |    | ✓  |
 | [v-RDFCSA](cite:cites selfindexingarchives) |    |    | ✓  |
@@ -93,21 +92,21 @@ such as diff, branching and merging.
 which allows these same features by considering each version to be a commit.
 
 #### Change-based approaches
-[Cassidy et. al.](cite:cites vcrdf) propose a system to store changes to graphs as a series of patches, which makes it a CB approach.
+[Cassidy et al.](cite:cites vcrdf) propose a system to store changes to graphs as a series of patches, which makes it a CB approach.
 They describe operations on versioned graphs such as reverse, revert and merge.
 A preliminary evaluation shows that their implementation is significantly slower
 than a native RDF store.
-[Im et. al.](cite:cites vmrdf) propose a CB patching system based on a relational database.
+[Im et al.](cite:cites vmrdf) propose a CB patching system based on a relational database.
 In their approach, they use a storage scheme called *aggregated deltas*
 which associates the latest version with each of the previous ones.
 While aggregated deltas result in fast delta queries, they introduce a higher storage overhead.
 [R&WBase](cite:cites rwbase) is a CB versioning system that uses the graph component of quad-stores to build a versioning layer.
 It supports tagging, branching and merging.
 [R43ples](cite:cites r43ples) follows a similar approach to R&WBase,
-but they additionally introduce new SPARQL keywords, such as REVISION, BRANCH and TAG.
+but they additionally introduce new SPARQL keywords, such as `REVISION`, `BRANCH` and `TAG`.
 
 #### Timestamp-based approaches
-[Hauptman et. al.](cite:cites vcld) store each triple in a different named graph as a TB storage approach.
+[Hauptman et al.](cite:cites vcld) store each triple in a different named graph as a TB storage approach.
 The identifying graph of each triple is used in a commit graph for SPARQL query evaluation at a certain version.
 [X-RDF-3X](cite:cites xrdf3x) is a versioning extension of [RDF-3X](cite:cites rdf3x),
 where each triple is annotated with a creation and deletion timestamp.
@@ -117,7 +116,7 @@ while having similar storage requirements.
 [v-RDFCSA](cite:cites selfindexingarchives) is a self-indexing RDF archive mechanism,
 that enables versioning queries on top of compressed RDF archives as a TB approach.
 [Dydra](cite:cites dydra) is an RDF graph storage platform with dataset versioning support.
-They introduce the REVISION keyword, which is similar to the GRAPH SPARQL keyword for referring to different dataset versions.
+They introduce the `REVISION` keyword, which is similar to the SPARQL keyword `GRAPH` for referring to different dataset versions.
 
 #### Hybrid approaches
 [TailR](cite:cites tailr) is an HTTP archive for Linked Data pages for retrieving prior versions of certain HTTP resources.
@@ -180,7 +179,7 @@ Experimental results on OSTRICH with the BEAR benchmark show that this hybrid st
 is more beneficial than having just a single storage strategy,
 as it allows efficient execution of all query atoms.
 The main downside of this approach is that it leads to scalability issues in terms of ingestion time for many versions.
-Concretely, the BEAR-B-hourly dataset—which contains 1299 versions—
-starts showing high ingestion times starting around version 1100.
+Concretely, the BEAR-B-hourly dataset—which contains 1,299 versions—
+starts showing high ingestion times starting around version 1,100.
 The reason for this is that the aggregated deltas start becoming too large.
 As such, we build upon OSTRICH in this work, and attempt to solve this problem by modifying the delta chain structure.
