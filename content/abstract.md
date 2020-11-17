@@ -1,16 +1,17 @@
 ## Abstract
 <!-- Context      -->
-In a Web where RDF datasets are continuously evolving,
-the ability to store and query multiple RDF dataset versions is crucial.
-<span class="comment" data-author="RV">The implication is not correct. It's not because they evolve, that we necessarily have an interest in history. I'd motivate that. However, we are likely talking to a group of people who are already convinced about the necessity of history, so maybe we can just take it as a given and not make the point at all (if it would take too much space).</span>
-While the hybrid storage strategy of RDF archives achieves a good trade-off
-<span class="comment" data-author="RV">Not sure people will now what <q>the hybrid</q> is</span>
-between ingestion and query performance in the context of Web querying,
-it suffers from scalability problems after ingesting many versions.
-<span class="comment" data-author="RV">Scalability in terms of what? Ingestion time, space?</span>
+Linked Open Datasets on the Web that are published as RDF can evolve over time.
+There is a need to be able to store such evolving RDF datasets,
+and query across their versions.
+Different storage strategies are available for managing such versioned datasets,
+each being efficient for specific types of versioned queries.
+In recent work, a hybrid storage strategy has been introduced that combines these different strategies
+to lead to more efficient query execution for all versioned query types at the cost increased ingestion time.
+While this trade-off is beneficial in the context of Web querying,
+it suffers from exponential ingestion times in terms of the number of versions,
+which becomes problematic for RDF datasets with many versions.
 <!-- Need         -->
-As such, there is a need for an improved storage strategy that scales better in terms of ingestion time.
-<span class="comment" data-author="RV">While I buy the argument, can we be stronger? Why is ingestion time a problem? Because updates are coming in faster than we can process them? Because the delay between update and queryable interface is too long?</span>
+As such, there is a need for an improved storage strategy that scales better in terms of ingestion time for many versions.
 <!-- Task         -->
 We have designed, implemented, and evaluated a change to the hybrid storage strategy
 where we make use of of _bidirectional delta chain_
@@ -21,16 +22,15 @@ we introduce a concrete architecture for this change,
 together with accompanying ingestion and querying algorithms.
 <!-- Findings     -->
 Experimental results from our implementation
-show that the ingestion scalability issue is solved,
-and that total storage size and query execution performance
-are even improved for most cases.
-<span class="comment" data-author="RV"><q>even</q>, so this was unexpected? If that was indeed a difficulty, perhaps argue this in need, showing why the need is non-trivial.</span>
+show that the ingestion scalability issue is solved.
+As an additional benefit,
+this change also leads to lower total storage size and improved query execution performance for most cases.
 <!-- Conclusion   -->
 This work shows that modifying the structure of the delta chain within the hybrid storage strategy
 can be highly beneficial for RDF archives.
 <!-- Perspectives -->
-We foresee that applying other modifications to this delta chain structure
-may be able to provide additional benefits.
-<span class="comment" data-author="RV">A bit more concrete please 😄</span>
+In future work,
+other modifications to this delta chain structure deserve to be investigated,
+as they may be able to provide additional benefits.
 
 <span id="keywords"><span class="title">Keywords:</span> Linked Data, RDF archiving, Semantic Data Versioning, storage, indexing</span>
