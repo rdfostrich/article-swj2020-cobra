@@ -33,8 +33,8 @@ This are caused by the hybrid storage strategy of OSTRICH, which is employed to 
 Concretely, after ingesting many versions, the ingestion process starts slowing down significantly,
 which makes OSTRICH unusable for datasets with a large number of versions,
 which is crucial for preserving RDF datasets on the Web.
-The reason for this is that the hybrid storage approach from OSTRICH consists of a single version _snapshot_
-followed by a _aggregated delta chain_ that keeps growing longer for every new version.
+The reason for this is that the hybrid storage approach from OSTRICH only consists of a single version _snapshot_ at the start,
+followed by an _aggregated delta chain_ that keeps growing longer for every new version.
 Since every additional delta requires all preceding deltas to be checked during ingestion,
 this process becomes slower for every new version.
 In order to solve this problem, we propose a storage strategy modification,
