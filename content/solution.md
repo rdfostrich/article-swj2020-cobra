@@ -280,4 +280,4 @@ To estimate the cardinality, the OSTRICH approach can again be extended
 by adding the snapshot cardinality with the addition cardinality for both delta chains for the given triple pattern.
 As some triples could occur in both delta chains, this can lead to an overestimation.
 
-<span class="comment" data-author="RV">In general, mentions to <q>the OSTRICH approach</q> are a bit confusing, given that we are extending it. It becomes unclear sometimes what properties of OSTRICH are inherited by the new approach, and which ones are not. I think we should give our new approach a name, perhaps OSTRICH-B or so, to emphasize bidirectionality.</span>
+<span class="comment" data-author="RV">In general, mentions to <q>the OSTRICH approach</q> are a bit confusing, given that we are extending it. It becomes unclear sometimes what properties of OSTRICH are inherited by the new approach, and which ones are not. I think we should give our new approach a name, perhaps OSTRICH-B or so, to emphasize bidirectionality. Or just COBRA, obviously, unless that is specifically the implementation (then again, OSTRICH is, too).</span>

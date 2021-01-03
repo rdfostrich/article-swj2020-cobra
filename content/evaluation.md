@@ -64,6 +64,7 @@ COBRA with a bidirectional aggregated delta chain after fix-up (ingested out-of-
 <figcaption markdown="block">
 The different storage approaches used in our experiments.
 </figcaption>
+<span class="comment" data-author="RV">Perhaps transparent backgrounds?</span>
 </figure>
 
 In the scope of this work, we work with at most two delta chains.
@@ -77,17 +78,18 @@ that would be required when ingestion in order (COBRA\*).
 To evaluate triple pattern query performance,
 we make use of the query sets provided by BEAR.
 BEAR-A provides 7 query sets containing around 100 triple patterns that are further divided into high result cardinality and low result cardinality. 
-BEAR-B provides two query sets that contain ?P? and ?PO queries.
+BEAR-B provides two query sets that contain `?P?` and `?PO` queries.
 We evaluate these queries as VM queries for all version, DM queries between the first and all other versions and a VQ query.
 In order to minimize outliers, we replicate the queries five times and take the mean results.
 Furthermore, we perform a warm-up period before the first query of each triple pattern.
 Since neither OSTRICH nor COBRA support multiple snapshots for all query atoms,
 we limit our experiments to OSTRICH’s unidrectional storage layout and COBRA’s bidirectional storage layout.
 
-### Results
+### Measurements
 {:#evaluation-results}
 
-In this section, we discuss the results of our experiments on ingestion and query evaluation.
+In this section, we discuss the results of our experiments on ingestion and query evaluation,
+which we then analyze in the next section.
 
 #### Ingestion
 
@@ -196,9 +198,9 @@ but the ingestion times for all later versions reset to low values.
 Finally, [](#ingestion-fixup-time) show the fix-up times,
 which are measured as a separate offline process.
 This is the time it would take to transition from the COBRA\* to COBRA storage approach,
-when the versions could not be inserted out of order.
+when the versions cannot be inserted out of order.
 On average, this fix-up requires 3,6 times more time relative to to the overhead of COBRA compared to COBRA*,
-showing that out of order ingestion is still preferred when possible.
+showing that out-of-order ingestion is still preferred when possible.
 
 <figure id="ingestion-fixup-time" class="table" markdown="1">
 
@@ -341,7 +343,7 @@ Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for the d
 </figcaption>
 </figure>
 
-### Discussion
+### Result analysis
 {:#evaluation-discussion}
 
 In this section, we discuss the findings of our results regarding ingestion and query evaluation,
@@ -393,7 +395,7 @@ When we have many small versions, these two delta chains are worth it,
 as the benefit of the shared snapshot outweighs the overhead of the delta chains.
 However, for few large versions,
 the overhead of two delta chains is too large for VQ,
-and one delta chain is more performant.
+and one delta chain performs better.
 In summary, a bidirectional delta chain is most effective for optimizing VM,
 largely beneficial for DM,
 and beneficial for VQ (assuming many small versions).
