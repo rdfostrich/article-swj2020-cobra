@@ -6,28 +6,38 @@ under the hybrid storage strategy (OSTRICH)
 by making use of a *bidirectional delta chain*.
 Based on our implementation of this new approach (COBRA),
 our experimental results show that this modification solves
-the main scalability problem of OSTRICH regarding its ingestion times.
-This change also allows COBRA to reduce total storage size for two out of three datasets.
-Furthermore, all versioned query types achieve a performance boost with COBRA,
+the main scalability problem of a unidirectional delta chain (OSTRICH) regarding its ingestion times (41% faster average).
+This change also reduces total storage size (13% lower) for two out of three datasets.
+Furthermore, all versioned query types achieve a performance boost (21% faster),
 except for VQ under the BEAR-A dataset.
 With query execution times in the order of 1 millisecond or less,
-the bidirectional delta chain strategy from COBRA is an ideal back-end in the context of Web querying,
+the bidirectional delta chain strategy from COBRA is an ideal back-end for RDF archives in the context of Web querying,
 as network latency is typically slower than that.
 
-<span class="comment" data-author="RV">What did we learn about bi-directionality and RDF? Viable or not? (and perhaps use the word <q>viable</q> indeed)</span>
+As such, the bidirectional delta chain is a viable alternative to the unidirectional delta chain,
+as it is beneficial across nearly all metrics.
+We **recommend bidirectional delta chains** when any of the following is needed (in order of importance):
 
-<span class="comment" data-author="RV">I am missing some recommendations here as to what to use when. I wonder if we can lift some of the parts from the analysis section to here (<q>for those datasets (BEAR-B), it is recommended to wait longer before initiating a new snapshot in the delta chain</q>). But I want to understand here: when should I use OSTRICH, COBRA, or wait for something else?
-Also tie back to hypotheses and what use cases work well.</span>
+* **Lower ingestion times**
+* **Faster VM and DM**
+* **Lower storage sizes**
 
-This work shows the importance of delta directionality and snapshot placement in the delta chain.
-While we have measured the impact of a bidirectional delta chain,
-other strategies still remain to be investigated.
-<span class="comment" data-author="RV">To achieve what? Which gains are expected?</span>
+On the other hand, we **do not recommend bidirectional delta chains** in the following cases:
+
+* **Fast VQ is needed over datasets with very large versions**: Bidirectional chains slow down VQ when versions are large.
+* **Dataset has only a few small versions**: Unidirectional chain should be used until the ingestion of a new version exceeds the ingestion time of a new snapshot.
+
+These limitations of a bidirectional delta chain
+may be resolvable in future work through more intelligent strategies on
+when to convert a unidirectional delta chain into a bidirectional delta chain.
+Next to this, the beneficial impact of the bidirectional delta chain opens up questions
+as to what respect other transformations of the delta chain in terms of delta directionality and snapshot placement
+may be beneficial to ingestion time, storage size, and query performance.
 First, deltas may inherit from two or more surrounding versions, instead of just one.
 Second, aggregated and non-aggregated deltas are just two extremes of delta organization.
 A range of valuable possibilities in between may exist,
 such as inheriting from the n<sup>th</sup> largest preceding version.
 Third, the impact of multiple snapshots and strategies to decide when to create them still remain as open questions.
-By investigating these different strategies, we can grow towards a truly _evolving_ Semantic Web.
 
-<span class="comment" data-author="RV">Who is impacted by this? What does it mean for archives? For query endpoints?</span>
+We have shown that modifying the structure of the delta chain can be highly beneficial for RDF archiving.
+This brings us closer to an efficient queryable Semantic Web that can evolve and maintain its history.

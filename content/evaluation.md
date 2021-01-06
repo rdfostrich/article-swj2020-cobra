@@ -325,7 +325,7 @@ except for VQ in BEAR-A.
 
 <figure id="query-avg" class="table" markdown="1">
 
-|               | VM      | DM      | VA     |
+|               | VM      | DM      | VQ     |
 |---------------|:--------|:--------|:-------|
 | **BEAR-A** | | |
 | OSTRICH       | 5.64    | 4,15    | *8,60*  |
