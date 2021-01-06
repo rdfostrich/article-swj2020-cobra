@@ -50,21 +50,20 @@ OSTRICH with a forward unidirectional aggregated delta chain &nbsp;&nbsp;&nbsp;
 <figure id="evaluation-storage-approaches-cobra-star" class="subfigure">
 <img src="img/approach-cobra-star.png" alt="COBRA* storage approach" class="eval-storage-approach">
 <figcaption markdown="block">
-COBRA with a bidirectional aggregated delta chain before fix-up &nbsp;&nbsp;&nbsp;
+COBRA with a bidirectional aggregated delta chain *before* fix-up &nbsp;&nbsp;&nbsp;
 </figcaption>
 </figure>
 
 <figure id="evaluation-storage-approaches-cobra" class="subfigure">
 <img src="img/approach-cobra.png" alt="COBRA storage approach" class="eval-storage-approach">
 <figcaption markdown="block">
-COBRA with a bidirectional aggregated delta chain after fix-up (ingested out-of-order starting with snapshot)
+COBRA with a bidirectional aggregated delta chain *after* fix-up (ingested out-of-order starting with snapshot)
 </figcaption>
 </figure>
 
 <figcaption markdown="block">
 The different storage approaches used in our experiments.
 </figcaption>
-<span class="comment" data-author="RV">Perhaps transparent backgrounds?</span>
 </figure>
 
 In the scope of this work, we work with at most two delta chains.
