@@ -12,7 +12,7 @@
   <meta name="citation_author" content="Thibault Mahieu" />
   <meta name="citation_author" content="Ruben Verborgh" />
   
-  <meta name="citation_publication_date" content="2020/11/18" />
+  <meta name="citation_publication_date" content="2021/01/06" />
 </head>
 
 <body prefix="dctypes: http://purl.org/dc/dcmitype/ pimspace: http://www.w3.org/ns/pim/space# rsa: http://www.w3.org/ns/auth/rsa# cert: http://www.w3.org/ns/auth/cert# wgs: http://www.w3.org/2003/01/geo/wgs84_pos# biblio: http://purl.org/net/biblio# bibo: http://purl.org/ontology/bibo/ book: http://purl.org/NET/book/vocab# ov: http://open.vocab.org/terms/ doap: http://usefulinc.com/ns/doap# dbr: http://dbpedia.org/resource/ dbp: http://dbpedia.org/property/ sio: http://semanticscience.org/resource/ opmw: http://www.opmw.org/ontology/ deo: http://purl.org/spar/deo/ doco: http://purl.org/spar/doco/ cito: http://purl.org/spar/cito/ fabio: http://purl.org/spar/fabio/ solid: http://www.w3.org/ns/solid/terms# acl: http://www.w3.org/ns/auth/acl# dio: https://w3id.org/dio# lsc: http://linkedscience.org/lsc/ns#" typeof="schema:CreativeWork sioc:Post prov:Entity lsc:Research">
@@ -389,35 +389,35 @@ Finally, we discuss querying algorithms for the foundational query atoms based o
 
           <h3 id="solution-approaches">Delta Chain Approaches</h3>
 
-          <p>In the scope of this work, we distinguish between six different delta chain approaches,
+          <p>In the scope of this work, we distinguish between 6 different delta chain approaches,
 as can be seen in <a href="#delta-chain-approaches">Table 1</a>.
-We decompose these approaches into 2 axes: directionality and aggregation.</p>
+We decompose these approaches into 2 axes: <em>directionality</em> and <em>aggregation</em>.</p>
 
           <figure id="delta-chain-approaches" class="table">
 
             <table class="delta-approaches">
               <thead>
                 <tr>
-                  <th> </th>
-                  <th><strong>Non-aggregated</strong></th>
-                  <th><strong>Aggregated</strong></th>
+                  <th style="text-align: right"> </th>
+                  <th style="text-align: center"><strong>Non-aggregated</strong></th>
+                  <th style="text-align: center"><strong>Aggregated</strong></th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><strong>Forward Unidirectional</strong></td>
-                  <td><img src="img/delta-chain-uni.svg" alt="Unidirectional delta chain" class="delta-approach" /></td>
-                  <td><img src="img/delta-chain-uni-agg.svg" alt="Unidirectional aggregated delta chain" class="delta-approach" /></td>
+                  <td style="text-align: right"><strong>Forward<br /> Unidir.</strong></td>
+                  <td style="text-align: center"><span><img src="img/delta-chain-uni.svg" alt="Unidirectional delta chain" class="delta-approach delta-approach-left" /></span></td>
+                  <td style="text-align: center"><span><img src="img/delta-chain-uni-agg.svg" alt="Unidirectional aggregated delta chain" class="delta-approach" /></span></td>
                 </tr>
                 <tr>
-                  <td><strong>Reverse Unidirectional</strong></td>
-                  <td><img src="img/delta-chain-uni-rev.svg" alt="Unidirectional reverse delta chain" class="delta-approach" /></td>
-                  <td><img src="img/delta-chain-uni-agg-rev.svg" alt="Unidirectional aggregated reverse delta chain" class="delta-approach" /></td>
+                  <td style="text-align: right"><strong>Reverse<br /> Unidir.</strong></td>
+                  <td style="text-align: center"><span><img src="img/delta-chain-uni-rev.svg" alt="Unidirectional reverse delta chain" class="delta-approach delta-approach-left" /></span></td>
+                  <td style="text-align: center"><span><img src="img/delta-chain-uni-agg-rev.svg" alt="Unidirectional aggregated reverse delta chain" class="delta-approach" /></span></td>
                 </tr>
                 <tr>
-                  <td><strong>Bidirectional</strong></td>
-                  <td><img src="img/delta-chain-bi.svg" alt="Bidirectional delta chain" class="delta-approach" /></td>
-                  <td><img src="img/delta-chain-bi-agg.svg" alt="Bidirectional aggregated delta chain" class="delta-approach" /></td>
+                  <td style="text-align: right"><strong>Bidir.</strong><br /> </td>
+                  <td style="text-align: center"><span><img src="img/delta-chain-bi.svg" alt="Bidirectional delta chain" class="delta-approach delta-approach-left" /></span></td>
+                  <td style="text-align: center"><span><img src="img/delta-chain-bi-agg.svg" alt="Bidirectional aggregated delta chain" class="delta-approach" /></span></td>
                 </tr>
               </tbody>
             </table>
@@ -428,20 +428,27 @@ both with and without aggregated deltas.</p>
             </figcaption>
           </figure>
 
-          <p>In terms of directionality, we distinguish three forms.
-The simplest form is the <em>forward unidirectional</em> delta chain,
-where the snapshot comes first, and is followed by deltas that are relative to the previous delta.
-The <em>reverse unidirectional</em> delta chain is a variant of this where everything is reversed.
-Concretely, the snapshot comes last, and is preceded by deltas, where each delta is relative to the next delta.
-These forward and reverse unidirectional approaches can be combined with each other to form a <em>bidirectional delta chain</em>,
-where a first set of deltas exist before the snapshot,
-and a second set of deltas exists after the snapshot.</p>
+          <p>Along the <em>directionality</em> axis, we distinguish 3 forms:</p>
 
-          <p>In terms of aggregation, we consider the default non-aggregated form and the aggregated form.
-In the non-aggregated form, each delta is relative to the delta immediately before or after it.
-In the aggregated form <span class="references">[<a href="#ref-24">24</a>]</span>, each delta is relative to the snapshot before or after it,
-where other deltas may occur inbetween.
-This aggregated delta approach leads to lower version materialization times,
+          <ol>
+            <li>The simplest form is the <strong>forward unidirectional</strong> delta chain,
+where the snapshot comes first, and is followed by deltas that are relative to the previous delta.</li>
+            <li>The <strong>reverse unidirectional</strong> delta chain is a variant of this where everything is reversed.
+Concretely, the snapshot comes last, and is preceded by deltas, where each delta is relative to the next delta.</li>
+            <li>These forward and reverse unidirectional approaches can be combined with each other to form a <strong>bidirectional delta chain</strong>,
+where a first set of deltas exist before the snapshot,
+and a second set of deltas exists after the snapshot.</li>
+          </ol>
+
+          <p>Along the <em>aggregation</em> axis, we consider 2 forms:</p>
+
+          <ul>
+            <li>In the <strong>non-aggregated form</strong>, each delta is relative to the delta immediately before or after it.</li>
+            <li>In the <strong>aggregated form</strong> <span class="references">[<a href="#ref-24">24</a>]</span>, each delta is relative to the snapshot before or after it,
+where other deltas may occur in-between.</li>
+          </ul>
+
+          <p>The aggregated delta approach leads to lower version materialization times,
 since each delta can be directly applied to a snapshot,
 as opposed to non-aggregated deltas where multiple deltas need to be combined before a version can be materialized.
 As such, the version materialization time for aggregated deltas is <code>O(1)</code> with respect to the number of versions,
@@ -450,27 +457,28 @@ This shows how aggregated deltas lead to better query execution times.
 The major downside of aggregated deltas is however that storage size increases due to the redundancies between the different deltas.
 The longer the delta chain, the larger these redundancies become.</p>
 
-          <p>In the context of this work,
-OSTRICH is an example that follows the unidirectional forward aggregated delta chain approach,
+          <p><a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH</a> <span class="references">[<a href="#ref-5">5</a>]</span> is an example that follows the unidirectional forward aggregated delta chain approach,
 while RCS <span class="references">[<a href="#ref-28">28</a>]</span> (non-RDF-based) follows the unidirectional reverse non-aggregated delta chain approach.
-In this work, we will make use of the bidirectional aggregated delta chain approach,
-which we will explain in the next section.</p>
+In this work, we will investigate the use of the <em>bidirectional aggregated</em> delta chain approach,
+for reasons explained in the next section.</p>
 
           <h3 id="solution-bidirectional">Motivations for a Bidirectional Delta Chain</h3>
 
           <p><a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">Experiments on the unidirectional forward aggregated delta chain approach from OSTRICH</a> <span class="references">[<a href="#ref-5">5</a>]</span>
-have shown that this approach leads to linearly increasing ingestion times,
-the longer the chain becomes.
+have shown that this approach leads to ingestion times
+that increase linearly with chain length, assuming (non-aggregated) deltas as inputs.
 This is an expected consequence of the aggregated delta approach,
 as they grow in size for each new version.
 The goal of this work is to investigate how these problems can be solved,
 without losing the advantages of aggregated deltas with respect to query execution times.
-As such, we will not achieve any lower ingestion times by reversing our delta chain,
+We would not achieve any lower ingestion times by reversing our delta chain,
 as the additions and deletions would just be swapped, but would not be smaller.
-Instead, we aim to reduce overall storage by reducing the number of required snapshots.</p>
+Instead, we aim to reduce ingestion time by lowering storage through the reduction of the number of required snapshots.</p>
 
           <p>One straightforward way of reducing ingestion time would be
-to create a new snapshot and delta chain once the ingestion time or size becomes too large.
+to create a new snapshot and delta chain once the ingestion time or size has crossed a certain threshold.
+One example of such a threshold could be that a new snapshot is created
+once the ingestion time of a delta became larger than the time for ingesting a snapshot.
 For instance, we can lower the total ingestion time to half the original time
 by splitting one delta chain into two delta chains,
 or even to one third by splitting it up into three delta chains.
@@ -478,9 +486,10 @@ In the extreme, each version would be form its own snapshot,
 which would lead to the independent copies storage strategy,
 at the cost of increased storage size.
 As such, there is a trade-off between ingestion time and storage size,
-and new delta chains should only be started once ingestion times become much higher than desired.</p>
+and new delta chains should only be started once ingestion times become higher than desired.</p>
 
-          <p>Since the creation of a snapshot can be costly, it should be avoided until absolutely necessary.
+          <p>Since the creation of a snapshot can be costly in terms of storage size,
+it should be avoided until absolutely necessary.
 As explained in the previous paragraph,
 splitting up a delta chain into two separate delta chains
 would lead to two snapshots, each followed by a chain of deltas.
@@ -493,7 +502,7 @@ where the second delta chain is reversed.
 The snapshots of these two chains are therefore shared,
 so that it only has to be created and stored once.</p>
 
-          <p>As such, the main advantage of a bidirectional delta chain is that it can more optimally make use of snapshots.
+          <p>As such, the main advantage of a bidirectional delta chain is that it can more efficiently make use of snapshots.
 Instead of only allowing deltas in one direction to make use of it,
 also deltas in the opposite direction can make use of it.
 This is especially advantageous for aggregated deltas,
@@ -502,11 +511,17 @@ In the scope of this research,
 we continue working with a bidirectional <em>aggregated</em> delta chain
 due to the non-increasing query execution times for increasing numbers of versions.</p>
 
+          <p>One disadvantage of the bidirectional approach is that it complicates ingestion,
+since we can not build a reverse delta chain directly,
+as we can not always know beforehand what a future version will look like.
+We provide an algorithm for this in <a href="#solution-ingestion">Subsection 4.4</a>.</p>
+
           <h3 id="solution-storage">Storage Approach</h3>
 
-          <p>As mentioned before, our storage approach builds upon that of OSTRICH.
-The only difference is that OSTRICH uses a unidirectional aggregated delta chain,
-and our approach uses a bidirectional aggregated delta chain.
+          <p>As mentioned before, our goal is to improve storage efficiency of RDF archives.
+For this, we build on top of the hybrid storage approach from OSTRICH,
+and we fundamentally modify this storage approach to use a bidirectional aggregated delta chain
+instead of a unidirectional aggregated delta chain.
 Concretely, this means that not only deltas exist <em>after</em> the snapshot,
 but also <em>before</em> the snapshot.</p>
 
@@ -517,43 +532,48 @@ but also <em>before</em> the snapshot.</p>
             </figcaption>
 </figure>
 
-          <p><a href="#storage-overview">Fig. 1</a> shows an overview of the main components of our storage approach,
-which are analogous to the components from OSTRICH, except for the delta chain on the left side of the snapshot.
-Like OSTRICH, the snapshot can be stored using <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-9">9</a>]</span>,
+          <p><a href="#storage-overview">Fig. 1</a> shows an overview of the main components of our storage approach.
+Note in particular the delta chain on the left side of the snapshot,
+while OSTRICH only has a single delta chain on the right side of the snapshot.
+All other components are inherited from OSTRICH,
+which we briefly summarize in the next paragraph.</p>
+
+          <p>We store the snapshot using <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-9">9</a>]</span>,
 due to its highly performant triple pattern queries, cardinality estimates,
 and high compression rate.
 Furthermore, metadata about the archive is stored, containing details such as the total number of versions.
-Next, each delta chain is compressed into timestamp-based B+tree indexes,
+To avoid storage overhead due to redundancies between different aggregated deltas,
+each delta chain is compressed into timestamp-based B+tree indexes
 where additions and deletions are stored separately.
-Each addition and deletion index is stored three times for different triple components orders (SPO, POS, OSP),
-to enable efficient triple pattern queries for all possible combinations.
-A shared dictionary is used to compress each triple component further.
-Following the OSTRICH storage approach,
+This separation is done to speed up query evaluation since additions and deletions are not always needed at the same time.
+To enable efficient triple pattern queries for all possible combinations,
+each addition and deletion index is stored three times for different triple components orders (SPO, POS, OSP).
+To compress each triple component further, a shared dictionary is used.
+In order to allow efficient cardinality estimate retrieval for deletions,
 the SPO deletion index contains additional metadata about the relative position of each triple inside the snapshot.
-This metadata also allows cardinality estimates for deletions to be retrieved efficiently.
-To enable cardinality estimates for additions, we make use of the addition count index from OSTRICH.
+To enable cardinality estimates for additions, we make use of a dedicated addition count index.
 For the sake of brevity, we omit further details about the components that can be found in the <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH article</a> <span class="references">[<a href="#ref-5">5</a>]</span>.</p>
 
           <h3 id="solution-ingestion">Ingestion Approach</h3>
 
-          <p>In this section, we introduce an approach to enable ingestion of new versions within our bidirectional aggregated storage approach.
-For this, we make use of the ingestion algorithm from OSTRICH, which enables ingestion within a unidirectional forward aggregated delta chain.
-As our approach extends from OSTRICH, we can already insert deltas <em>after</em> the snapshot,
-but not yet <em>before</em> the snapshot, i.e., the reverse part of the delta chain.</p>
+          <p>In this section, we introduce an approach to enable ingestion of new versions within our <em>bidirectional</em> aggregated storage approach.
+For this, we build upon the <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">streaming ingestion algorithm and DM query algorithm for <em>unidirectional</em> forward aggregated delta chains</a> <span class="references">[<a href="#ref-5">5</a>]</span>,
+which allows us to insert deltas <em>after</em> the snapshot.</p>
 
-          <p>Our approach for constructing the reverse delta chain involves a temporary forward delta chain.
+          <p>In order to insert deltas <em>before</em> the snapshot,
+our approach for constructing the reverse delta chain involves a temporary forward delta chain.
 This is because we can not start building our reverse delta chain directly,
 as we can not predict what triples will be in the snapshot later down the line.
 For each new version, our temporary forward delta chain will be built up,
 and can be queried in the meantime.
-From the moment that this delta chain becomes too long, or some other treshold has been exceeded,
+From the moment that this delta chain becomes too long, or some other threshold has been exceeded,
 then an offline fix-up algorithm is triggered that will effectively <em>reverse</em> this delta chain,
-and place a snapshot at the end, where a new forward delta chain can be built upon.</p>
+and place a snapshot at the end, where a new forward delta chain can be built upon when new versions arrive.</p>
 
           <p><a href="#algorithm-fixup">Algorithm 1</a> shows a sketch of our fix-up algorithm in pseudo-code.
-First, the aggregated deltas in the chain will be extracted as non-aggregated deltas by calling <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization">existing DM functionality in OSTRICH</a>.
+First, the aggregated deltas in the chain will be extracted as non-aggregated deltas by invoking <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization">a DM query over the current unidirectional aggregated delta chain</a>.
 We store the deletions as additions, and the additions as deletions.
-Next, we create a new delta chain, and insert these reversed deltas by calling <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions">existing ingestion functionality in OSTRICH</a>.
+Next, we create a new delta chain, and insert these reversed deltas by invoking <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions">the streaming ingestion algorithm for unidirectional aggregated delta chains</a>.
 Once ingestion is done, the existing delta chain is replaced by our new delta chain.</p>
 
           <figure id="algorithm-fixup" class="algorithm numbered">
@@ -590,26 +610,26 @@ and the temporary forward delta chain can be deleted.</p>
           <p>In this section, we discuss triple pattern query algorithms for the three query atoms discussed in <a href="#related-work">Section 2</a> (VM, DM, VQ).
 For simplicity, we assume the existence of a (bidirectional) delta chain with one snapshot.
 We consider multiple snapshots and delta chains future work.
-Just like for OSTRICH, all of these algorithms work in a streaming manner with offset support,
-and offer cardinality estimators.
-Below, we briefly discuss the relevant parts of the OSTRICH algorithms.
+We build upon the <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">existing algorithms for unidirectional (aggregated) delta chains</a> <span class="references">[<a href="#ref-5">5</a>]</span>,
+and thereby inherit their properties of streaming, offset support, and cardinality estimators.
+Below, we briefly discuss the relevant parts of these existing algorithms.
 For more details, we refer to the <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH article</a> <span class="references">[<a href="#ref-5">5</a>]</span>.</p>
 
           <h4 id="version-materialization">Version Materialization</h4>
 
           <p>Version Materialization (VM) allows retrieval of triples in a given version.
-In summary, <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#version-materialization">OSTRICH enables VM</a>
-by either querying a snapshot directly, if the requested version is a snapshot,
+In summary, <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#version-materialization">VM over a unidirectional delta chain</a>
+works by either querying a snapshot directly, if the requested version is a snapshot,
 or applying a given delta on the closest preceding snapshot otherwise.
-In our case, a snapshot can not only exist before a delta, but also after a delta.
-Nevertheless, the algorithm itself remains the same as in OSTRICH,
+In our bidirectional delta chain, a snapshot can not only exist before a delta, but also after a delta.
+Nevertheless, the algorithm itself remains the same as for a unidirectional delta chain,
 as the delta will have to be applied onto the snapshot in both cases.
 As such, we do not discuss this VM case any further.</p>
 
           <h4 id="delta-materialization">Delta Materialization</h4>
 
           <p>Delta Materialization (DM) allows differences between two given versions to be retrieved.
-<a href="https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization">OSTRICH distinguishes two cases for this</a>;
+<a href="https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization">The DM algorithm over a unidirectional delta chain distinguishes two cases for this</a>;
 either the start version is a snapshot or a delta,
 where the end version will always be a delta.
 If the start (or end) version is a snapshot, then the result is simply a query within the aggregated delta of the end version.
@@ -622,7 +642,7 @@ i.e., the DM query crosses the snapshot boundary.
 For this, we split up our query into two queries:
 a DM query from the start version until the snapshot,
 and a DM query from the snapshot until the end version.
-These two queries can be resolved over the two respective delta chains using <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization">the existing DM functionality from OSTRICH</a>.
+These two queries can be resolved over the two respective delta chains using <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization">the DM algorithm over a unidirectional delta chain</a>.
 As the results from these two queries are sorted,
 we can merge them in a sort-merge join way,
 where triples are only emitted if they don’t exist in both streams (ignoring the addition/deletion flag).
@@ -647,7 +667,7 @@ when the version range crosses the snapshot boundary.</p>
           <p>In order to estimate the cardinality of this third case,
 the same idea is followed
 where the counts of the part of the delta chain before and after the snapshot are added.
-Just like the existing DM cardinality estimator from OSTRICH,
+Just like the existing DM cardinality estimator over a unidirectional delta chain,
 this can be an overestimation, since certain triples may occur in both delta chains
 that would be omitted from the final result stream.</p>
 
@@ -655,8 +675,8 @@ that would be omitted from the final result stream.</p>
 
           <p>A Version Query (VQ) enables querying across all versions,
 with results being annotated with the version in which they occur.
-<a href="https://rdfostrich.github.io/article-jws2018-ostrich/#version-query">OSTRICH enables VQ</a>
-by iterating over the snapshot for a given triple pattern in a streaming manner.
+<a href="https://rdfostrich.github.io/article-jws2018-ostrich/#version-query">VQ over a unidirectional delta chain</a>
+is done by iterating over the snapshot for a given triple pattern in a streaming manner.
 Every snapshot triple is queried within the deletion index.
 For every discovered deletion, their respective version annotations are removed from the result.
 If no such deletion value was found, the triple was never deleted, so the versions annotation will contain all versions of the store.
@@ -669,7 +689,7 @@ Instead of checking single addition and deletion streams,
 two addition and deletion streams have to be checked.
 This will produce distinct version annotations, for which we apply the union.</p>
 
-          <p>To estimate the cardinality, the OSTRICH approach can again be extended
+          <p>To estimate the cardinality, the unidirectional delta chain approach can again be extended
 by adding the snapshot cardinality with the addition cardinality for both delta chains for the given triple pattern.
 As some triples could occur in both delta chains, this can lead to an overestimation.</p>
 
@@ -729,14 +749,14 @@ For an extensive comparison of the hybrid storage strategy with other systems, w
 <figure id="evaluation-storage-approaches-cobra-star" class="subfigure">
 <img src="img/approach-cobra-star.png" alt="COBRA* storage approach" class="eval-storage-approach" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 2.2:</span> COBRA with a bidirectional aggregated delta chain before fix-up    </p>
+                <p><span class="label">Subfig. 2.2:</span> COBRA with a bidirectional aggregated delta chain <em>before</em> fix-up    </p>
               </figcaption>
 </figure>
 
 <figure id="evaluation-storage-approaches-cobra" class="subfigure">
 <img src="img/approach-cobra.png" alt="COBRA storage approach" class="eval-storage-approach" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 2.3:</span> COBRA with a bidirectional aggregated delta chain after fix-up (ingested out-of-order starting with snapshot)</p>
+                <p><span class="label">Subfig. 2.3:</span> COBRA with a bidirectional aggregated delta chain <em>after</em> fix-up (ingested out-of-order starting with snapshot)</p>
               </figcaption>
 </figure>
 
@@ -756,16 +776,17 @@ that would be required when ingestion in order (COBRA*).</p>
           <p>To evaluate triple pattern query performance,
 we make use of the query sets provided by BEAR.
 BEAR-A provides 7 query sets containing around 100 triple patterns that are further divided into high result cardinality and low result cardinality. 
-BEAR-B provides two query sets that contain ?P? and ?PO queries.
+BEAR-B provides two query sets that contain <code>?P?</code> and <code>?PO</code> queries.
 We evaluate these queries as VM queries for all version, DM queries between the first and all other versions and a VQ query.
 In order to minimize outliers, we replicate the queries five times and take the mean results.
 Furthermore, we perform a warm-up period before the first query of each triple pattern.
 Since neither OSTRICH nor COBRA support multiple snapshots for all query atoms,
 we limit our experiments to OSTRICH’s unidrectional storage layout and COBRA’s bidirectional storage layout.</p>
 
-          <h3 id="evaluation-results">Results</h3>
+          <h3 id="evaluation-results">Measurements</h3>
 
-          <p>In this section, we discuss the results of our experiments on ingestion and query evaluation.</p>
+          <p>In this section, we discuss the results of our experiments on ingestion and query evaluation,
+which we then analyze in the next section.</p>
 
           <h4 id="ingestion">Ingestion</h4>
 
@@ -929,9 +950,9 @@ but the ingestion times for all later versions reset to low values.</p>
           <p>Finally, <a href="#ingestion-fixup-time">Table 3</a> show the fix-up times,
 which are measured as a separate offline process.
 This is the time it would take to transition from the COBRA* to COBRA storage approach,
-when the versions could not be inserted out of order.
+when the versions cannot be inserted out of order.
 On average, this fix-up requires 3,6 times more time relative to to the overhead of COBRA compared to COBRA*,
-showing that out of order ingestion is still preferred when possible.</p>
+showing that out-of-order ingestion is still preferred when possible.</p>
 
           <figure id="ingestion-fixup-time" class="table">
 
@@ -1080,7 +1101,7 @@ except for VQ in BEAR-A.</p>
                   <th> </th>
                   <th style="text-align: left">VM</th>
                   <th style="text-align: left">DM</th>
-                  <th style="text-align: left">VA</th>
+                  <th style="text-align: left">VQ</th>
                 </tr>
               </thead>
               <tbody>
@@ -1146,7 +1167,7 @@ except for VQ in BEAR-A.</p>
             </figcaption>
           </figure>
 
-          <h3 id="evaluation-discussion">Discussion</h3>
+          <h3 id="evaluation-discussion">Result analysis</h3>
 
           <p>In this section, we discuss the findings of our results regarding ingestion and query evaluation,
 and we test our hypotheses.</p>
@@ -1197,7 +1218,7 @@ When we have many small versions, these two delta chains are worth it,
 as the benefit of the shared snapshot outweighs the overhead of the delta chains.
 However, for few large versions,
 the overhead of two delta chains is too large for VQ,
-and one delta chain is more performant.
+and one delta chain performs better.
 In summary, a bidirectional delta chain is most effective for optimizing VM,
 largely beneficial for DM,
 and beneficial for VQ (assuming many small versions).</p>
@@ -1233,23 +1254,45 @@ under the hybrid storage strategy (OSTRICH)
 by making use of a <em>bidirectional delta chain</em>.
 Based on our implementation of this new approach (COBRA),
 our experimental results show that this modification solves
-the main scalability problem of OSTRICH regarding its ingestion times.
-This change also allows COBRA to reduce total storage size for two out of three datasets.
-Furthermore, all versioned query types achieve a performance boost with COBRA,
+the main scalability problem of a unidirectional delta chain (OSTRICH) regarding its ingestion times (41% faster average).
+This change also reduces total storage size (13% lower) for two out of three datasets.
+Furthermore, all versioned query types achieve a performance boost (21% faster),
 except for VQ under the BEAR-A dataset.
 With query execution times in the order of 1 millisecond or less,
-the bidirectional delta chain strategy from COBRA is an ideal back-end in the context of Web querying,
+the bidirectional delta chain strategy from COBRA is an ideal back-end for RDF archives in the context of Web querying,
 as network latency is typically slower than that.</p>
 
-          <p>This work shows the importance of delta directionality and snapshot placement in the delta chain.
-While we have measured the impact of a bidirectional delta chain,
-other strategies still remain to be investigated.
+          <p>As such, the bidirectional delta chain is a viable alternative to the unidirectional delta chain,
+as it is beneficial across nearly all metrics.
+We <strong>recommend bidirectional delta chains</strong> when any of the following is needed (in order of importance):</p>
+
+          <ul>
+            <li><strong>Lower ingestion times</strong></li>
+            <li><strong>Faster VM and DM</strong></li>
+            <li><strong>Lower storage sizes</strong></li>
+          </ul>
+
+          <p>On the other hand, we <strong>do not recommend bidirectional delta chains</strong> in the following cases:</p>
+
+          <ul>
+            <li><strong>Fast VQ is needed over datasets with very large versions</strong>: Bidirectional chains slow down VQ when versions are large.</li>
+            <li><strong>Dataset has only a few small versions</strong>: Unidirectional chain should be used until the ingestion of a new version exceeds the ingestion time of a new snapshot.</li>
+          </ul>
+
+          <p>These limitations of a bidirectional delta chain
+may be resolvable in future work through more intelligent strategies on
+when to convert a unidirectional delta chain into a bidirectional delta chain.
+Next to this, the beneficial impact of the bidirectional delta chain opens up questions
+as to what respect other transformations of the delta chain in terms of delta directionality and snapshot placement
+may be beneficial to ingestion time, storage size, and query performance.
 First, deltas may inherit from two or more surrounding versions, instead of just one.
 Second, aggregated and non-aggregated deltas are just two extremes of delta organization.
 A range of valuable possibilities in between may exist,
 such as inheriting from the n<sup>th</sup> largest preceding version.
-Third, the impact of multiple snapshots and strategies to decide when to create them still remain as open questions.
-By investigating these different strategies, we can grow towards a truly <em>evolving</em> Semantic Web.</p>
+Third, the impact of multiple snapshots and strategies to decide when to create them still remain as open questions.</p>
+
+          <p>We have shown that modifying the structure of the delta chain can be highly beneficial for RDF archiving.
+This brings us closer to an efficient queryable Semantic Web that can evolve and maintain its history.</p>
 
         </div>
 </section>
