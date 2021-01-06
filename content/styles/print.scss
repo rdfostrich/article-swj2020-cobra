@@ -42,8 +42,16 @@ figure.numbered pre {
   }
 }
 
+table.delta-approaches {
+  td {
+    span {
+	  height: 50px;
+	}
+  }
+}
+
 img.delta-approach {
-  width: 11em;
+  width: 8em;
 }
 
 img.results-triple {

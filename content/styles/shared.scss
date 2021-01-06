@@ -99,6 +99,17 @@ ol.index-entries {
 
 table.delta-approaches {
   td {
-    vertical-align: bottom;
+    span {
+	  margin: 0px;
+	  display: flex;
+	  justify-content: flex-end;
+	  flex-direction: column;
+	  height: 70px;
+	  max-height:100px;
+	}
   }
+}
+
+.delta-approach-left {
+  padding-right: 10px;
 }

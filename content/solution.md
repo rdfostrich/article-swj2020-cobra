@@ -17,15 +17,14 @@ We decompose these approaches into 2 axes: _directionality_ and _aggregation_.
 
 |   | **Non-aggregated** | **Aggregated** |
 |--:|:------------------:|:--------------:|
-| **Forward<br> Unidirectional** | <img src="img/delta-chain-uni.svg" alt="Unidirectional delta chain" class="delta-approach"> | <img src="img/delta-chain-uni-agg.svg" alt="Unidirectional aggregated delta chain" class="delta-approach"> |
-| **Reverse<br> Unidirectional** | <img src="img/delta-chain-uni-rev.svg" alt="Unidirectional reverse delta chain" class="delta-approach"> | <img src="img/delta-chain-uni-agg-rev.svg" alt="Unidirectional aggregated reverse delta chain" class="delta-approach"> |
-| **Bidirectional**<br>          | <img src="img/delta-chain-bi.svg" alt="Bidirectional delta chain" class="delta-approach"> | <img src="img/delta-chain-bi-agg.svg" alt="Bidirectional aggregated delta chain" class="delta-approach"> |
+| **Forward<br> Unidir.** | <span><img src="img/delta-chain-uni.svg" alt="Unidirectional delta chain" class="delta-approach delta-approach-left"></span> | <span><img src="img/delta-chain-uni-agg.svg" alt="Unidirectional aggregated delta chain" class="delta-approach"></span> |
+| **Reverse<br> Unidir.** | <span><img src="img/delta-chain-uni-rev.svg" alt="Unidirectional reverse delta chain" class="delta-approach delta-approach-left"></span> | <span><img src="img/delta-chain-uni-agg-rev.svg" alt="Unidirectional aggregated reverse delta chain" class="delta-approach"></span> |
+| **Bidir.**<br>          | <span><img src="img/delta-chain-bi.svg" alt="Bidirectional delta chain" class="delta-approach delta-approach-left"></span> | <span><img src="img/delta-chain-bi-agg.svg" alt="Bidirectional aggregated delta chain" class="delta-approach"></span> |
 {:.delta-approaches}
 
 <figcaption markdown="block">
 Overview of unidirectional forward, unidirectional reverse, and bidirectional delta chain approaches,
 both with and without aggregated deltas.
-<span class="comment" data-author="RV">I had initially misinterpreted thee figure and saw 3 long chains instead of 6 short ones. Perhaps some spacing could help.</span>
 </figcaption>
 </figure>
 
