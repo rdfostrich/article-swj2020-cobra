@@ -1,0 +1,29 @@
+To the Editors of the Semantic Web Journal
+
+Dear Editors,
+
+Please find attached to this letter our submission entitled
+"Optimizing Storage of RDF Archives using Bidirectional Delta Chains"
+for the call for full papers.
+In this article, we introduce a novel technique for storing RDF archives using bidirectional delta chains,
+which solves a major scalability issue in existing RDF archiving systems.
+
+In particular, the main contributions of this work are:
+* a bidirectional storage technique with an ingestion algorithm;
+* querying algorithms for three different version query types on this storage technique;
+* an open-source implementation of this technique and the querying algorithms;
+* an extensive evaluation of our approach using an existing RDF archiving benchmark.
+
+We hope this article is a good fit for this journal.
+Should you have any further questions or concerns, please do not hesitate to contact us.
+We look forward to hearing back from you and thank you in advance
+for considering the publication of this work in the Semantic Web Journal.
+
+Sincerely,
+Ruben Taelman
+on behalf of the authors
+
+imec - Ghent University - IDLab
+Technologiepark-Zwijnaarde 15
+B-9052 Gent
+Belgium
