@@ -14,7 +14,7 @@ which becomes problematic for RDF datasets with many versions.
 As such, there is a need for an improved storage strategy that scales better in terms of ingestion time for many versions.
 <!-- Task         -->
 We have designed, implemented, and evaluated a change to the hybrid storage strategy
-where we make use of of _bidirectional delta chain_
+where we make use of a _bidirectional delta chain_
 instead of the default _unidirectional delta chain_.
 <!-- Object       -->
 In this article,
@@ -22,11 +22,11 @@ we introduce a concrete architecture for this change,
 together with accompanying ingestion and querying algorithms.
 <!-- Findings     -->
 Experimental results from our implementation
-show that the ingestion scalability issue is solved.
+show that the ingestion time scales significantly better.
 As an additional benefit,
 this change also leads to lower total storage size and improved query execution performance for most cases.
 <!-- Conclusion   -->
-This work shows that modifying the structure of the delta chain within the hybrid storage strategy
+This work shows that modifying the structure of delta chains within the hybrid storage strategy
 can be highly beneficial for RDF archives.
 <!-- Perspectives -->
 In future work,

@@ -17,9 +17,9 @@ We decompose these approaches into 2 axes: _directionality_ and _aggregation_.
 
 |   | **Non-aggregated** | **Aggregated** |
 |--:|:------------------:|:--------------:|
-| **Forward<br> Unidir.** | <span><img src="img/delta-chain-uni.svg" alt="Unidirectional delta chain" class="delta-approach delta-approach-left"></span> | <span><img src="img/delta-chain-uni-agg.svg" alt="Unidirectional aggregated delta chain" class="delta-approach"></span> |
-| **Reverse<br> Unidir.** | <span><img src="img/delta-chain-uni-rev.svg" alt="Unidirectional reverse delta chain" class="delta-approach delta-approach-left"></span> | <span><img src="img/delta-chain-uni-agg-rev.svg" alt="Unidirectional aggregated reverse delta chain" class="delta-approach"></span> |
-| **Bidir.**<br>          | <span><img src="img/delta-chain-bi.svg" alt="Bidirectional delta chain" class="delta-approach delta-approach-left"></span> | <span><img src="img/delta-chain-bi-agg.svg" alt="Bidirectional aggregated delta chain" class="delta-approach"></span> |
+| **Forward<br> UDC** | <span><img src="img/delta-chain-uni.svg" alt="Unidirectional delta chain" class="delta-approach delta-approach-left"></span> | <span><img src="img/delta-chain-uni-agg.svg" alt="Unidirectional aggregated delta chain" class="delta-approach"></span> |
+| **Reverse<br> UDC** | <span><img src="img/delta-chain-uni-rev.svg" alt="Unidirectional reverse delta chain" class="delta-approach delta-approach-left"></span> | <span><img src="img/delta-chain-uni-agg-rev.svg" alt="Unidirectional aggregated reverse delta chain" class="delta-approach"></span> |
+| **BDC**<br>          | <span><img src="img/delta-chain-bi.svg" alt="Bidirectional delta chain" class="delta-approach delta-approach-left"></span> | <span><img src="img/delta-chain-bi-agg.svg" alt="Bidirectional aggregated delta chain" class="delta-approach"></span> |
 {:.delta-approaches}
 
 <figcaption markdown="block">
@@ -111,7 +111,7 @@ due to the non-increasing query execution times for increasing numbers of versio
 One disadvantage of the bidirectional approach is that it complicates ingestion,
 since we can not build a reverse delta chain directly,
 as we can not always know beforehand what a future version will look like.
-We provide an algorithm for this in [](#solution-ingestion).
+We tackle this problem in [](#solution-ingestion).
 
 ### Storage Approach
 {:#solution-storage}

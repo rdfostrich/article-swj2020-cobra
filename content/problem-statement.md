@@ -2,7 +2,7 @@
 {:#problem-statement}
 
 As mentioned in [](#introduction), RDF archiving solutions suffer are not sufficiently capable of handing large RDF archives with many versions.
-While the hybrid storage approach as proposed by OSTRICH can handle the largest archives among all existing approaches,
+While the hybrid storage approach as proposed by OSTRICH can handle the largest archives among all currently existing approaches,
 it does not scale sufficiently to a large number of versions due to its long delta chains.
 Our goal in this work is to investigate if we can build on top of this hybrid storage approach
 and modify its delta chain structure

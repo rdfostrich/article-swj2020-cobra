@@ -50,7 +50,7 @@ OSTRICH with a forward unidirectional aggregated delta chain &nbsp;&nbsp;&nbsp;
 <figure id="evaluation-storage-approaches-cobra-star" class="subfigure">
 <img src="img/approach-cobra-star.png" alt="COBRA* storage approach" class="eval-storage-approach">
 <figcaption markdown="block">
-COBRA with a bidirectional aggregated delta chain *before* fix-up &nbsp;&nbsp;&nbsp;
+COBRA* with a bidirectional aggregated delta chain *before* fix-up &nbsp;&nbsp;&nbsp;
 </figcaption>
 </figure>
 
@@ -350,7 +350,7 @@ and we test our hypotheses.
 
 #### Ingestion
 
-Our experimental results show that the usage of a bidirectional delta chain has a significant impact
+Our experimental results show that the usage of a bidirectional delta chain has a significant beneficial impact
 on storage size and ingestion time compared to a unidirectional delta chain.
 While the unidirectional delta chain leads to increasing ingestion times for every new version,
 initiating a new snapshot (COBRA\*) can effectively _reset_ these ingestion times.

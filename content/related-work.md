@@ -55,13 +55,10 @@ CB is better for DM queries,
 and TB is best for VQ queries.
 No single strategy leads to good performance of all query atoms.
 
-In the following, we summarize the primary known RDF archiving systems,
-and which storage strategy they follow.
+[](#rdf-archive-systems) shows an overview of the primary RDF archiving systems,
+and which storage strategy they follow. These are explained in more detail hereafter.
 
-<!-- [](#rdf-archive-systems) shows an overview of the primary RDF archiving systems,
-and which storage strategy they follow.
-
-figure id="rdf-archive-systems" class="table" markdown="1">
+<figure id="rdf-archive-systems" class="table" markdown="1">
 
 | Name                                        | IC | CB | TB |
 | ------------------------------------------- |----|----|----|
@@ -82,7 +79,7 @@ figure id="rdf-archive-systems" class="table" markdown="1">
 Overview of RDF archiving solutions with their corresponding storage strategy:
 Individual copies (IC), Change-based (CB), or Timestamp-based (TB).
 </figcaption>
-</figure>-->
+</figure>
 
 #### Independent copies approaches
 [SemVersion](cite:cites semversion) tracks different versions of RDF graphs,
@@ -173,7 +170,7 @@ which are valuable for query planning within query engines.
 OSTRICH has been implemented in [C/C++](https://github.com/rdfostrich/ostrich),
 with bindings existing for [Node.JS (JavaScript)](https://github.com/rdfostrich/ostrich-node).
 The triple pattern index provided by OSTRICH has been demonstrated
-to be usable within a full SPARQL query engine such as [Comunica](cite:cites ostrich_comunica,comunica).
+to be usable within a full SPARQL query engine such as [Comunica](cite:cites comunica,ostrich_comunica).
 
 Experimental results on OSTRICH with the BEAR benchmark show that this hybrid strategy
 is more beneficial than having just a single storage strategy,
@@ -182,4 +179,5 @@ The main downside of this approach is that it leads to scalability issues in ter
 Concretely, the BEAR-B-hourly dataset—which contains 1,299 versions—
 starts showing high ingestion times starting around version 1,100.
 The reason for this is that the aggregated deltas start becoming too large.
-As such, we build upon OSTRICH in this work, and attempt to solve this problem by modifying the delta chain structure.
+As such, we aim to resolve this problem in this work by improving the hybrid storage strategy from OSTRICH
+through fundamental changes to the delta chain structure.
