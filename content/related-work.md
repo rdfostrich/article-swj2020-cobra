@@ -60,20 +60,21 @@ and which storage strategy they follow. These are explained in more detail herea
 
 <figure id="rdf-archive-systems" class="table" markdown="1">
 
-| Name                                        | IC | CB | TB |
-| ------------------------------------------- |----|----|----|
-| [SemVersion](cite:cites semversion)         | ✓  |    |    |
-| [Cassidy et al.](cite:cites vcrdf)          |    | ✓  |    |
-| [R&WBase](cite:cites rwbase)                |    | ✓  |    |
-| [R43ples](cite:cites r43ples)               |    | ✓  |    |
-| [Hauptman et al.](cite:cites vcld)          |    |    | ✓  |
-| [X-RDF-3X](cite:cites xrdf3x)               |    |    | ✓  |
-| [RDF-TX](cite:cites rdftx)                  |    |    | ✓  |
-| [v-RDFCSA](cite:cites selfindexingarchives) |    |    | ✓  |
-| [Dydra](cite:cites dydra)                   |    |    | ✓  |
-| [Quit Store](cite:cites quit)               | ✓  |    |    |
-| [TailR](cite:cites tailr)                   | ✓  | ✓  |    |
-| [OSTRICH](cite:cites ostrich)               | ✓  | ✓  | ✓  |
+| Name                                            | IC | CB | TB |
+| ----------------------------------------------- |----|----|----|
+| [SemVersion](cite:cites semversion)             | ✓  |    |    |
+| [Cassidy et al.](cite:cites vcrdf)              |    | ✓  |    |
+| [R&WBase](cite:cites rwbase)                    |    | ✓  |    |
+| [R43ples](cite:cites r43ples)                   |    | ✓  |    |
+| [Hauptman et al.](cite:cites vcld)              |    |    | ✓  |
+| [X-RDF-3X](cite:cites xrdf3x)                   |    |    | ✓  |
+| [RDF-TX](cite:cites rdftx)                      |    |    | ✓  |
+| [v-RDFCSA](cite:cites selfindexingarchives)     |    |    | ✓  |
+| [Dydra](cite:cites dydra)                       |    |    | ✓  |
+| [Quit Store](cite:cites quit)                   | ✓  |    |    |
+| [TailR](cite:cites tailr)                       | ✓  | ✓  |    |
+| [Cuevas et al.](cite:cites cuevas2020versioned) | ✓  | ✓  | ✓  |
+| [OSTRICH](cite:cites ostrich)                   | ✓  | ✓  | ✓  |
 
 <figcaption markdown="block">
 Overview of RDF archiving solutions with their corresponding storage strategy:
@@ -121,6 +122,18 @@ It is a hybrid CB/IC approach as it starts by storing a dataset snapshot,
 after which only deltas are stored for each consecutive version, as shown in [](#regular-delta-chain).
 When the chain becomes too long, or other conditions are fulfilled,
 a new snapshot is created for the next version to avoid long version reconstruction times.
+[Cuevas et al.](cite:cites cuevas2020versioned) propose an approach similar to R&WBase,
+where the named graph functionality in SPARQL 1.1 engines is used to store RDF archives,
+and versioned queries are achieved through query rewriting.
+As opposed to R&WBase that only uses a CB approach, they propose distinct a IC strategy, four CB strategies, and a TB strategy.
+For each of those strategies, they introduce separate query rewriting techniques for VM and DM queries,
+but do not consider VQ queries.
+Experimental results on an archive with eight large versions show there is a time-space trade-off,
+whereby large storage sizes achieve faster query execution,
+and smaller storage sizes result in slower query execution.
+The authors consider the TB strategy achieving the best trade-off.
+Relevant for our work, is the use of four CB strategies,
+which correspond to forward, backward deltas, forward [aggregated](cite:cites vmrdf), and backward aggregated deltas.
 [OSTRICH](cite:cites ostrich) is a hybrid IC/CB/TB approach that exploits the advantages of each strategy
 to provide a trade-off between storage requirements and querying efficiency.
 Experiments show that OSTRICH achieves good querying performance for all query atoms,
