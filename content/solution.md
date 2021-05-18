@@ -172,7 +172,7 @@ and place a snapshot at the end, where a new forward delta chain can be built up
 [](#algorithm-fixup) shows a sketch of our fix-up algorithm in pseudo-code.
 First, the aggregated deltas in the chain will be extracted as non-aggregated deltas by invoking [a DM query over the current unidirectional aggregated delta chain](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization).
 We store the deletions as additions, and the additions as deletions.
-Next, we create a new delta chain, and insert these reversed deltas by invoking [the streaming ingestion algorithm for unidirectional aggregated delta chains](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions).
+Next, we create a new delta chain, and insert these reversed non-aggregated deltas by invoking [the streaming ingestion algorithm to create unidirectional aggregated delta chains](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions).
 Once ingestion is done, the existing delta chain is replaced by our new delta chain.
 
 <figure id="algorithm-fixup" class="algorithm numbered">
