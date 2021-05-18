@@ -31,27 +31,26 @@
 ]
 
     % Nodes
-    \node[base,fill=colordelta]  (delta1)   {$\Delta$};
+    \node[base,fill=colorsnapshot,text width=15em] (snapshot) {Snapshot};
+    \node[base,fill=colordelta,right=of snapshot]  (delta1)   {$\Delta$};
     \node[base,fill=colordelta,right=of delta1]    (delta2)   {$\Delta$};
-    \node[base,fill=colordelta,right=of delta2]    (delta3)   {$\Delta$};
-    \node[base,fill=colorsnapshot,text width=15em,right=of delta3] (snapshot) {Snapshot};
-    \node[base,fill=colordelta,right=of snapshot]  (delta4)   {$\Delta$};
+    \node[base,fill=colorsnapshot,text width=15em,right=of delta2] (snapshot2) {Snapshot};
+    \node[base,fill=colordelta,right=of snapshot2]    (delta4)   {$\Delta$};
     \node[base,fill=colordelta,right=of delta4]    (delta5)   {$\Delta$};
     
     % Text
-    \node[txt,below=of delta1]             {0};
-    \node[txt,below=of delta2]             {1};
-    \node[txt,below=of delta3]             {2};
-    \node[txt,below=of snapshot] (snaptxt) {3};
-    \node[txt,below=of delta4]             {4};
-    \node[txt,below=of delta5]             {5};
+    \node[txt,below=of snapshot]  (snaptxt) {0};
+    \node[txt,below=of delta1]  (delta1txt) {1};
+    \node[txt,below=of delta2]  (delta1txt) {2};
+    \node[txt,below=of snapshot2] (snaptxt) {3};
+    \node[txt,below=of delta4]              {4};
+    \node[txt,below=of delta5]              {5};
     
     % Arrows
-    \draw[->,thick](delta1) to [out=45,in=135] (delta2);
-    \draw[->,thick](delta2) to [out=45,in=135] (delta3);
-    \draw[->,thick](delta3) to [out=45,in=135] (snapshot);
-    \draw[->,thick](delta4) to [out=135,in=45] (snapshot);
-    \draw[->,thick](delta5) to [out=135,in=45] (delta4);
+    \draw[->,thick](delta1) to [out=135,in=45] (snapshot);
+    \draw[->,thick](delta2) to [out=135,in=45] (snapshot);
+    \draw[->,thick](delta4) to [out=135,in=45] (snapshot2);
+    \draw[->,thick](delta5) to [out=135,in=45] (snapshot2);
 
 \end{tikzpicture}
 \end{document}

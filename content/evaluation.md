@@ -41,28 +41,28 @@ For an extensive comparison of the hybrid storage strategy with other systems, w
 <figure id="evaluation-storage-approaches" class="figure">
 
 <figure id="evaluation-storage-approaches-ostrich" class="subfigure">
-<img src="img/approach-ostrich.png" alt="OSTRICH storage approach" class="eval-storage-approach">
+<img src="img/delta-chain-uni-agg.svg" alt="OSTRICH storage approach" class="eval-storage-approach">
 <figcaption markdown="block">
 OSTRICH with a forward unidirectional aggregated delta chain &nbsp;&nbsp;&nbsp;
 </figcaption>
 </figure>
 
 <figure id="evaluation-storage-approaches-cobra-star" class="subfigure">
-<img src="img/approach-cobra-star.png" alt="COBRA* storage approach" class="eval-storage-approach">
+<img src="img/delta-chain-bi-agg-before-fixup.svg" alt="COBRA* storage approach" class="eval-storage-approach">
 <figcaption markdown="block">
 COBRA* with a bidirectional aggregated delta chain *before* fix-up &nbsp;&nbsp;&nbsp;
 </figcaption>
 </figure>
 
 <figure id="evaluation-storage-approaches-cobra" class="subfigure">
-<img src="img/approach-cobra.png" alt="COBRA storage approach" class="eval-storage-approach">
+<img src="img/delta-chain-bi-agg.svg" alt="COBRA storage approach" class="eval-storage-approach">
 <figcaption markdown="block">
 COBRA with a bidirectional aggregated delta chain *after* fix-up (ingested out-of-order starting with snapshot)
 </figcaption>
 </figure>
 
 <figcaption markdown="block">
-The different storage approaches used in our experiments.
+The different storage approaches used in our experiments for an arbitrary dataset with six versions.
 </figcaption>
 </figure>
 
