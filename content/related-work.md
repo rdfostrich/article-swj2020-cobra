@@ -41,16 +41,17 @@ Example: _At what times was book X present in the library?_
 ### RDF Archiving Solutions
 
 In the recent years, several techniques and solutions have been proposed to allow storing and querying RDF archives.
-RDF archiving systems are typically categorized into [three non-orthogonal storage strategies](cite:cites archiving):
+RDF archiving systems are typically categorized into [four non-orthogonal storage strategies](cite:cites archiving, quit):
 
 - The **Independent Copies (IC)** approach creates separate instantiations of datasets for
 each change or set of changes.
 - The **Change-Based (CB)** approach instead only stores change sets between versions.
 - The **Timestamp-Based (TB)** approach stores the temporal validity of facts.
+- The **Fragment-based (FB)** approach stores snapshots of each changed _fragment_ of datasets.
 
 There exists a correspondence between these query atoms
-and the independent copies (IC), change-based (CB), and timestamp-based (TB) storage strategies.
-Namely, IC typically leads to efficient VM queries,
+and the independent copies (IC), change-based (CB), timestamp-based (TB) and fragment-based (FB) storage strategies.
+Namely, IC and FB typically lead to efficient VM queries,
 CB is better for DM queries,
 and TB is best for VQ queries.
 No single strategy leads to good performance of all query atoms.
@@ -60,25 +61,25 @@ and which storage strategy they follow. These are explained in more detail herea
 
 <figure id="rdf-archive-systems" class="table" markdown="1">
 
-| Name                                            | IC | CB | TB |
-| ----------------------------------------------- |----|----|----|
-| [SemVersion](cite:cites semversion)             | ✓  |    |    |
-| [Cassidy et al.](cite:cites vcrdf)              |    | ✓  |    |
-| [R&WBase](cite:cites rwbase)                    |    | ✓  |    |
-| [R43ples](cite:cites r43ples)                   |    | ✓  |    |
-| [Hauptman et al.](cite:cites vcld)              |    |    | ✓  |
-| [X-RDF-3X](cite:cites xrdf3x)                   |    |    | ✓  |
-| [RDF-TX](cite:cites rdftx)                      |    |    | ✓  |
-| [v-RDFCSA](cite:cites selfindexingarchives)     |    |    | ✓  |
-| [Dydra](cite:cites dydra)                       |    |    | ✓  |
-| [Quit Store](cite:cites quit)                   | ✓  |    |    |
-| [TailR](cite:cites tailr)                       | ✓  | ✓  |    |
-| [Cuevas et al.](cite:cites cuevas2020versioned) | ✓  | ✓  | ✓  |
-| [OSTRICH](cite:cites ostrich)                   | ~  | ✓  | ✓  |
+| Name                                            | IC | CB | TB | FB |
+| ----------------------------------------------- |----|----|----|----|
+| [SemVersion](cite:cites semversion)             | ✓  |    |    |    |
+| [Cassidy et al.](cite:cites vcrdf)              |    | ✓  |    |    |
+| [R&WBase](cite:cites rwbase)                    |    | ✓  |    |    |
+| [R43ples](cite:cites r43ples)                   |    | ✓  |    |    |
+| [Hauptman et al.](cite:cites vcld)              |    |    | ✓  |    |
+| [X-RDF-3X](cite:cites xrdf3x)                   |    |    | ✓  |    |
+| [RDF-TX](cite:cites rdftx)                      |    |    | ✓  |    |
+| [v-RDFCSA](cite:cites selfindexingarchives)     |    |    | ✓  |    |
+| [Dydra](cite:cites dydra)                       |    |    | ✓  |    |
+| [Quit Store](cite:cites quit)                   |    |    |    | ✓  |
+| [TailR](cite:cites tailr)                       | ✓  | ✓  |    |    |
+| [Cuevas et al.](cite:cites cuevas2020versioned) | ✓  | ✓  | ✓  |    |
+| [OSTRICH](cite:cites ostrich)                   | ~  | ✓  | ✓  |    |
 
 <figcaption markdown="block">
 Overview of RDF archiving solutions with their corresponding storage strategy:
-Individual copies (IC), Change-based (CB), or Timestamp-based (TB).
+Individual copies (IC), Change-based (CB), Timestamp-based (TB), or Fragment-based (FB).
 ✓: fullfils the strategy completely; ~: fullfuls the strategy partially.
 </figcaption>
 </figure>
@@ -87,8 +88,6 @@ Individual copies (IC), Change-based (CB), or Timestamp-based (TB).
 [SemVersion](cite:cites semversion) tracks different versions of RDF graphs,
 using Concurrent Versions System (CVS) concepts to maintain different versions of ontologies,
 such as diff, branching and merging.
-[Quit Store](cite:cites quit) is a system that is built on top of Git,
-which allows these same features by considering each version to be a commit.
 
 #### Change-based approaches
 [Cassidy et al.](cite:cites vcrdf) propose a system to store changes to graphs as a series of patches, which makes it a CB approach.
@@ -117,6 +116,13 @@ that enables versioning queries on top of compressed RDF archives as a TB approa
 [Dydra](cite:cites dydra) is an RDF graph storage platform with dataset versioning support.
 They introduce the `REVISION` keyword, which is similar to the SPARQL keyword `GRAPH` for referring to different dataset versions.
 
+#### Fragment-based approaches
+[Quit Store](cite:cites quit) is a system that is built on top of Git,
+which allows these same features by considering each version to be a commit.
+A version is made up of multiple fragments, which may be reused across multiple versions of a dataset,
+which typically leads to lower storage space compared to a pure IC strategy.
+Using Git's delta compression, this storage space can be reduced even further at the cost of slower querying.
+
 #### Hybrid approaches
 [TailR](cite:cites tailr) is an HTTP archive for Linked Data pages for retrieving prior versions of certain HTTP resources.
 It is a hybrid CB/IC approach as it starts by storing a dataset snapshot,
@@ -137,6 +143,9 @@ Relevant for our work, is the use of four CB strategies,
 which correspond to forward, backward deltas, forward [aggregated](cite:cites vmrdf), and backward aggregated deltas.
 [OSTRICH](cite:cites ostrich) is a hybrid IC/CB/TB approach that exploits the advantages of each strategy
 to provide a trade-off between storage requirements and querying efficiency.
+It only fullfils the IC strategy partially,
+since it only creates a fully materialized snapshot for the first version,
+and stores differences afterwards.
 Experiments show that OSTRICH achieves good querying performance for all query atoms,
 but suffers from scalability issues in terms of ingestion time for many versions.
 As such, we build upon OSTRICH in this work, and attempt to solve this problem.
