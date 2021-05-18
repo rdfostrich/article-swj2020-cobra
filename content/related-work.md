@@ -126,7 +126,7 @@ Using Git's delta compression, this storage space can be reduced even further at
 #### Hybrid approaches
 [TailR](cite:cites tailr) is an HTTP archive for Linked Data pages for retrieving prior versions of certain HTTP resources.
 It is a hybrid CB/IC approach as it starts by storing a dataset snapshot,
-after which only deltas are stored for each consecutive version, as shown in [](#regular-delta-chain).
+after which only deltas are stored for each consecutive version.
 When the chain becomes too long, or other conditions are fulfilled,
 a new snapshot is created for the next version to avoid long version reconstruction times.
 [Cuevas et al.](cite:cites cuevas2020versioned) propose an approach similar to R&WBase,
@@ -164,7 +164,7 @@ we make use of BEAR for our experiments.
 
 ### OSTRICH
 
-As mentioned before, [OSTRICH](cite:cites ostrich) make us of a hybrid IC/CB/TB storage approach
+As mentioned before, [OSTRICH](cite:cites ostrich) makes use of a hybrid IC/CB/TB storage approach
 with the goal of providing a trade-off between storage size and querying efficiency.
 The main motivation for OSTRICH is to serve as a back-end of a [low-cost Web APIs for exposing RDF archives](cite:cites vtpf),
 where query execution must be sufficiently fast,

@@ -92,9 +92,9 @@ which we then analyze in the next section.
 
 #### Ingestion
 
-[](#ingestion-total) show the total storage sizes and ingestion times
+[](#ingestion-total) shows the total storage sizes and ingestion times
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
-These tables show that COBRA requires less ingestion time than OSTRICH in all cases (41% less on average).
+This table shows that COBRA requires less ingestion time than OSTRICH in all cases (41% less on average).
 Furthermore, COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly, but not for BEAR-B Daily.
 COBRA* requires more storage space than both COBRA and OSTRICH with BEAR-A, but it requires less ingestion time.
 For BEAR-B Daily, OSTRICH requires less storage, but COBRA* has the lowest ingestion time.
@@ -194,11 +194,11 @@ These figures show the impact of the middle snapshots within the bidirectional c
 For BEAR-B Daily and Hourly, the storage size significantly increases at the middle version,
 but the ingestion times for all later versions reset to low values.
 
-Finally, [](#ingestion-fixup-time) show the fix-up times,
+Finally, [](#ingestion-fixup-time) shows the fix-up times,
 which are measured as a separate offline process.
 This is the time it would take to transition from the COBRA\* to COBRA storage approach,
 when the versions cannot be inserted out of order.
-On average, this fix-up requires 3,6 times more time relative to to the overhead of COBRA compared to COBRA*,
+On average, this fix-up requires 3,6 times more time relative to the overhead of COBRA compared to COBRA*,
 showing that out-of-order ingestion is still preferred when possible.
 
 <figure id="ingestion-fixup-time" class="table" markdown="1">
@@ -252,7 +252,7 @@ BEAR-B Hourly
 
 <figcaption markdown="block">
 Version Materialization evaluation times per version for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
-For most versions, COBRA has is faster than OSTRICH.
+For most versions, COBRA is faster than OSTRICH.
 </figcaption>
 </figure>
 
@@ -367,7 +367,7 @@ the first one could optionally be reversed so that both can share one snapshot t
 Our results show that this can further reduce storage size for datasets with few large versions (BEAR-A).
 However, for many small versions (BEAR-B), this leads to overhead in terms of storage size.
 This fix-up process does however require a significant execution time.
-Since this could easily run in a separate process can happen in an offline process,
+Since this could easily run in a separate offline process,
 this additional time is typically not a problem.
 As such, when the server encounters a dataset with large versions (millions of triples per version),
 then the fix-up approach should be followed.
@@ -406,7 +406,7 @@ which we will now answer based on our experimental results.
 In our [first hypothesis](#hypothesis-qualitative-storage), we expected storage size
 to become lower with a bidirectional delta chain compared to a unidirectional delta chain.
 While this is true for BEAR-A and BEAR-B Hourly, this is not true for BEAR-B Daily.
-As such, we _reject_ this hypotheses.
+As such, we _reject_ this hypothesis.
 In our [second hypothesis](#hypothesis-qualitative-ingestion),
 we expected ingestion time to be lower with a bidirectional delta chain.
 Our results show that this is true.

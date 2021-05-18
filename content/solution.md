@@ -79,7 +79,7 @@ once the ingestion time of a delta became larger than the time for ingesting a s
 For instance, we can lower the total ingestion time to half the original time
 by splitting one delta chain into two delta chains,
 or even to one third by splitting it up into three delta chains.
-In the extreme, each version would be form its own snapshot,
+In the extreme, each version would form its own snapshot,
 which would lead to the independent copies storage strategy,
 at the cost of increased storage size.
 As such, there is a trade-off between ingestion time and storage size,
