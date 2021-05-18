@@ -15,7 +15,7 @@ While RDF archiving systems have emerged in the past that can handle such evolvi
 illustrated the need for improved versioning capabilities
 in order to preserve RDF on the Web and expose queryable access.
 Concretely, there is a need for systems that can store and query such datasets with low cost and effort on Web servers,
-so that they can cope with the large scale of RDF datasets on the Web, and their velocity.
+so that they can cope with the large scale of RDF datasets on the Web, and their velocity of changes.
 In previous work, we introduced a [new hybrid archiving approach, implemented as a system called OSTRICH](cite:cites ostrich).
 The approach consists of efficient triple pattern queries for different versioned query types,
 while still keeping storage requirements reasonable.
@@ -35,9 +35,11 @@ which makes OSTRICH unusable for datasets with a large number of versions,
 which is crucial for preserving RDF datasets on the Web.
 The reason for this is that the hybrid storage approach from OSTRICH only consists of a single version _snapshot_ at the start,
 followed by an _aggregated delta chain_ that keeps growing longer for every new version.
+While this aggregated delta chain is beneficial for faster query execution,
+it comes at the cost of increased ingestion times.
 Since every additional delta requires all preceding deltas to be checked during ingestion,
 this process becomes slower for every new version.
-In order to solve this problem, we propose a storage strategy modification,
+In order to delay this problem, we propose a storage strategy modification,
 where there still is a single version snapshot,
 but we place it in the middle of the delta chain,
 instead of at the beginning,
