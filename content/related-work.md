@@ -74,11 +74,12 @@ and which storage strategy they follow. These are explained in more detail herea
 | [Quit Store](cite:cites quit)                   | ✓  |    |    |
 | [TailR](cite:cites tailr)                       | ✓  | ✓  |    |
 | [Cuevas et al.](cite:cites cuevas2020versioned) | ✓  | ✓  | ✓  |
-| [OSTRICH](cite:cites ostrich)                   | ✓  | ✓  | ✓  |
+| [OSTRICH](cite:cites ostrich)                   | ~  | ✓  | ✓  |
 
 <figcaption markdown="block">
 Overview of RDF archiving solutions with their corresponding storage strategy:
 Individual copies (IC), Change-based (CB), or Timestamp-based (TB).
+✓: fullfils the strategy completely; ~: fullfuls the strategy partially.
 </figcaption>
 </figure>
 
