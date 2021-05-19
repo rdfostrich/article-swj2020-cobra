@@ -12,7 +12,7 @@
   <meta name="citation_author" content="Thibault Mahieu" />
   <meta name="citation_author" content="Ruben Verborgh" />
   
-  <meta name="citation_publication_date" content="2021/05/18" />
+  <meta name="citation_publication_date" content="2021/05/19" />
 </head>
 
 <body prefix="dctypes: http://purl.org/dc/dcmitype/ pimspace: http://www.w3.org/ns/pim/space# rsa: http://www.w3.org/ns/auth/rsa# cert: http://www.w3.org/ns/auth/cert# wgs: http://www.w3.org/2003/01/geo/wgs84_pos# biblio: http://purl.org/net/biblio# bibo: http://purl.org/ontology/bibo/ book: http://purl.org/NET/book/vocab# ov: http://open.vocab.org/terms/ doap: http://usefulinc.com/ns/doap# dbr: http://dbpedia.org/resource/ dbp: http://dbpedia.org/property/ sio: http://semanticscience.org/resource/ opmw: http://www.opmw.org/ontology/ deo: http://purl.org/spar/deo/ doco: http://purl.org/spar/doco/ cito: http://purl.org/spar/cito/ fabio: http://purl.org/spar/fabio/ solid: http://www.w3.org/ns/solid/terms# acl: http://www.w3.org/ns/auth/acl# dio: https://w3id.org/dio# lsc: http://linkedscience.org/lsc/ns#" typeof="schema:CreativeWork sioc:Post prov:Entity lsc:Research">
@@ -69,7 +69,7 @@ we introduce a concrete architecture for this change,
 together with accompanying ingestion and querying algorithms.
 <!-- Findings     -->
 Experimental results from our implementation
-show that the ingestion time scales significantly better.
+show that the ingestion time is significantly reduced.
 As an additional benefit,
 this change also leads to lower total storage size and improved query execution performance for most cases.
 <!-- Conclusion   -->
@@ -78,7 +78,7 @@ can be highly beneficial for RDF archives.
 <!-- Perspectives -->
 In future work,
 other modifications to this delta chain structure deserve to be investigated,
-as they may be able to provide additional benefits.</p>
+to further improve the scalability of ingestion and querying of datasets with many versions.</p>
 
       <p><span id="keywords"><span class="title">Keywords:</span> Linked Data, RDF archiving, Semantic Data Versioning, storage, indexing</span></p>
 
@@ -715,7 +715,50 @@ During the execution of this process, the temporary forward delta chain is still
 so queries are still possible during this time.
 Only after the fix-up process is done,
 query executions will be delegated to this new reverse delta chain, 
-and the temporary forward delta chain can be deleted.</p>
+and the temporary forward delta chain can be deleted.
+Since this fix-up process only applies to the first (temporary) delta chain,
+and does not touch the second delta chain,
+it may even run in parallel to other ingestions processes for new versions.</p>
+
+          <h3 id="solution-ingestion-outoforder">Out-of-order Ingestion Approach</h3>
+
+          <p>The ingestion approach from previous section assumes in-order ingestion of versions,
+where versions are ingested as soon as they become available.
+In some cases, it may occur that all versions are presents beforehand,
+and can be ingested at the same time.
+If this occurs, we can simplify ingestion and avoid the fix-up algorithm, by not inserting versions in their logical order.</p>
+
+          <p><a href="#algorithm-outoforder-ingest">Algorithm 2</a> shows a sketch of our fix-up algorithm in pseudo-code.
+Concretely, if we have a set of <code>n</code> versions (<code>n</code> is assumed even for simplicity of this paragraph)
+then we first determine the middle version <code>n/2</code>.
+For this middle version, we create a fully materialized snapshot, and assign its proper version label <code>n/2</code>.
+Next, we create our reverse delta chain for all versions <code>&lt; n/2</code>,
+by invoking <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions">the streaming ingestion algorithm to create unidirectional aggregated delta chains</a> targeted at snapshot <code>n/2</code>, and by swapping the addition and deletion labels.
+Finally, we create our forward delta chain for all versions <code>&gt; n/2</code>,
+by again invoking <a href="https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions">the streaming ingestion algorithm to create unidirectional aggregated delta chains</a>
+targeted at snapshot <code>n/2</code>.</p>
+
+          <figure id="algorithm-outoforder-ingest" class="algorithm numbered">
+<pre><code>FUNCTION ingestOutOfOrder(store, versions)
+</code><code># Create snapshot for middle version
+</code><code>vMiddle = Math.floor(versions.length / 2)
+</code><code>store.createSnaphot(middleVersion, versions[vMiddle])
+</code><code># Create reverse delta chain
+</code><code>reverseChain = store.newDeltaChain({ reversed: true, snapshot: vMiddle })
+</code><code>FOR v = 0; v &lt; vMiddle; v++
+</code><code>  reverseChain.ingest(v, versions.deletions[v], versions.additions[v])
+</code><code># Create forward delta chain
+</code><code>forwardChain = store.newDeltaChain({ reversed: false, snapshot: vMiddle })
+</code><code>FOR v = vMiddle + 1; v &lt; versions.length; v++
+</code><code>  forwardChain.ingest(v, versions.additions[v], versions.deletions[v])
+</code></pre>
+<figcaption>
+              <p><span class="label">Algorithm 2:</span> Out-of-order ingestion algorithm for creating a bidirectional aggregated delta chain for a predetermined set of versions.</p>
+            </figcaption>
+</figure>
+
+          <p>This our-of-order ingestion will typically not be used in a live setting.
+Instead, it can be used when initializing an archive when all versions are known beforehand.</p>
 
           <h3 id="solution-query">Query Algorithms</h3>
 
@@ -758,7 +801,7 @@ These two queries can be resolved over the two respective delta chains using <a 
 As the results from these two queries are sorted,
 we can merge them in a sort-merge join way,
 where triples are only emitted if they don’t exist in both streams (ignoring the addition/deletion flag).
-<a href="#algorithm-querying-dm">Algorithm 2</a> illustrates this algorithm in pseudocode.
+<a href="#algorithm-querying-dm">Algorithm 3</a> illustrates this algorithm in pseudocode.
 Following the patch notation for <a property="schema:citation http://purl.org/spar/cito/cites" href="http://darcs.net">DARCS</a> <span class="references">[<a href="#ref-30">30</a>]</span>,
 with <code>o</code> being the start version, <code>e</code> being the end version and <code>s</code> being the snapshot,
 our delta split corresponds to <sup><code>o</code></sup><code>D</code><sup><code>e</code></sup> = <sup><code>o</code></sup><code>D1</code><sup><code>s</code></sup><code>D2</code><sup><code>e</code></sup>.</p>
@@ -771,7 +814,7 @@ our delta split corresponds to <sup><code>o</code></sup><code>D</code><sup><code
 </code><code>return sortMerge(reverseStream, forwardStream)
 </code></pre>
 <figcaption>
-              <p><span class="label">Algorithm 2:</span> Delta Materialization algorithm for triple patterns that produces a triple stream
+              <p><span class="label">Algorithm 3:</span> Delta Materialization algorithm for triple patterns that produces a triple stream
 when the version range crosses the snapshot boundary.</p>
             </figcaption>
 </figure>
@@ -882,6 +925,10 @@ For simplicity of these experiments, we always start a new delta chain in the mi
 (4 for BEAR-A, 45 for BEAR-B Daily, 200 for BEAR-B Hourly).
 Note that for the COBRA storage approach, we assume that all versions are available beforehand,
 so they can be stored out of order, starting with the middle snapshot.
+For example, following the out-of-order ingestion algorithm from <a href="#solution-ingestion-outoforder">Subsection 4.5</a>,
+for BEAR-A, this will first lead to the creation of a snapshot for version 4,
+the creation of a reverse delta chain for versions 0-3,
+and finally the creation of a forward delta chain for versions 5-8.
 In practise, this may not always be possible, which is why we report on the additional fix-up time during ingestion separately
 that would be required when ingestion in order (COBRA*).</p>
 
@@ -1365,8 +1412,8 @@ and <em>reject</em> our <a href="#hypothesis-qualitative-querying-vq">fifth</a> 
 under the hybrid storage strategy (OSTRICH)
 by making use of a <em>bidirectional delta chain</em>.
 Based on our implementation of this new approach (COBRA),
-our experimental results show that this modification solves
-the main scalability problem of a unidirectional delta chain (OSTRICH) regarding its ingestion times (41% faster).
+our experimental results show that this modification
+leads to more efficient ingestion (41% faster) compared to a unidirectional delta chain (OSTRICH).
 This change also reduces total storage size (13% lower) for two out of three datasets.
 Furthermore, all versioned query types achieve a performance boost (21% faster),
 except for VQ under the BEAR-A dataset.
@@ -1403,6 +1450,13 @@ A range of valuable possibilities in between may exist,
 such as inheriting from the n<sup>th</sup> largest preceding version.
 Third, the impact of multiple snapshots and strategies to decide when to create them still remain as open questions,
 which we suspect will be crucial for RDF archiving for indefinitely increasing numbers of versions.</p>
+
+          <p>While these findings show that a bidirectional delta chain is mostly more beneficial than a unidirectional delta chain for the same version range,
+neither approaches will scale to an infinite number of versions.
+Therefore, investigating creation of multiple snapshots in future work to create new delta chains will be crucial for solving scalability issues
+when ingesting (theoretically) infinite numbers of version.
+While we expect that the creation and querying of multiple delta chains will be significantly more expensive than a single delta chain,
+the use of bidirectional chains can delay their need by a factor of 2 compared to unidirectional delta chains.</p>
 
           <p>We have shown that modifying the structure of the delta chain can be highly beneficial for RDF archiving.
 This brings us closer to an efficient queryable Semantic Web that can evolve and maintain its history.</p>

@@ -1,0 +1,12 @@
+FUNCTION ingestOutOfOrder(store, versions)
+# Create snapshot for middle version
+vMiddle = Math.floor(versions.length / 2)
+store.createSnaphot(middleVersion, versions[vMiddle])
+# Create reverse delta chain
+reverseChain = store.newDeltaChain({ reversed: true, snapshot: vMiddle })
+FOR v = 0; v < vMiddle; v++
+  reverseChain.ingest(v, versions.deletions[v], versions.additions[v])
+# Create forward delta chain
+forwardChain = store.newDeltaChain({ reversed: false, snapshot: vMiddle })
+FOR v = vMiddle + 1; v < versions.length; v++
+  forwardChain.ingest(v, versions.additions[v], versions.deletions[v])
