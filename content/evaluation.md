@@ -71,6 +71,10 @@ For simplicity of these experiments, we always start a new delta chain in the mi
 (4 for BEAR-A, 45 for BEAR-B Daily, 200 for BEAR-B Hourly).
 Note that for the COBRA storage approach, we assume that all versions are available beforehand,
 so they can be stored out of order, starting with the middle snapshot.
+For example, following the out-of-order ingestion algorithm from [](#solution-ingestion-outoforder),
+for BEAR-A, this will first lead to the creation of a snapshot for version 4,
+the creation of a reverse delta chain for versions 0-3,
+and finally the creation of a forward delta chain for versions 5-8.
 In practise, this may not always be possible, which is why we report on the additional fix-up time during ingestion separately
 that would be required when ingestion in order (COBRA\*).
 

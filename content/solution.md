@@ -190,6 +190,35 @@ Only after the fix-up process is done,
 query executions will be delegated to this new reverse delta chain, 
 and the temporary forward delta chain can be deleted.
 
+### Out-of-order Ingestion Approach
+{:#solution-ingestion-outoforder}
+
+The ingestion approach from previous section assumes in-order ingestion of versions,
+where versions are ingested as soon as they become available.
+In some cases, it may occur that all versions are presents beforehand,
+and can be ingested at the same time.
+If this occurs, we can simplify ingestion and avoid the fix-up algorithm, by not inserting versions in their logical order.
+
+[](#algorithm-outoforder-ingest) shows a sketch of our fix-up algorithm in pseudo-code.
+Concretely, if we have a set of `n` versions (`n` is assumed even for simplicity of this paragraph)
+then we first determine the middle version `n/2`.
+For this middle version, we create a fully materialized snapshot, and assign its proper version label `n/2`.
+Next, we create our reverse delta chain for all versions `< n/2`,
+by invoking [the streaming ingestion algorithm to create unidirectional aggregated delta chains](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions) targeted at snapshot `n/2`, and by swapping the addition and deletion labels.
+Finally, we create our forward delta chain for all versions `> n/2`,
+by again invoking [the streaming ingestion algorithm to create unidirectional aggregated delta chains](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions)
+targeted at snapshot `n/2`.
+
+<figure id="algorithm-outoforder-ingest" class="algorithm numbered">
+````/algorithms/outoforder-ingest.txt````
+<figcaption markdown="block">
+Out-of-order ingestion algorithm for creating a bidirectional aggregated delta chain for a predetermined set of versions.
+</figcaption>
+</figure>
+
+This our-of-order ingestion will typically not be used in a live setting.
+Instead, it can be used when initializing an archive when all versions are known beforehand.
+
 ### Query Algorithms
 {:#solution-query}
 
