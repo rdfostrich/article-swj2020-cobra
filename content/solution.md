@@ -189,6 +189,9 @@ so queries are still possible during this time.
 Only after the fix-up process is done,
 query executions will be delegated to this new reverse delta chain, 
 and the temporary forward delta chain can be deleted.
+Since this fix-up process only applies to the first (temporary) delta chain,
+and does not touch the second delta chain,
+it may even run in parallel to other ingestions processes for new versions.
 
 ### Out-of-order Ingestion Approach
 {:#solution-ingestion-outoforder}
