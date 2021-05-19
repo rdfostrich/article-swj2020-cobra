@@ -5,8 +5,8 @@ In this work, we improved the storage of RDF archives
 under the hybrid storage strategy (OSTRICH)
 by making use of a *bidirectional delta chain*.
 Based on our implementation of this new approach (COBRA),
-our experimental results show that this modification solves
-the main scalability problem of a unidirectional delta chain (OSTRICH) regarding its ingestion times (41% faster).
+our experimental results show that this modification
+leads to more efficient ingestion (41% faster) compared to a unidirectional delta chain (OSTRICH).
 This change also reduces total storage size (13% lower) for two out of three datasets.
 Furthermore, all versioned query types achieve a performance boost (21% faster),
 except for VQ under the BEAR-A dataset.
@@ -39,6 +39,13 @@ A range of valuable possibilities in between may exist,
 such as inheriting from the n<sup>th</sup> largest preceding version.
 Third, the impact of multiple snapshots and strategies to decide when to create them still remain as open questions,
 which we suspect will be crucial for RDF archiving for indefinitely increasing numbers of versions.
+
+While these findings show that a bidirectional delta chain is mostly more beneficial than a unidirectional delta chain for the same version range,
+neither approaches will scale to an infinite number of versions.
+Therefore, investigating creation of multiple snapshots in future work to create new delta chains will be crucial for solving scalability issues
+when ingesting (theoretically) infinite numbers of version.
+While we expect that the creation and querying of multiple delta chains will be significantly more expensive than a single delta chain,
+the use of bidirectional chains can delay their need by a factor of 2 compared to unidirectional delta chains.
 
 We have shown that modifying the structure of the delta chain can be highly beneficial for RDF archiving.
 This brings us closer to an efficient queryable Semantic Web that can evolve and maintain its history.

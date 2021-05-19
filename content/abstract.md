@@ -22,7 +22,7 @@ we introduce a concrete architecture for this change,
 together with accompanying ingestion and querying algorithms.
 <!-- Findings     -->
 Experimental results from our implementation
-show that the ingestion time scales significantly better.
+show that the ingestion time is significantly reduced.
 As an additional benefit,
 this change also leads to lower total storage size and improved query execution performance for most cases.
 <!-- Conclusion   -->
@@ -31,6 +31,6 @@ can be highly beneficial for RDF archives.
 <!-- Perspectives -->
 In future work,
 other modifications to this delta chain structure deserve to be investigated,
-as they may be able to provide additional benefits.
+to further improve the scalability of ingestion and querying of datasets with many versions.
 
 <span id="keywords"><span class="title">Keywords:</span> Linked Data, RDF archiving, Semantic Data Versioning, storage, indexing</span>
