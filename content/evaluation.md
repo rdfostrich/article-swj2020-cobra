@@ -195,6 +195,9 @@ In order to provide more details on the evolution of storage size and ingestion 
 [](#ingestion-size) shows the cumulative storage size for the different datasets,
 and [](#ingestion-time) shows the ingestion time for these datasets.
 These figures show the impact of the middle snapshots within the bidirectional chain.
+For BEAR-A, storage size for COBRA lowers at the middle version,
+which shows that a snapshot with reversed deltas pointing to it (COBRA) requires less storage space
+compared to continued use of aggregated deltas (OSTRICH).
 For BEAR-B Daily and Hourly, the storage size significantly increases at the middle version,
 but the ingestion times for all later versions reset to low values.
 
@@ -368,9 +371,12 @@ which would initiate a new snapshot when this threshold is exceeded.
 
 Once there are two unidirectional delta chains,
 the first one could optionally be reversed so that both can share one snapshot through a fix-up process (COBRA).
-Our results show that this can further reduce storage size for datasets with few large versions (BEAR-A).
+Our results show that this can further reduce storage size for datasets with few large versions (BEAR-A),
+and even lead to less storage space compared to the continued use of aggregated deltas (OSTRICH).
 However, for many small versions (BEAR-B), this leads to overhead in terms of storage size.
-This fix-up process does however require a significant execution time.
+This shows that a bidirectional delta chain is more effective for BEAR-A compared to the BEAR-B datasets in terms of storage size,
+while it is always effective in terms of ingestion time.
+The fix-up process for enabling this reversal does however require a significant execution time.
 Since this could easily run in a separate offline process,
 this additional time is typically not a problem.
 As such, when the server encounters a dataset with large versions (millions of triples per version),
