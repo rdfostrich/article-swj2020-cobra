@@ -362,9 +362,9 @@ on storage size and ingestion time compared to a unidirectional delta chain.
 While the unidirectional delta chain leads to increasing ingestion times for every new version,
 initiating a new snapshot (COBRA\*) can effectively _reset_ these ingestion times.
 The downside of this is that there can be an increase in storage size due to this,
-which is more significant for datasets that have many small versions (BEAR-B).
+which is more significant for datasets that have many small (few triples and a low change ratio) versions (BEAR-B).
 As such, for those datasets (BEAR-B), it is recommended to wait longer before initiating a new snapshot in the delta chain,
-since ingestion times are typically much lower compared to datasets with fewer large versions (BEAR-A).
+since ingestion times are typically much lower compared to datasets with fewer large (many triples and a high change ratio) versions (BEAR-A).
 Given the capabilities and query load of the server and affordable storage overhead,
 a certain ingestion time threshold could be defined,
 which would initiate a new snapshot when this threshold is exceeded.

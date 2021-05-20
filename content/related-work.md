@@ -158,6 +158,11 @@ The 58 versions of BEAR-A contain between 30M and 66M triples per version, with 
 BEAR-A provides triple pattern queries for three different query atoms for both result sets with a low and a high cardinality.
 The BEAR-B dataset contains the 100 most volatile resources from DBpedia Live as three different granularities (instant, hour and day),
 and provides a small collection of triple pattern queries corresponding to the real-world usage of DBpedia.
+Each version contains between 33K and 43K triples, where the instant granularity has an average change ratio of 0.011%,
+hour has 0.304%, and day has 1.252%.
+Given the relative number of triples and change ratios between BEAR-A and BEAR-B,
+we refer to BEAR-A as a dataset with few large versions,
+and to BEAR-B as a dataset with many small versions for the remainder of this article.
 Due to BEAR covering all query atoms we work with,
 and it providing baseline implementations for the different storage strategies,
 we make use of BEAR for our experiments.
