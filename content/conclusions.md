@@ -39,6 +39,10 @@ A range of valuable possibilities in between may exist,
 such as inheriting from the n<sup>th</sup> largest preceding version.
 Third, the impact of multiple snapshots and strategies to decide when to create them still remain as open questions,
 which we suspect will be crucial for RDF archiving for indefinitely increasing numbers of versions.
+Fourth, the creation of multiple snapshots will also lead to the need for querying across multiple snapshots and delta chains.
+While the existing VM querying algorithm can be reused for this,
+new efficient algorithms for DM and VQ will be required,
+as well as algorithms for providing cardinality estimates.
 
 While these findings show that a bidirectional delta chain is mostly more beneficial than a unidirectional delta chain for the same version range,
 neither approaches will scale to an infinite number of versions.
