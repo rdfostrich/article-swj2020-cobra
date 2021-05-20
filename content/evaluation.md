@@ -377,7 +377,7 @@ However, for many small versions (BEAR-B), this leads to overhead in terms of st
 This shows that a bidirectional delta chain is more effective for BEAR-A compared to the BEAR-B datasets in terms of storage size,
 while it is always effective in terms of ingestion time.
 The fix-up process for enabling this reversal does however require a significant execution time.
-Since this could easily run in a separate offline process,
+Since this could easily run in a separate offline process in parallel to query execution and the ingestion of next versions,
 this additional time is typically not a problem.
 As such, when the server encounters a dataset with large versions (millions of triples per version),
 then the fix-up approach should be followed.
