@@ -12,7 +12,7 @@
   <meta name="citation_author" content="Thibault Mahieu" />
   <meta name="citation_author" content="Ruben Verborgh" />
   
-  <meta name="citation_publication_date" content="2021/05/19" />
+  <meta name="citation_publication_date" content="2021/05/20" />
 </head>
 
 <body prefix="dctypes: http://purl.org/dc/dcmitype/ pimspace: http://www.w3.org/ns/pim/space# rsa: http://www.w3.org/ns/auth/rsa# cert: http://www.w3.org/ns/auth/cert# wgs: http://www.w3.org/2003/01/geo/wgs84_pos# biblio: http://purl.org/net/biblio# bibo: http://purl.org/ontology/bibo/ book: http://purl.org/NET/book/vocab# ov: http://open.vocab.org/terms/ doap: http://usefulinc.com/ns/doap# dbr: http://dbpedia.org/resource/ dbp: http://dbpedia.org/property/ sio: http://semanticscience.org/resource/ opmw: http://www.opmw.org/ontology/ deo: http://purl.org/spar/deo/ doco: http://purl.org/spar/doco/ cito: http://purl.org/spar/cito/ fabio: http://purl.org/spar/fabio/ solid: http://www.w3.org/ns/solid/terms# acl: http://www.w3.org/ns/auth/acl# dio: https://w3id.org/dio# lsc: http://linkedscience.org/lsc/ns#" typeof="schema:CreativeWork sioc:Post prov:Entity lsc:Research">
@@ -137,7 +137,11 @@ where there still is a single version snapshot,
 but we place it in the middle of the delta chain,
 instead of at the beginning,
 leading to a <em>bidirectional delta chain</em>.
-While this complicates ingestion and querying,
+This modification is inspired by the concept of <em>bidirectional predicted pictures</em> (B-frames) <span class="references">[<a href="#ref-9">9</a>]</span>
+that are a popular technique within video compression.
+Typically, such B-frames are used for non-aggregated deltas,
+but we instead devise a similar technique for aggregated deltas.
+While bidirectional delta chains complicate ingestion and querying,
 it leads to two shorter delta chains.
 This will require less effort than one long delta chain,
 and lead to faster ingestion and querying.</p>
@@ -164,12 +168,12 @@ since we build upon this approach in this work.</p>
 
           <h3 id="rdf-archiving">RDF Archiving</h3>
 
-          <p>Various techniques have been introduced to store <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">RDF datasets</a> <span class="references">[<a href="#ref-9">9</a>, <a href="#ref-10">10</a>]</span>.
+          <p>Various techniques have been introduced to store <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">RDF datasets</a> <span class="references">[<a href="#ref-10">10</a>, <a href="#ref-11">11</a>]</span>.
 These techniques make use of various indexing and compression techniques
 to optimize query execution and storage size.
 There is a need to maintain the history of these datasets <span class="references">[<a href="#ref-2">2</a>, <a href="#ref-4">4</a>]</span>,
 which gave rise to the research domain of <em>RDF archiving</em>.
-An <a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf"><em>RDF archive</em></a> <span class="references">[<a href="#ref-11">11</a>]</span> has been defined as <em>a set of version-annotated triples.</em>
+An <a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf"><em>RDF archive</em></a> <span class="references">[<a href="#ref-12">12</a>]</span> has been defined as <em>a set of version-annotated triples.</em>
 Where a <em>version-annotated triple</em> is defined as <em>an RDF triple with a label representing the version in which this triple holds.</em>
 Furthermore, an RDF version of an RDF archive is composed of all triples with a given version label.</p>
 
@@ -179,11 +183,11 @@ Instead of only querying within the latest version of a dataset,
 also previous versions can be queried,
 or even differences between different versions.
 To cover this new range of querying possibilities,
-<a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf">five foundational query types were introduced</a> <span class="references">[<a href="#ref-11">11</a>]</span>,
+<a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf">five foundational query types were introduced</a> <span class="references">[<a href="#ref-12">12</a>]</span>,
 which are referred to as <em>query atoms</em>.
-For brevity, we refer to <a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf">the article in which they were introduced</a> <span class="references">[<a href="#ref-11">11</a>]</span> their formal details.
+For brevity, we refer to <a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf">the article in which they were introduced</a> <span class="references">[<a href="#ref-12">12</a>]</span> their formal details.
 In this scope of this article, we only discuss three of the five query atoms,
-as they can be expressed in <a property="schema:citation http://purl.org/spar/cito/cites" href="http://rubensworks.net/raw/publications/2016/ExposingRdfArchivesUsingTpf.pdf">terms of each other</a> <span class="references">[<a href="#ref-12">12</a>]</span>.
+as they can be expressed in <a property="schema:citation http://purl.org/spar/cito/cites" href="http://rubensworks.net/raw/publications/2016/ExposingRdfArchivesUsingTpf.pdf">terms of each other</a> <span class="references">[<a href="#ref-13">13</a>]</span>.
 The three relevant query atoms are defined as follows:</p>
 
           <ol>
@@ -198,7 +202,7 @@ Example: <em>At what times was book X present in the library?</em></li>
           <h3 id="rdf-archiving-solutions">RDF Archiving Solutions</h3>
 
           <p>In the recent years, several techniques and solutions have been proposed to allow storing and querying RDF archives.
-RDF archiving systems are typically categorized into <a property="schema:citation http://purl.org/spar/cito/cites" href="http://ceur-ws.org/Vol-1377/paper6.pdf">four non-orthogonal storage strategies</a> <span class="references">[<a href="#ref-4">4</a>, <a href="#ref-13">13</a>]</span>:</p>
+RDF archiving systems are typically categorized into <a property="schema:citation http://purl.org/spar/cito/cites" href="http://ceur-ws.org/Vol-1377/paper6.pdf">four non-orthogonal storage strategies</a> <span class="references">[<a href="#ref-4">4</a>, <a href="#ref-14">14</a>]</span>:</p>
 
           <ul>
             <li>The <strong>Independent Copies (IC)</strong> approach creates separate instantiations of datasets for
@@ -232,84 +236,84 @@ and which storage strategy they follow. These are explained in more detail herea
               </thead>
               <tbody>
                 <tr>
-                  <td>SemVersion <span class="references">[<a href="#ref-14">14</a>]</span></td>
+                  <td>SemVersion <span class="references">[<a href="#ref-15">15</a>]</span></td>
                   <td>✓</td>
                   <td> </td>
                   <td> </td>
                   <td> </td>
                 </tr>
                 <tr>
-                  <td>Cassidy et al. <span class="references">[<a href="#ref-15">15</a>]</span></td>
+                  <td>Cassidy et al. <span class="references">[<a href="#ref-16">16</a>]</span></td>
                   <td> </td>
                   <td>✓</td>
                   <td> </td>
                   <td> </td>
                 </tr>
                 <tr>
-                  <td>R&amp;WBase <span class="references">[<a href="#ref-16">16</a>]</span></td>
+                  <td>R&amp;WBase <span class="references">[<a href="#ref-17">17</a>]</span></td>
                   <td> </td>
                   <td>✓</td>
                   <td> </td>
                   <td> </td>
                 </tr>
                 <tr>
-                  <td>R43ples <span class="references">[<a href="#ref-17">17</a>]</span></td>
+                  <td>R43ples <span class="references">[<a href="#ref-18">18</a>]</span></td>
                   <td> </td>
                   <td>✓</td>
                   <td> </td>
                   <td> </td>
                 </tr>
                 <tr>
-                  <td>Hauptman et al. <span class="references">[<a href="#ref-18">18</a>]</span></td>
+                  <td>Hauptman et al. <span class="references">[<a href="#ref-19">19</a>]</span></td>
                   <td> </td>
                   <td> </td>
                   <td>✓</td>
                   <td> </td>
                 </tr>
                 <tr>
-                  <td>X-RDF-3X <span class="references">[<a href="#ref-19">19</a>]</span></td>
+                  <td>X-RDF-3X <span class="references">[<a href="#ref-20">20</a>]</span></td>
                   <td> </td>
                   <td> </td>
                   <td>✓</td>
                   <td> </td>
                 </tr>
                 <tr>
-                  <td><a property="schema:citation http://purl.org/spar/cito/cites" href="https://pdfs.semanticscholar.org/8efc/acc920a6329bda5508c65c84d69f52eb5ac1.pdf">RDF-TX</a> <span class="references">[<a href="#ref-20">20</a>]</span></td>
+                  <td><a property="schema:citation http://purl.org/spar/cito/cites" href="https://pdfs.semanticscholar.org/8efc/acc920a6329bda5508c65c84d69f52eb5ac1.pdf">RDF-TX</a> <span class="references">[<a href="#ref-21">21</a>]</span></td>
                   <td> </td>
                   <td> </td>
                   <td>✓</td>
                   <td> </td>
                 </tr>
                 <tr>
-                  <td>v-RDFCSA <span class="references">[<a href="#ref-21">21</a>]</span></td>
+                  <td>v-RDFCSA <span class="references">[<a href="#ref-22">22</a>]</span></td>
                   <td> </td>
                   <td> </td>
                   <td>✓</td>
                   <td> </td>
                 </tr>
                 <tr>
-                  <td>Dydra <span class="references">[<a href="#ref-22">22</a>]</span></td>
+                  <td>Dydra <span class="references">[<a href="#ref-23">23</a>]</span></td>
                   <td> </td>
                   <td> </td>
                   <td>✓</td>
                   <td> </td>
                 </tr>
                 <tr>
-                  <td><span property="schema:citation http://purl.org/spar/cito/cites" resource="https://dx.doi.org/10.1016/j.websem.2018.08.002"><a href="https://arxiv.org/pdf/1805.03721">Quit Store</a></span> <span class="references">[<a href="#ref-13">13</a>]</span></td>
+                  <td><span property="schema:citation http://purl.org/spar/cito/cites" resource="https://dx.doi.org/10.1016/j.websem.2018.08.002"><a href="https://arxiv.org/pdf/1805.03721">Quit Store</a></span> <span class="references">[<a href="#ref-14">14</a>]</span></td>
                   <td> </td>
                   <td> </td>
                   <td> </td>
                   <td>✓</td>
                 </tr>
                 <tr>
-                  <td>TailR <span class="references">[<a href="#ref-23">23</a>]</span></td>
+                  <td>TailR <span class="references">[<a href="#ref-24">24</a>]</span></td>
                   <td>✓</td>
                   <td>✓</td>
                   <td> </td>
                   <td> </td>
                 </tr>
                 <tr>
-                  <td><a property="schema:citation http://purl.org/spar/cito/cites" href="https://users.dcc.uchile.cl/~ahogan/docs/sparql-version.pdf">Cuevas et al.</a> <span class="references">[<a href="#ref-24">24</a>]</span></td>
+                  <td><a property="schema:citation http://purl.org/spar/cito/cites" href="https://users.dcc.uchile.cl/~ahogan/docs/sparql-version.pdf">Cuevas et al.</a> <span class="references">[<a href="#ref-25">25</a>]</span></td>
                   <td>✓</td>
                   <td>✓</td>
                   <td>✓</td>
@@ -333,51 +337,51 @@ Individual copies (IC), Change-based (CB), Timestamp-based (TB), or Fragment-bas
           </figure>
 
           <h4 id="independent-copies-approaches">Independent copies approaches</h4>
-          <p>SemVersion <span class="references">[<a href="#ref-14">14</a>]</span> tracks different versions of RDF graphs,
+          <p>SemVersion <span class="references">[<a href="#ref-15">15</a>]</span> tracks different versions of RDF graphs,
 using Concurrent Versions System (CVS) concepts to maintain different versions of ontologies,
 such as diff, branching and merging.</p>
 
           <h4 id="change-based-approaches">Change-based approaches</h4>
-          <p>Cassidy et al. <span class="references">[<a href="#ref-15">15</a>]</span> propose a system to store changes to graphs as a series of patches, which makes it a CB approach.
+          <p>Cassidy et al. <span class="references">[<a href="#ref-16">16</a>]</span> propose a system to store changes to graphs as a series of patches, which makes it a CB approach.
 They describe operations on versioned graphs such as reverse, revert and merge.
 A preliminary evaluation shows that their implementation is significantly slower
 than a native RDF store.
-Im et al. <span class="references">[<a href="#ref-25">25</a>]</span> propose a CB patching system based on a relational database.
+Im et al. <span class="references">[<a href="#ref-26">26</a>]</span> propose a CB patching system based on a relational database.
 In their approach, they use a storage scheme called <em>aggregated deltas</em>
 which associates the latest version with each of the previous ones.
 While aggregated deltas result in fast delta queries, they introduce a higher storage overhead.
-R&amp;WBase <span class="references">[<a href="#ref-16">16</a>]</span> is a CB versioning system that uses the graph component of quad-stores to build a versioning layer.
+R&amp;WBase <span class="references">[<a href="#ref-17">17</a>]</span> is a CB versioning system that uses the graph component of quad-stores to build a versioning layer.
 It supports tagging, branching and merging.
-R43ples <span class="references">[<a href="#ref-17">17</a>]</span> follows a similar approach to R&amp;WBase,
+R43ples <span class="references">[<a href="#ref-18">18</a>]</span> follows a similar approach to R&amp;WBase,
 but they additionally introduce new SPARQL keywords, such as <code>REVISION</code>, <code>BRANCH</code> and <code>TAG</code>.</p>
 
           <h4 id="timestamp-based-approaches">Timestamp-based approaches</h4>
-          <p>Hauptman et al. <span class="references">[<a href="#ref-18">18</a>]</span> store each triple in a different named graph as a TB storage approach.
+          <p>Hauptman et al. <span class="references">[<a href="#ref-19">19</a>]</span> store each triple in a different named graph as a TB storage approach.
 The identifying graph of each triple is used in a commit graph for SPARQL query evaluation at a certain version.
-X-RDF-3X <span class="references">[<a href="#ref-19">19</a>]</span> is a versioning extension of RDF-3X <span class="references">[<a href="#ref-10">10</a>]</span>,
+X-RDF-3X <span class="references">[<a href="#ref-20">20</a>]</span> is a versioning extension of RDF-3X <span class="references">[<a href="#ref-11">11</a>]</span>,
 where each triple is annotated with a creation and deletion timestamp.
-<a property="schema:citation http://purl.org/spar/cito/cites" href="https://pdfs.semanticscholar.org/8efc/acc920a6329bda5508c65c84d69f52eb5ac1.pdf">RDF-TX</a> <span class="references">[<a href="#ref-20">20</a>]</span> is an in-memory query engine that supports a temporal SPARQL querying extension,
+<a property="schema:citation http://purl.org/spar/cito/cites" href="https://pdfs.semanticscholar.org/8efc/acc920a6329bda5508c65c84d69f52eb5ac1.pdf">RDF-TX</a> <span class="references">[<a href="#ref-21">21</a>]</span> is an in-memory query engine that supports a temporal SPARQL querying extension,
 which makes use of a compressed multi-version B+Trees that outperforms similar systems such as X-RDF-3X in terms of querying efficiency,
 while having similar storage requirements.
-v-RDFCSA <span class="references">[<a href="#ref-21">21</a>]</span> is a self-indexing RDF archive mechanism,
+v-RDFCSA <span class="references">[<a href="#ref-22">22</a>]</span> is a self-indexing RDF archive mechanism,
 that enables versioning queries on top of compressed RDF archives as a TB approach.
-Dydra <span class="references">[<a href="#ref-22">22</a>]</span> is an RDF graph storage platform with dataset versioning support.
+Dydra <span class="references">[<a href="#ref-23">23</a>]</span> is an RDF graph storage platform with dataset versioning support.
 They introduce the <code>REVISION</code> keyword, which is similar to the SPARQL keyword <code>GRAPH</code> for referring to different dataset versions.</p>
 
           <h4 id="fragment-based-approaches">Fragment-based approaches</h4>
-          <p><span property="schema:citation http://purl.org/spar/cito/cites" resource="https://dx.doi.org/10.1016/j.websem.2018.08.002"><a href="https://arxiv.org/pdf/1805.03721">Quit Store</a></span> <span class="references">[<a href="#ref-13">13</a>]</span> is a system that is built on top of Git,
+          <p><span property="schema:citation http://purl.org/spar/cito/cites" resource="https://dx.doi.org/10.1016/j.websem.2018.08.002"><a href="https://arxiv.org/pdf/1805.03721">Quit Store</a></span> <span class="references">[<a href="#ref-14">14</a>]</span> is a system that is built on top of Git,
 which allows these same features by considering each version to be a commit.
 A version is made up of multiple fragments, which may be reused across multiple versions of a dataset,
 which typically leads to lower storage space compared to a pure IC strategy.
 Using Git’s delta compression, this storage space can be reduced even further at the cost of slower querying.</p>
 
           <h4 id="hybrid-approaches">Hybrid approaches</h4>
-          <p>TailR <span class="references">[<a href="#ref-23">23</a>]</span> is an HTTP archive for Linked Data pages for retrieving prior versions of certain HTTP resources.
+          <p>TailR <span class="references">[<a href="#ref-24">24</a>]</span> is an HTTP archive for Linked Data pages for retrieving prior versions of certain HTTP resources.
 It is a hybrid CB/IC approach as it starts by storing a dataset snapshot,
 after which only deltas are stored for each consecutive version.
 When the chain becomes too long, or other conditions are fulfilled,
 a new snapshot is created for the next version to avoid long version reconstruction times.
-<a property="schema:citation http://purl.org/spar/cito/cites" href="https://users.dcc.uchile.cl/~ahogan/docs/sparql-version.pdf">Cuevas et al.</a> <span class="references">[<a href="#ref-24">24</a>]</span> propose an approach similar to R&amp;WBase,
+<a property="schema:citation http://purl.org/spar/cito/cites" href="https://users.dcc.uchile.cl/~ahogan/docs/sparql-version.pdf">Cuevas et al.</a> <span class="references">[<a href="#ref-25">25</a>]</span> propose an approach similar to R&amp;WBase,
 where the named graph functionality in SPARQL 1.1 engines is used to store RDF archives,
 and versioned queries are achieved through query rewriting.
 As opposed to R&amp;WBase that only uses a CB approach, they propose distinct a IC strategy, four CB strategies, and a TB strategy.
@@ -388,7 +392,7 @@ whereby large storage sizes achieve faster query execution,
 and smaller storage sizes result in slower query execution.
 The authors consider the TB strategy achieving the best trade-off.
 Relevant for our work, is the use of four CB strategies,
-which correspond to forward, backward deltas, forward aggregated <span class="references">[<a href="#ref-25">25</a>]</span>, and backward aggregated deltas.
+which correspond to forward, backward deltas, forward aggregated <span class="references">[<a href="#ref-26">26</a>]</span>, and backward aggregated deltas.
 <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH</a> <span class="references">[<a href="#ref-5">5</a>]</span> is a hybrid IC/CB/TB approach that exploits the advantages of each strategy
 to provide a trade-off between storage requirements and querying efficiency.
 It only fullfils the IC strategy partially,
@@ -400,12 +404,17 @@ As such, we build upon OSTRICH in this work, and attempt to solve this problem.<
 
           <h3 id="rdf-archiving-benchmarks">RDF Archiving Benchmarks</h3>
 
-          <p><a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf">BEAR</a> <span class="references">[<a href="#ref-11">11</a>]</span> is a benchmark for RDF archive systems.
+          <p><a property="schema:citation http://purl.org/spar/cito/cites" href="http://semantic-web-journal.org/system/files/swj1814.pdf">BEAR</a> <span class="references">[<a href="#ref-12">12</a>]</span> is a benchmark for RDF archive systems.
 that is based on real-world datasets from different domains.
 The 58 versions of BEAR-A contain between 30M and 66M triples per version, with an average change ratio of 31%.
 BEAR-A provides triple pattern queries for three different query atoms for both result sets with a low and a high cardinality.
 The BEAR-B dataset contains the 100 most volatile resources from DBpedia Live as three different granularities (instant, hour and day),
 and provides a small collection of triple pattern queries corresponding to the real-world usage of DBpedia.
+Each version contains between 33K and 43K triples, where the instant granularity has an average change ratio of 0.011%,
+hour has 0.304%, and day has 1.252%.
+Given the relative number of triples and change ratios between BEAR-A and BEAR-B,
+we refer to BEAR-A as a dataset with few large versions,
+and to BEAR-B as a dataset with many small versions for the remainder of this article.
 Due to BEAR covering all query atoms we work with,
 and it providing baseline implementations for the different storage strategies,
 we make use of BEAR for our experiments.</p>
@@ -414,15 +423,15 @@ we make use of BEAR for our experiments.</p>
 
           <p>As mentioned before, <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH</a> <span class="references">[<a href="#ref-5">5</a>]</span> makes use of a hybrid IC/CB/TB storage approach
 with the goal of providing a trade-off between storage size and querying efficiency.
-The main motivation for OSTRICH is to serve as a back-end of a <a property="schema:citation http://purl.org/spar/cito/cites" href="http://rubensworks.net/raw/publications/2017/vtpf.pdf">low-cost Web APIs for exposing RDF archives</a> <span class="references">[<a href="#ref-26">26</a>]</span>,
+The main motivation for OSTRICH is to serve as a back-end of a <a property="schema:citation http://purl.org/spar/cito/cites" href="http://rubensworks.net/raw/publications/2017/vtpf.pdf">low-cost Web APIs for exposing RDF archives</a> <span class="references">[<a href="#ref-27">27</a>]</span>,
 where query execution must be sufficiently fast,
 without requiring too much storage.</p>
 
           <p>Concretely, OSTRICH always starts by storing the initial version as a fully materialized version, following the IC strategy.
-This initial version is stored using <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-9">9</a>]</span>, which enables high compression and efficient querying.
+This initial version is stored using <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-10">10</a>]</span>, which enables high compression and efficient querying.
 Based on this initial version, all following versions are stored as deltas, following the CB strategy.
 To solve the problem of increasing query execution times for increasing numbers of versions,
-OSTRICH makes use of the aggregated deltas <span class="references">[<a href="#ref-25">25</a>]</span> approach,
+OSTRICH makes use of the aggregated deltas <span class="references">[<a href="#ref-26">26</a>]</span> approach,
 by making each delta relative to the initial snapshot instead of the previous version.
 Due to the storage redundancies that are introduced because of these aggregated deltas,
 OSTRICH uses a B+tree-based approach to store all aggregated deltas in a single store.
@@ -441,7 +450,7 @@ which are valuable for query planning within query engines.
 OSTRICH has been implemented in <a href="https://github.com/rdfostrich/ostrich">C/C++</a>,
 with bindings existing for <a href="https://github.com/rdfostrich/ostrich-node">Node.JS (JavaScript)</a>.
 The triple pattern index provided by OSTRICH has been demonstrated
-to be usable within a full SPARQL query engine such as <a property="schema:citation http://purl.org/spar/cito/cites" href="https://comunica.github.io/Article-ISWC2018-Resource/">Comunica</a> <span class="references">[<a href="#ref-27">27</a>, <a href="#ref-28">28</a>]</span>.</p>
+to be usable within a full SPARQL query engine such as <a property="schema:citation http://purl.org/spar/cito/cites" href="https://comunica.github.io/Article-ISWC2018-Resource/">Comunica</a> <span class="references">[<a href="#ref-28">28</a>, <a href="#ref-29">29</a>]</span>.</p>
 
           <p>Experimental results on OSTRICH with the BEAR benchmark show that this hybrid strategy
 is more beneficial than having just a single storage strategy,
@@ -556,7 +565,7 @@ and a second set of deltas exists after the snapshot.</li>
 
           <ul>
             <li>In the <strong>non-aggregated form</strong>, each delta is relative to the delta immediately before or after it.</li>
-            <li>In the <strong>aggregated form</strong> <span class="references">[<a href="#ref-25">25</a>]</span>, each delta is relative to the snapshot before or after it,
+            <li>In the <strong>aggregated form</strong> <span class="references">[<a href="#ref-26">26</a>]</span>, each delta is relative to the snapshot before or after it,
 where other deltas may occur in-between.</li>
           </ul>
 
@@ -570,7 +579,7 @@ The major downside of aggregated deltas is however that storage size increases d
 The longer the delta chain, the larger these redundancies become.</p>
 
           <p><a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH</a> <span class="references">[<a href="#ref-5">5</a>]</span> is an example that follows the unidirectional forward aggregated delta chain approach,
-while RCS <span class="references">[<a href="#ref-29">29</a>]</span> (non-RDF-based) follows the unidirectional reverse non-aggregated delta chain approach.
+while RCS <span class="references">[<a href="#ref-30">30</a>]</span> (non-RDF-based) follows the unidirectional reverse non-aggregated delta chain approach.
 In this work, we will investigate the use of the <em>bidirectional aggregated</em> delta chain approach,
 for reasons explained in the next section.</p>
 
@@ -650,7 +659,7 @@ while OSTRICH only has a single delta chain on the right side of the snapshot.
 All other components are inherited from OSTRICH,
 which we briefly summarize in the next paragraph.</p>
 
-          <p>We store the snapshot using <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-9">9</a>]</span>,
+          <p>We store the snapshot using <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-10">10</a>]</span>,
 due to its highly performant triple pattern queries, cardinality estimates,
 and high compression rate.
 Furthermore, metadata about the archive is stored, containing details such as the total number of versions.
@@ -802,7 +811,7 @@ As the results from these two queries are sorted,
 we can merge them in a sort-merge join way,
 where triples are only emitted if they don’t exist in both streams (ignoring the addition/deletion flag).
 <a href="#algorithm-querying-dm">Algorithm 3</a> illustrates this algorithm in pseudocode.
-Following the patch notation for <a property="schema:citation http://purl.org/spar/cito/cites" href="http://darcs.net">DARCS</a> <span class="references">[<a href="#ref-30">30</a>]</span>,
+Following the patch notation for <a property="schema:citation http://purl.org/spar/cito/cites" href="http://darcs.net">DARCS</a> <span class="references">[<a href="#ref-31">31</a>]</span>,
 with <code>o</code> being the start version, <code>e</code> being the end version and <code>s</code> being the snapshot,
 our delta split corresponds to <sup><code>o</code></sup><code>D</code><sup><code>e</code></sup> = <sup><code>o</code></sup><code>D1</code><sup><code>s</code></sup><code>D2</code><sup><code>e</code></sup>.</p>
 
@@ -861,7 +870,7 @@ As some triples could occur in both delta chains, this can lead to an overestima
 
           <p>We have implemented our storage approach and query algorithms as a tool called COBRA (Change-Based Offset-Enabled Bidirectional RDF Archive).
 COBRA is an extension of OSTRICH, has been implemented in C/C++, and is available under the MIT license on <a href="https://github.com/rdfostrich/cobra" class="mandatory" data-link-text="https:/​/​github.com/​rdfostrich/​cobra">GitHub</a>.
-Our implementation uses <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-9">9</a>]</span> as snapshot technology,
+Our implementation uses <a property="schema:citation http://purl.org/spar/cito/cites" href="http://www.websemanticsjournal.org/index.php/ps/article/view/328">HDT</a> <span class="references">[<a href="#ref-10">10</a>]</span> as snapshot technology,
 and makes use of the highly efficient memory-mapped B+Tree implementation <a href="http://fallabs.com/kyotocabinet/" class="mandatory" data-link-text="http:/​/​fallabs.com/​kyotocabinet/​">Kyoto Cabinet</a> for storing our indexes.
 The delta dictionary is encoded with <a href="http://www.gzip.org/">gzip</a>, which requires decompression during querying and ingestion.</p>
 
@@ -1103,6 +1112,9 @@ COBRA resets ingestion time from the snapshot version, while ingestion time for 
 <a href="#ingestion-size">Fig. 3</a> shows the cumulative storage size for the different datasets,
 and <a href="#ingestion-time">Fig. 4</a> shows the ingestion time for these datasets.
 These figures show the impact of the middle snapshots within the bidirectional chain.
+For BEAR-A, storage size for COBRA lowers at the middle version,
+which shows that a snapshot with reversed deltas pointing to it (COBRA) requires less storage space
+compared to continued use of aggregated deltas (OSTRICH).
 For BEAR-B Daily and Hourly, the storage size significantly increases at the middle version,
 but the ingestion times for all later versions reset to low values.</p>
 
@@ -1338,19 +1350,22 @@ on storage size and ingestion time compared to a unidirectional delta chain.
 While the unidirectional delta chain leads to increasing ingestion times for every new version,
 initiating a new snapshot (COBRA*) can effectively <em>reset</em> these ingestion times.
 The downside of this is that there can be an increase in storage size due to this,
-which is more significant for datasets that have many small versions (BEAR-B).
+which is more significant for datasets that have many small (few triples and a low change ratio) versions (BEAR-B).
 As such, for those datasets (BEAR-B), it is recommended to wait longer before initiating a new snapshot in the delta chain,
-since ingestion times are typically much lower compared to datasets with fewer large versions (BEAR-A).
+since ingestion times are typically much lower compared to datasets with fewer large (many triples and a high change ratio) versions (BEAR-A).
 Given the capabilities and query load of the server and affordable storage overhead,
 a certain ingestion time threshold could be defined,
 which would initiate a new snapshot when this threshold is exceeded.</p>
 
           <p>Once there are two unidirectional delta chains,
 the first one could optionally be reversed so that both can share one snapshot through a fix-up process (COBRA).
-Our results show that this can further reduce storage size for datasets with few large versions (BEAR-A).
+Our results show that this can further reduce storage size for datasets with few large versions (BEAR-A),
+and even lead to less storage space compared to the continued use of aggregated deltas (OSTRICH).
 However, for many small versions (BEAR-B), this leads to overhead in terms of storage size.
-This fix-up process does however require a significant execution time.
-Since this could easily run in a separate offline process,
+This shows that a bidirectional delta chain is more effective for BEAR-A compared to the BEAR-B datasets in terms of storage size,
+while it is always effective in terms of ingestion time.
+The fix-up process for enabling this reversal does however require a significant execution time.
+Since this could easily run in a separate offline process in parallel to query execution and the ingestion of next versions,
 this additional time is typically not a problem.
 As such, when the server encounters a dataset with large versions (millions of triples per version),
 then the fix-up approach should be followed.</p>
@@ -1449,7 +1464,11 @@ Second, aggregated and non-aggregated deltas are just two extremes of delta orga
 A range of valuable possibilities in between may exist,
 such as inheriting from the n<sup>th</sup> largest preceding version.
 Third, the impact of multiple snapshots and strategies to decide when to create them still remain as open questions,
-which we suspect will be crucial for RDF archiving for indefinitely increasing numbers of versions.</p>
+which we suspect will be crucial for RDF archiving for indefinitely increasing numbers of versions.
+Fourth, the creation of multiple snapshots will also lead to the need for querying across multiple snapshots and delta chains.
+While the existing VM querying algorithm can be reused for this,
+new efficient algorithms for DM and VQ with offset support will be required,
+as well as algorithms for providing cardinality estimates.</p>
 
           <p>While these findings show that a bidirectional delta chain is mostly more beneficial than a unidirectional delta chain for the same version range,
 neither approaches will scale to an infinite number of versions.
@@ -1486,48 +1505,50 @@ This brings us closer to an efficient queryable Semantic Web that can evolve and
   <dt id="ref-8">[8]</dt>
   <dd resource="http://www.semantic-web-journal.net/system/files/swj2538.pdf" typeof="schema:Article">Pelgrin, O., Galàrraga, L., Hose, K.: Towards Fully-fledged Archiving for RDF Datasets. Semantic Web Journal. (2020).</dd>
   <dt id="ref-9">[9]</dt>
-  <dd resource="http://www.websemanticsjournal.org/index.php/ps/article/view/328" typeof="schema:Article">Fernández, J.D., Martínez-Prieto, M.A., Gutiérrez, C., Polleres, A., Arias, M.: Binary RDF Representation for Publication and Exchange (HDT). Web Semantics: Science, Services and Agents on the World Wide Web. 19, 22–41 (2013).</dd>
+  <dd resource="#bframes" typeof="schema:Article">Flierl, M., Girod, B.: Generalized B pictures and the draft H. 264/AVC video-compression standard. IEEE Transactions on Circuits and Systems for Video technology. 13, 587–597 (2003).</dd>
   <dt id="ref-10">[10]</dt>
-  <dd resource="#rdf3x" typeof="schema:Article">Neumann, T., Weikum, G.: RDF-3X: a RISC-style engine for RDF. Proceedings of the VLDB Endowment. 1, 647–659 (2008).</dd>
+  <dd resource="http://www.websemanticsjournal.org/index.php/ps/article/view/328" typeof="schema:Article">Fernández, J.D., Martínez-Prieto, M.A., Gutiérrez, C., Polleres, A., Arias, M.: Binary RDF Representation for Publication and Exchange (HDT). Web Semantics: Science, Services and Agents on the World Wide Web. 19, 22–41 (2013).</dd>
   <dt id="ref-11">[11]</dt>
-  <dd resource="http://semantic-web-journal.org/system/files/swj1814.pdf" typeof="schema:Article">Fernández, J.D., Umbrich, J., Polleres, A., Knuth, M.: Evaluating Query and Storage Strategies for RDF Archives. Semantic Web Journal. (2018).</dd>
+  <dd resource="#rdf3x" typeof="schema:Article">Neumann, T., Weikum, G.: RDF-3X: a RISC-style engine for RDF. Proceedings of the VLDB Endowment. 1, 647–659 (2008).</dd>
   <dt id="ref-12">[12]</dt>
-  <dd resource="http://rubensworks.net/raw/publications/2016/ExposingRdfArchivesUsingTpf.pdf" typeof="schema:Article">Taelman, R., Verborgh, R., Mannens, E.: Exposing RDF Archives using Triple Pattern Fragments. In: Proceedings of the 20th International Conference on Knowledge Engineering and Knowledge Management: Posters and Demos (2016).</dd>
+  <dd resource="http://semantic-web-journal.org/system/files/swj1814.pdf" typeof="schema:Article">Fernández, J.D., Umbrich, J., Polleres, A., Knuth, M.: Evaluating Query and Storage Strategies for RDF Archives. Semantic Web Journal. (2018).</dd>
   <dt id="ref-13">[13]</dt>
-  <dd resource="https://dx.doi.org/10.1016/j.websem.2018.08.002" typeof="schema:Article">Arndt, N., Naumann, P., Radtke, N., Martin, M., Marx, E.: Decentralized Collaborative Knowledge Management using Git. Journal of Web Semantics. (2018).</dd>
+  <dd resource="http://rubensworks.net/raw/publications/2016/ExposingRdfArchivesUsingTpf.pdf" typeof="schema:Article">Taelman, R., Verborgh, R., Mannens, E.: Exposing RDF Archives using Triple Pattern Fragments. In: Proceedings of the 20th International Conference on Knowledge Engineering and Knowledge Management: Posters and Demos (2016).</dd>
   <dt id="ref-14">[14]</dt>
-  <dd resource="#semversion" typeof="schema:Article">Volkel, M., Winkler, W., Sure, Y., Kruk, S.R., Synak, M.: Semversion: A versioning system for RDF and ontologies. In: Second European Semantic Web Conference, ESWC 2005, Heraklion, Crete, Greece, May 29–June 1, 2005. Proceedings (2005).</dd>
+  <dd resource="https://dx.doi.org/10.1016/j.websem.2018.08.002" typeof="schema:Article">Arndt, N., Naumann, P., Radtke, N., Martin, M., Marx, E.: Decentralized Collaborative Knowledge Management using Git. Journal of Web Semantics. (2018).</dd>
   <dt id="ref-15">[15]</dt>
-  <dd resource="#vcrdf" typeof="schema:Article">Cassidy, S., Ballantine, J.: Version Control for RDF Triple Stores. ICSOFT (ISDM/EHST/DC). 7, 5–12 (2007).</dd>
+  <dd resource="#semversion" typeof="schema:Article">Volkel, M., Winkler, W., Sure, Y., Kruk, S.R., Synak, M.: Semversion: A versioning system for RDF and ontologies. In: Second European Semantic Web Conference, ESWC 2005, Heraklion, Crete, Greece, May 29–June 1, 2005. Proceedings (2005).</dd>
   <dt id="ref-16">[16]</dt>
-  <dd resource="#rwbase" typeof="schema:Article">Vander Sande, M., Colpaert, P., Verborgh, R., Coppens, S., Mannens, E., Van de Walle, R.: R&amp;Wbase: git for triples. In: Proceedings of the 6th Workshop on Linked Data on the Web (2013).</dd>
+  <dd resource="#vcrdf" typeof="schema:Article">Cassidy, S., Ballantine, J.: Version Control for RDF Triple Stores. ICSOFT (ISDM/EHST/DC). 7, 5–12 (2007).</dd>
   <dt id="ref-17">[17]</dt>
-  <dd resource="#r43ples" typeof="schema:Article">Graube, M., Hensel, S., Urbas, L.: R43ples: Revisions for triples. In: Proceedings of the 1st Workshop on Linked Data Quality co-located with 10th International Conference on Semantic Systems (SEMANTiCS 2014) (2014).</dd>
+  <dd resource="#rwbase" typeof="schema:Article">Vander Sande, M., Colpaert, P., Verborgh, R., Coppens, S., Mannens, E., Van de Walle, R.: R&amp;Wbase: git for triples. In: Proceedings of the 6th Workshop on Linked Data on the Web (2013).</dd>
   <dt id="ref-18">[18]</dt>
-  <dd resource="#vcld" typeof="schema:Article">Hauptmann, C., Brocco, M., Wörndl, W.: Scalable Semantic Version Control for Linked Data Management. In: Proceedings of the 2nd Workshop on Linked Data Quality co-located with 12th Extended Semantic Web Conference (ESWC 2015) (2015).</dd>
+  <dd resource="#r43ples" typeof="schema:Article">Graube, M., Hensel, S., Urbas, L.: R43ples: Revisions for triples. In: Proceedings of the 1st Workshop on Linked Data Quality co-located with 10th International Conference on Semantic Systems (SEMANTiCS 2014) (2014).</dd>
   <dt id="ref-19">[19]</dt>
-  <dd resource="#xrdf3x" typeof="schema:Article">Neumann, T., Weikum, G.: x-RDF-3X: fast querying, high update rates, and consistency for RDF databases. Proceedings of the VLDB Endowment. 3, 256–263 (2010).</dd>
+  <dd resource="#vcld" typeof="schema:Article">Hauptmann, C., Brocco, M., Wörndl, W.: Scalable Semantic Version Control for Linked Data Management. In: Proceedings of the 2nd Workshop on Linked Data Quality co-located with 12th Extended Semantic Web Conference (ESWC 2015) (2015).</dd>
   <dt id="ref-20">[20]</dt>
-  <dd resource="https://pdfs.semanticscholar.org/8efc/acc920a6329bda5508c65c84d69f52eb5ac1.pdf" typeof="schema:Article">Gao, S., Gu, J., Zaniolo, C.: RDF-TX: A fast, user-friendly system for querying the history of RDF knowledge bases. In: Proceedings of the 19th International Conference on Extending DatabaseTechnology. pp. 269–280 (2016).</dd>
+  <dd resource="#xrdf3x" typeof="schema:Article">Neumann, T., Weikum, G.: x-RDF-3X: fast querying, high update rates, and consistency for RDF databases. Proceedings of the VLDB Endowment. 3, 256–263 (2010).</dd>
   <dt id="ref-21">[21]</dt>
-  <dd resource="#selfindexingarchives" typeof="schema:Article">Cerdeira-Pena, A., Farina, A., Fernández, J.D., Martı́nez-Prieto Miguel A: Self-indexing RDF archives. In: Data Compression Conference (DCC), 2016. pp. 526–535. IEEE (2016).</dd>
+  <dd resource="https://pdfs.semanticscholar.org/8efc/acc920a6329bda5508c65c84d69f52eb5ac1.pdf" typeof="schema:Article">Gao, S., Gu, J., Zaniolo, C.: RDF-TX: A fast, user-friendly system for querying the history of RDF knowledge bases. In: Proceedings of the 19th International Conference on Extending DatabaseTechnology. pp. 269–280 (2016).</dd>
   <dt id="ref-22">[22]</dt>
-  <dd resource="#dydra" typeof="schema:Article">Anderson, J., Bendiken, A.: Transaction-time queries in dydra. In: Joint Proceedings of the 2nd Workshop on Managing the Evolution and Preservation of the Data Web (MEPDaW 2016) and the 3rd Workshop on Linked Data Quality (LDQ 2016). pp. 11–19 (2016).</dd>
+  <dd resource="#selfindexingarchives" typeof="schema:Article">Cerdeira-Pena, A., Farina, A., Fernández, J.D., Martı́nez-Prieto Miguel A: Self-indexing RDF archives. In: Data Compression Conference (DCC), 2016. pp. 526–535. IEEE (2016).</dd>
   <dt id="ref-23">[23]</dt>
-  <dd resource="#tailr" typeof="schema:Article">Meinhardt, P., Knuth, M., Sack, H.: TailR: a platform for preserving history on the web of data. In: Proceedings of the 11th International Conference on Semantic Systems. pp. 57–64. ACM (2015).</dd>
+  <dd resource="#dydra" typeof="schema:Article">Anderson, J., Bendiken, A.: Transaction-time queries in dydra. In: Joint Proceedings of the 2nd Workshop on Managing the Evolution and Preservation of the Data Web (MEPDaW 2016) and the 3rd Workshop on Linked Data Quality (LDQ 2016). pp. 11–19 (2016).</dd>
   <dt id="ref-24">[24]</dt>
-  <dd resource="https://users.dcc.uchile.cl/~ahogan/docs/sparql-version.pdf" typeof="schema:Article">Cuevas, I., Hogan, A.: Versioned Queries over RDF Archives: All You Need is SPARQL? In: Proceedings of the Workshop on Managing the Evolution and Preservation of the Data Web (MEPDaW) (2020).</dd>
+  <dd resource="#tailr" typeof="schema:Article">Meinhardt, P., Knuth, M., Sack, H.: TailR: a platform for preserving history on the web of data. In: Proceedings of the 11th International Conference on Semantic Systems. pp. 57–64. ACM (2015).</dd>
   <dt id="ref-25">[25]</dt>
-  <dd resource="#vmrdf" typeof="schema:Article">Im, D.-H., Lee, S.-W., Kim, H.-J.: A version management framework for RDF triple stores. International Journal of Software Engineering and Knowledge Engineering. 22, 85–106 (2012).</dd>
+  <dd resource="https://users.dcc.uchile.cl/~ahogan/docs/sparql-version.pdf" typeof="schema:Article">Cuevas, I., Hogan, A.: Versioned Queries over RDF Archives: All You Need is SPARQL? In: Proceedings of the Workshop on Managing the Evolution and Preservation of the Data Web (MEPDaW) (2020).</dd>
   <dt id="ref-26">[26]</dt>
-  <dd resource="http://rubensworks.net/raw/publications/2017/vtpf.pdf" typeof="schema:Article">Taelman, R., Vander Sande, M., Verborgh, R., Mannens, E.: Versioned Triple Pattern Fragments: A Low-cost Linked Data Interface Feature for Web Archives. In: Proceedings of the 3rd Workshop on Managing the Evolution and Preservation of the Data Web (2017).</dd>
+  <dd resource="#vmrdf" typeof="schema:Article">Im, D.-H., Lee, S.-W., Kim, H.-J.: A version management framework for RDF triple stores. International Journal of Software Engineering and Knowledge Engineering. 22, 85–106 (2012).</dd>
   <dt id="ref-27">[27]</dt>
-  <dd resource="https://comunica.github.io/Article-ISWC2018-Resource/" typeof="schema:Article">Taelman, R., Van Herwegen, J., Vander Sande, M., Verborgh, R.: Comunica: a Modular SPARQL Query Engine for the Web. In: Proceedings of the 17th International Semantic Web Conference (2018).</dd>
+  <dd resource="http://rubensworks.net/raw/publications/2017/vtpf.pdf" typeof="schema:Article">Taelman, R., Vander Sande, M., Verborgh, R., Mannens, E.: Versioned Triple Pattern Fragments: A Low-cost Linked Data Interface Feature for Web Archives. In: Proceedings of the 3rd Workshop on Managing the Evolution and Preservation of the Data Web (2017).</dd>
   <dt id="ref-28">[28]</dt>
-  <dd resource="https://rdfostrich.github.io/article-mocha-2018/" typeof="schema:Article">Taelman, R., Vander Sande, M., Verborgh, R.: Versioned Querying with OSTRICH and Comunica in MOCHA 2018. In: Proceedings of the 5th SemWebEval Challenge at ESWC 2018 (2018).</dd>
+  <dd resource="https://comunica.github.io/Article-ISWC2018-Resource/" typeof="schema:Article">Taelman, R., Van Herwegen, J., Vander Sande, M., Verborgh, R.: Comunica: a Modular SPARQL Query Engine for the Web. In: Proceedings of the 17th International Semantic Web Conference (2018).</dd>
   <dt id="ref-29">[29]</dt>
-  <dd resource="#rcs" typeof="schema:Article">Tichy, W.F.: RCS—a system for version control. Software: Practice and Experience. 15, 637–654 (1985).</dd>
+  <dd resource="https://rdfostrich.github.io/article-mocha-2018/" typeof="schema:Article">Taelman, R., Vander Sande, M., Verborgh, R.: Versioned Querying with OSTRICH and Comunica in MOCHA 2018. In: Proceedings of the 5th SemWebEval Challenge at ESWC 2018 (2018).</dd>
   <dt id="ref-30">[30]</dt>
+  <dd resource="#rcs" typeof="schema:Article">Tichy, W.F.: RCS—a system for version control. Software: Practice and Experience. 15, 637–654 (1985).</dd>
+  <dt id="ref-31">[31]</dt>
   <dd resource="http://darcs.net" typeof="schema:CreativeWork">Roundy, D.: Darcs. <a href="http://darcs.net">http:/​/​darcs.net</a> (2008).</dd>
 </dl>
 </section>
