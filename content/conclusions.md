@@ -41,7 +41,7 @@ Third, the impact of multiple snapshots and strategies to decide when to create 
 which we suspect will be crucial for RDF archiving for indefinitely increasing numbers of versions.
 Fourth, the creation of multiple snapshots will also lead to the need for querying across multiple snapshots and delta chains.
 While the existing VM querying algorithm can be reused for this,
-new efficient algorithms for DM and VQ will be required,
+new efficient algorithms for DM and VQ with offset support will be required,
 as well as algorithms for providing cardinality estimates.
 
 While these findings show that a bidirectional delta chain is mostly more beneficial than a unidirectional delta chain for the same version range,
