@@ -44,7 +44,11 @@ where there still is a single version snapshot,
 but we place it in the middle of the delta chain,
 instead of at the beginning,
 leading to a _bidirectional delta chain_.
-While this complicates ingestion and querying,
+This modification is inspired by the concept of [_bidirectional predicted pictures_ (B-frames)](cite:cites bframes)
+that are a popular technique within video compression.
+Typically, such B-frames are used for non-aggregated deltas,
+but we instead devise a similar technique for aggregated deltas.
+While bidirectional delta chains complicate ingestion and querying,
 it leads to two shorter delta chains.
 This will require less effort than one long delta chain,
 and lead to faster ingestion and querying.
