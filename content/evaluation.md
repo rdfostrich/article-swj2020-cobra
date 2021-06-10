@@ -24,19 +24,22 @@ This dataset was compiled from the [Dynamic Linked Data Observatory](http://swse
 To test for datasets with many smaller versions, we use BEAR-B with the daily and hourly granularities.
 For the daily dataset we use 89 versions and for hourly dataset 400 versions,
 both of them have around 48K triples per version.
-All experiments were performed on a 64-bit Ubuntu 14.04 machine with a 6-core 2.40 GHz CPU and 48 GB of RAM.
+All experiments were performed on a 64-bit Ubuntu 14.04 machine with a 24-core 2.40 GHz CPU and 128 GB of RAM.
 Our experimental setup and its raw results are available on [GitHub](https://github.com/rdfostrich/cobra/tree/master/Experiments/){:.mandatory}.
 
 Considering we aim to measure the benefits of the bidirectional aggregated delta chain
 compared to the unidirectional aggregated delta chain under the hybrid storage strategy,
-we distinguish between the following storage approaches:
+we primarily distinguish between the following storage approaches:
 
 * **OSTRICH**: Forward unidirectional aggregated delta chain ([](#evaluation-storage-approaches-ostrich))
 * **COBRA\***: Bidirectional aggregated delta chain before fix-up ([](#evaluation-storage-approaches-cobra-star))
 * **COBRA**: Bidirectional aggregated delta chain after fix-up ([](#evaluation-storage-approaches-cobra))
 
-As such, we consider comparing against other systems with different storage strategies out of scope for this work.
-For an extensive comparison of the hybrid storage strategy with other systems, we refer to the [OSTRICH article](cite:cites ostrich).
+In order to achieve a more complete comparison with other approaches,
+we also evaluate BEAR's Jena (IC, CB, TB and hybrid CB/TB) and HDT-based (IC and CB) RDF archive implementations.
+We consider a comparison with other systems such as X-RDF-3X, RDF-TX and Dydra
+out of scoped for this work due to the major difficulties we experienced with these systems
+caused by missing implementations or the additional required implementation effort to support the required query interfaces.
 
 <figure id="evaluation-storage-approaches" class="figure">
 
@@ -93,16 +96,20 @@ we limit our experiments to OSTRICHâ€™s unidrectional storage layout and COBRAâ€
 
 In this section, we discuss the results of our experiments on ingestion and query evaluation,
 which we then analyze in the next section.
+All raw results and the scripts that were used to process them are available on [GitHub](https://github.com/rdfostrich/cobra-bear-results/){:.mandatory}.
 
 #### Ingestion
 
-[](#ingestion-total) shows the total storage sizes and ingestion times
+[](#table-ingestion-size) and [](#table-ingestion-time) respectively show the total storage sizes and ingestion times
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 This table shows that COBRA requires less ingestion time than OSTRICH in all cases (41% less on average).
 Furthermore, COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly, but not for BEAR-B Daily.
 COBRA* requires more storage space than both COBRA and OSTRICH with BEAR-A, but it requires less ingestion time.
 For BEAR-B Daily, OSTRICH requires less storage, but COBRA* has the lowest ingestion time.
 For BEAR-B Hourly, COBRA* is lower in terms of storage size and ingestion time than both COBRA and OSTRICH.
+
+{:.todo}
+Update the text above once final results are in. (also consider the new approaches!)
 
 <figure id="ingestion-total" class="table" markdown="1">
 
@@ -121,6 +128,52 @@ For BEAR-B Hourly, COBRA* is lower in terms of storage size and ingestion time t
 <figcaption markdown="block">
 Total storage size and ingestion time for the different datasets.
 COBRA* is always the fastest, with no consistent winner for total storage size.
+</figcaption>
+</figure>
+
+{:.todo}
+RM the table above.
+
+<figure id="table-ingestion-size" class="table" markdown="1">
+
+| Approach        | BEAR-A                | BEAR-B-daily   | BEAR-B-hourly      |
+| --------------- |----------------------:|---------------:|-------------------:|
+| Raw (N-Triples) | 46,069.76             | 556.44         | 8,314.86           |
+| Raw (gzip)      | *3,194.88*            |  30.98         |   466.35           |
+| OSTRICH         |  4,587.52             |  16.87         |   450.59           |
+| COBRA           |  TODO                 |  TODO          |   TODO             |
+| COBRA*          |  TODO                 |  TODO          |   TODO             |
+| Jena-IC         | 32,808.96             | 415.32         | 6,233.92           |
+| Jena-CB         | 18,216.96             |  42.82         |   473.41           |
+| Jena-TB         | 82,278.4              |  23.61         | 3,678.89           |
+| Jena-CB/TB      | 31,160.32             |  22.83         |    53.84           |
+| HDT-IC          |  6,829.73             | 148.61         | 2,226.45           |
+| HDT-CB          |  3,485.43             |  *6.21*        |   *25.14*          |
+
+<figcaption markdown="block">
+Total storage size in MB for the different datasets.
+The lowest sizes per dataset are indicated in italics.
+There is no consistent overall winner.
+</figcaption>
+</figure>
+
+<figure id="table-ingestion-time" class="table" markdown="1">
+
+| Approach        | BEAR-A | BEAR-B-daily  | BEAR-B-hourly |
+| --------------- |-------:|--------------:|--------------:|
+| OSTRICH         | 2,256  | 12.36         | 4,497.32      |
+| COBRA           | TODO   | TODO          | TODO          |
+| COBRA*          | TODO   | TODO          | TODO          |
+| Jena-IC         |   443  |  8.91         |  142.26       |
+| Jena-CB         |   226  |  9.53         |  173.48       |
+| Jena-TB         | 1,746  |  0.35         |   70.56       |
+| Jena-CB/TB      |   679  |  0.35         |    0.65       |
+| HDT-IC          |    34  |  0.39         |    5.89       |
+| HDT-CB          |   *18* | *0.02*        |   *0.07*      |
+
+<figcaption markdown="block">
+Total ingestion time in minutes for the different datasets.
+The lowest times per dataset are indicated in italics.
 </figcaption>
 </figure>
 
@@ -158,6 +211,9 @@ For BEAR-B Daily and Hourly, the middle snapshot leads to a significant increase
 </figcaption>
 </figure>
 
+{:.todo}
+Update figures above, because we use different version ranges
+
 <figure id="ingestion-time" class="figure">
 
 <center>
@@ -191,7 +247,10 @@ COBRA resets ingestion time from the snapshot version, while ingestion time for 
 </figcaption>
 </figure>
 
-In order to provide more details on the evolution of storage size and ingestion time,
+{:.todo}
+Update figures above, because we use different version ranges
+
+In order to provide more details on the evolution of storage size and ingestion time of COBRA(*) compared to OSTRICH,
 [](#ingestion-size) shows the cumulative storage size for the different datasets,
 and [](#ingestion-time) shows the ingestion time for these datasets.
 These figures show the impact of the middle snapshots within the bidirectional chain.
@@ -208,6 +267,9 @@ when the versions cannot be inserted out of order.
 On average, this fix-up requires 3,6 times more time relative to the overhead of COBRA compared to COBRA*,
 showing that out-of-order ingestion is still preferred when possible.
 
+{:.todo}
+Update text above if needed.
+
 <figure id="ingestion-fixup-time" class="table" markdown="1">
 
 | Dataset       | Time          |
@@ -221,14 +283,46 @@ Fix-up duration for the different datasets.
 </figcaption>
 </figure>
 
+{:.todo}
+Update table above, because we use different version ranges
+
 #### Query Evaluation
 
-[](#query-vm), [](#query-dm) and [](#query-vq) show the query evaluation times
+[](#results-beara-vm-sumary), [](#query-dm) and [](#query-vq) show the query evaluation times
 for COBRA (after fix-up) and OSTRICH for respectively VM, DM and VQ.
-These figures show that for VM, COBRA is faster than OSTRICH minus a few outliers around the middle version.
+These query evaluation times are averaged across all query sets for their respective dataset.
+For completeness, we included more detailed plots for each query set separately in [the appendix](#appendix).
+The summarizing figures show that for VM, COBRA is faster than OSTRICH minus a few outliers around the middle version.
 For DM, COBRA is always faster than OSTRICH when querying within the first half of its delta chain.
 For the second half, COBRA becomes slower, and for BEAR-B Daily even becomes slower than OSTRICH.
 For VQ, COBRA is faster than OSTRICH for BEAR-B Hourly, slightly faster for BEAR-B Daily, and slower for BEAR-A.
+
+{:.todo}
+Update the text above once final results are in. (also consider the new approaches!)
+
+{:.todo}
+Update new figures to include COBRA results
+
+<figure id="results-beara-vm-sumary">
+<img src="img/query/results_beara-vm-summary.svg" alt="[bear-a vm]" height="200em" class="plot">
+<figcaption markdown="block">
+Median BEAR-A VM query results for all triple patterns for all versions.
+</figcaption>
+</figure>
+
+<figure id="results-beara-dm-summary">
+<img src="img/query/results_beara-dm-summary.svg" alt="[bear-a dm]" height="200em" class="plot">
+<figcaption markdown="block">
+Median BEAR-A DM query results for all triple patterns from version 0 to all other versions.
+</figcaption>
+</figure>
+
+<figure id="results-beara-vq-summary">
+<img src="img/query/results_beara-vq-summary.svg" alt="[bear-a vq]" height="200em" class="plot">
+<figcaption markdown="block">
+Median BEAR-A VQ query results for all triple patterns.
+</figcaption>
+</figure>
 
 <figure id="query-vm" class="figure">
 
@@ -260,6 +354,30 @@ BEAR-B Hourly
 <figcaption markdown="block">
 Version Materialization evaluation times per version for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 For most versions, COBRA is faster than OSTRICH.
+</figcaption>
+</figure>
+
+{:.todo}
+RM figures above (also their raw image files)
+
+<figure id="results-bearb-daily-vm-sumary">
+<img src="img/query/results_bearb-daily-vm-summary.svg" alt="[bear-b-daily vm]" height="200em" class="plot">
+<figcaption markdown="block">
+Median BEAR-B-daily VM query results for all triple patterns for all versions.
+</figcaption>
+</figure>
+
+<figure id="results-bearb-daily-dm-summary">
+<img src="img/query/results_bearb-daily-dm-summary.svg" alt="[bear-b-daily dm]" height="200em" class="plot">
+<figcaption markdown="block">
+Median BEAR-B-daily DM query results for all triple patterns from version 0 to all other versions.
+</figcaption>
+</figure>
+
+<figure id="results-bearb-daily-vq-summary">
+<img src="img/query/results_bearb-daily-vq-summary.svg" alt="[bear-b-daily vq]" height="200em" class="plot">
+<figcaption markdown="block">
+Median BEAR-B-daily VQ query results for all triple patterns.
 </figcaption>
 </figure>
 
@@ -297,6 +415,30 @@ For the first half of versions, COBRA is faster than OSTRICH, but slows down in 
 </figcaption>
 </figure>
 
+{:.todo}
+RM figures above (also their raw image files)
+
+<figure id="results-bearb-hourly-vm-sumary">
+<img src="img/query/results_bearb-hourly-vm-summary.svg" alt="[bear-b-hourly vm]" height="200em" class="plot">
+<figcaption markdown="block">
+Median BEAR-B-hourly VM query results for all triple patterns for all versions.
+</figcaption>
+</figure>
+
+<figure id="results-bearb-hourly-dm-summary">
+<img src="img/query/results_bearb-hourly-dm-summary.svg" alt="[bear-b-hourly dm]" height="200em" class="plot">
+<figcaption markdown="block">
+Median BEAR-B-hourly DM query results for all triple patterns from version 0 to all other versions.
+</figcaption>
+</figure>
+
+<figure id="results-bearb-hourly-vq-summary">
+<img src="img/query/results_bearb-hourly-vq-summary.svg" alt="[bear-b-hourly vq]" height="200em" class="plot">
+<figcaption markdown="block">
+Median BEAR-B-hourly VQ query results for all triple patterns.
+</figcaption>
+</figure>
+
 <figure id="query-vq" class="figure">
 
 <figure id="query-vq-beara" class="subfigure">
@@ -326,9 +468,15 @@ COBRA is faster than OSTRICH for the BEAR-B datasets, but slower for BEAR-A.
 </figcaption>
 </figure>
 
+{:.todo}
+RM figures above (also their raw image files)
+
 [](#query-avg) show the average overall query evaluation times for BEAR-A, BEAR-B Daily and BEAR-B Hourly.
 This shows that on average, COBRA is faster than OSTRICH,
 except for VQ in BEAR-A.
+
+{:.todo}
+Update the text above once final results are in. (also consider the new approaches!)
 
 <figure id="query-avg" class="table" markdown="1">
 
@@ -348,6 +496,9 @@ except for VQ in BEAR-A.
 Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for the different datasets (ms).
 </figcaption>
 </figure>
+
+{:.todo}
+Update table above with new results, and also include HDT and Jena approaches.
 
 ### Result analysis
 {:#evaluation-discussion}
