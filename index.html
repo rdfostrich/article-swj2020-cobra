@@ -12,7 +12,7 @@
   <meta name="citation_author" content="Thibault Mahieu" />
   <meta name="citation_author" content="Ruben Verborgh" />
   
-  <meta name="citation_publication_date" content="2021/05/20" />
+  <meta name="citation_publication_date" content="2021/06/10" />
 </head>
 
 <body prefix="dctypes: http://purl.org/dc/dcmitype/ pimspace: http://www.w3.org/ns/pim/space# rsa: http://www.w3.org/ns/auth/rsa# cert: http://www.w3.org/ns/auth/cert# wgs: http://www.w3.org/2003/01/geo/wgs84_pos# biblio: http://purl.org/net/biblio# bibo: http://purl.org/ontology/bibo/ book: http://purl.org/NET/book/vocab# ov: http://open.vocab.org/terms/ doap: http://usefulinc.com/ns/doap# dbr: http://dbpedia.org/resource/ dbp: http://dbpedia.org/property/ sio: http://semanticscience.org/resource/ opmw: http://www.opmw.org/ontology/ deo: http://purl.org/spar/deo/ doco: http://purl.org/spar/doco/ cito: http://purl.org/spar/cito/ fabio: http://purl.org/spar/fabio/ solid: http://www.w3.org/ns/solid/terms# acl: http://www.w3.org/ns/auth/acl# dio: https://w3id.org/dio# lsc: http://linkedscience.org/lsc/ns#" typeof="schema:CreativeWork sioc:Post prov:Entity lsc:Research">
@@ -885,12 +885,12 @@ This dataset was compiled from the <a href="http://swse.deri.org/dyldo/">Dynamic
 To test for datasets with many smaller versions, we use BEAR-B with the daily and hourly granularities.
 For the daily dataset we use 89 versions and for hourly dataset 400 versions,
 both of them have around 48K triples per version.
-All experiments were performed on a 64-bit Ubuntu 14.04 machine with a 6-core 2.40 GHz CPU and 48 GB of RAM.
+All experiments were performed on a 64-bit Ubuntu 14.04 machine with a 24-core 2.40 GHz CPU and 128 GB of RAM.
 Our experimental setup and its raw results are available on <a href="https://github.com/rdfostrich/cobra/tree/master/Experiments/" class="mandatory" data-link-text="https:/​/​github.com/​rdfostrich/​cobra/​tree/​master/​Experiments/​">GitHub</a>.</p>
 
           <p>Considering we aim to measure the benefits of the bidirectional aggregated delta chain
 compared to the unidirectional aggregated delta chain under the hybrid storage strategy,
-we distinguish between the following storage approaches:</p>
+we primarily distinguish between the following storage approaches:</p>
 
           <ul>
             <li><strong>OSTRICH</strong>: Forward unidirectional aggregated delta chain (<a href="#evaluation-storage-approaches-ostrich">Subfig. 2.1</a>)</li>
@@ -898,8 +898,11 @@ we distinguish between the following storage approaches:</p>
             <li><strong>COBRA</strong>: Bidirectional aggregated delta chain after fix-up (<a href="#evaluation-storage-approaches-cobra">Subfig. 2.3</a>)</li>
           </ul>
 
-          <p>As such, we consider comparing against other systems with different storage strategies out of scope for this work.
-For an extensive comparison of the hybrid storage strategy with other systems, we refer to the <a property="schema:citation http://purl.org/spar/cito/cites" href="https://rdfostrich.github.io/article-jws2018-ostrich/">OSTRICH article</a> <span class="references">[<a href="#ref-5">5</a>]</span>.</p>
+          <p>In order to achieve a more complete comparison with other approaches,
+we also evaluate BEAR’s Jena (IC, CB, TB and hybrid CB/TB) and HDT-based (IC and CB) RDF archive implementations.
+We consider a comparison with other systems such as X-RDF-3X, RDF-TX and Dydra
+out of scoped for this work due to the major difficulties we experienced with these systems
+caused by missing implementations or the additional required implementation effort to support the required query interfaces.</p>
 
           <figure id="evaluation-storage-approaches" class="figure">
 
@@ -954,17 +957,20 @@ we limit our experiments to OSTRICH’s unidrectional storage layout and COBRA�
           <h3 id="evaluation-results">Measurements</h3>
 
           <p>In this section, we discuss the results of our experiments on ingestion and query evaluation,
-which we then analyze in the next section.</p>
+which we then analyze in the next section.
+All raw results and the scripts that were used to process them are available on <a href="https://github.com/rdfostrich/cobra-bear-results/" class="mandatory" data-link-text="https:/​/​github.com/​rdfostrich/​cobra-​bear-​results/​">GitHub</a>.</p>
 
           <h4 id="ingestion">Ingestion</h4>
 
-          <p><a href="#ingestion-total">Table 3</a> shows the total storage sizes and ingestion times
+          <p><a href="#table-ingestion-size">Table 4</a> and <a href="#table-ingestion-time">Table 5</a> respectively show the total storage sizes and ingestion times
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 This table shows that COBRA requires less ingestion time than OSTRICH in all cases (41% less on average).
 Furthermore, COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly, but not for BEAR-B Daily.
 COBRA* requires more storage space than both COBRA and OSTRICH with BEAR-A, but it requires less ingestion time.
 For BEAR-B Daily, OSTRICH requires less storage, but COBRA* has the lowest ingestion time.
 For BEAR-B Hourly, COBRA* is lower in terms of storage size and ingestion time than both COBRA and OSTRICH.</p>
+
+          <p class="todo">Update the text above once final results are in. (also consider the new approaches!)</p>
 
           <figure id="ingestion-total" class="table">
 
@@ -1041,6 +1047,171 @@ COBRA* is always the fastest, with no consistent winner for total storage size.<
             </figcaption>
           </figure>
 
+          <p class="todo">RM the table above.</p>
+
+          <figure id="table-ingestion-size" class="table">
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Approach</th>
+                  <th style="text-align: right">BEAR-A</th>
+                  <th style="text-align: right">BEAR-B-daily</th>
+                  <th style="text-align: right">BEAR-B-hourly</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Raw (N-Triples)</td>
+                  <td style="text-align: right">46,069.76</td>
+                  <td style="text-align: right">556.44</td>
+                  <td style="text-align: right">8,314.86</td>
+                </tr>
+                <tr>
+                  <td>Raw (gzip)</td>
+                  <td style="text-align: right"><em>3,194.88</em></td>
+                  <td style="text-align: right">30.98</td>
+                  <td style="text-align: right">466.35</td>
+                </tr>
+                <tr>
+                  <td>OSTRICH</td>
+                  <td style="text-align: right">4,587.52</td>
+                  <td style="text-align: right">16.87</td>
+                  <td style="text-align: right">450.59</td>
+                </tr>
+                <tr>
+                  <td>COBRA</td>
+                  <td style="text-align: right">TODO</td>
+                  <td style="text-align: right">25.14</td>
+                  <td style="text-align: right">TODO</td>
+                </tr>
+                <tr>
+                  <td>COBRA*</td>
+                  <td style="text-align: right">TODO</td>
+                  <td style="text-align: right">TODO</td>
+                  <td style="text-align: right">TODO</td>
+                </tr>
+                <tr>
+                  <td>Jena-IC</td>
+                  <td style="text-align: right">32,808.96</td>
+                  <td style="text-align: right">415.32</td>
+                  <td style="text-align: right">6,233.92</td>
+                </tr>
+                <tr>
+                  <td>Jena-CB</td>
+                  <td style="text-align: right">18,216.96</td>
+                  <td style="text-align: right">42.82</td>
+                  <td style="text-align: right">473.41</td>
+                </tr>
+                <tr>
+                  <td>Jena-TB</td>
+                  <td style="text-align: right">82,278.4</td>
+                  <td style="text-align: right">23.61</td>
+                  <td style="text-align: right">3,678.89</td>
+                </tr>
+                <tr>
+                  <td>Jena-CB/TB</td>
+                  <td style="text-align: right">31,160.32</td>
+                  <td style="text-align: right">22.83</td>
+                  <td style="text-align: right">53.84</td>
+                </tr>
+                <tr>
+                  <td>HDT-IC</td>
+                  <td style="text-align: right">6,829.73</td>
+                  <td style="text-align: right">148.61</td>
+                  <td style="text-align: right">2,226.45</td>
+                </tr>
+                <tr>
+                  <td>HDT-CB</td>
+                  <td style="text-align: right">3,485.43</td>
+                  <td style="text-align: right"><em>6.21</em></td>
+                  <td style="text-align: right"><em>25.14</em></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <figcaption>
+              <p><span class="label">Table 4:</span> Total storage size in MB for the different datasets.
+The lowest sizes per dataset are indicated in italics.
+There is no consistent overall winner.</p>
+            </figcaption>
+          </figure>
+
+          <figure id="table-ingestion-time" class="table">
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Approach</th>
+                  <th style="text-align: right">BEAR-A</th>
+                  <th style="text-align: right">BEAR-B-daily</th>
+                  <th style="text-align: right">BEAR-B-hourly</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>OSTRICH</td>
+                  <td style="text-align: right">2,256</td>
+                  <td style="text-align: right">12.36</td>
+                  <td style="text-align: right">4,497.32</td>
+                </tr>
+                <tr>
+                  <td>COBRA</td>
+                  <td style="text-align: right">TODO</td>
+                  <td style="text-align: right">TODO</td>
+                  <td style="text-align: right">TODO</td>
+                </tr>
+                <tr>
+                  <td>COBRA*</td>
+                  <td style="text-align: right">TODO</td>
+                  <td style="text-align: right">TODO</td>
+                  <td style="text-align: right">TODO</td>
+                </tr>
+                <tr>
+                  <td>Jena-IC</td>
+                  <td style="text-align: right">443</td>
+                  <td style="text-align: right">8.91</td>
+                  <td style="text-align: right">142.26</td>
+                </tr>
+                <tr>
+                  <td>Jena-CB</td>
+                  <td style="text-align: right">226</td>
+                  <td style="text-align: right">9.53</td>
+                  <td style="text-align: right">173.48</td>
+                </tr>
+                <tr>
+                  <td>Jena-TB</td>
+                  <td style="text-align: right">1,746</td>
+                  <td style="text-align: right">0.35</td>
+                  <td style="text-align: right">70.56</td>
+                </tr>
+                <tr>
+                  <td>Jena-CB/TB</td>
+                  <td style="text-align: right">679</td>
+                  <td style="text-align: right">0.35</td>
+                  <td style="text-align: right">0.65</td>
+                </tr>
+                <tr>
+                  <td>HDT-IC</td>
+                  <td style="text-align: right">34</td>
+                  <td style="text-align: right">0.39</td>
+                  <td style="text-align: right">5.89</td>
+                </tr>
+                <tr>
+                  <td>HDT-CB</td>
+                  <td style="text-align: right"><em>18</em></td>
+                  <td style="text-align: right"><em>0.02</em></td>
+                  <td style="text-align: right"><em>0.07</em></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <figcaption>
+              <p><span class="label">Table 5:</span> Total ingestion time in minutes for the different datasets.
+The lowest times per dataset are indicated in italics.</p>
+            </figcaption>
+          </figure>
+
           <figure id="ingestion-size" class="figure">
 
 <center>
@@ -1075,6 +1246,8 @@ For BEAR-B Daily and Hourly, the middle snapshot leads to a significant increase
             </figcaption>
 </figure>
 
+          <p class="todo">Update figures above, because we use different version ranges</p>
+
           <figure id="ingestion-time" class="figure">
 
 <center>
@@ -1108,7 +1281,9 @@ COBRA resets ingestion time from the snapshot version, while ingestion time for 
             </figcaption>
 </figure>
 
-          <p>In order to provide more details on the evolution of storage size and ingestion time,
+          <p class="todo">Update figures above, because we use different version ranges</p>
+
+          <p>In order to provide more details on the evolution of storage size and ingestion time of COBRA(*) compared to OSTRICH,
 <a href="#ingestion-size">Fig. 3</a> shows the cumulative storage size for the different datasets,
 and <a href="#ingestion-time">Fig. 4</a> shows the ingestion time for these datasets.
 These figures show the impact of the middle snapshots within the bidirectional chain.
@@ -1118,12 +1293,14 @@ compared to continued use of aggregated deltas (OSTRICH).
 For BEAR-B Daily and Hourly, the storage size significantly increases at the middle version,
 but the ingestion times for all later versions reset to low values.</p>
 
-          <p>Finally, <a href="#ingestion-fixup-time">Table 4</a> shows the fix-up times,
+          <p>Finally, <a href="#ingestion-fixup-time">Table 6</a> shows the fix-up times,
 which are measured as a separate offline process.
 This is the time it would take to transition from the COBRA* to COBRA storage approach,
 when the versions cannot be inserted out of order.
 On average, this fix-up requires 3,6 times more time relative to the overhead of COBRA compared to COBRA*,
 showing that out-of-order ingestion is still preferred when possible.</p>
+
+          <p class="todo">Update text above if needed.</p>
 
           <figure id="ingestion-fixup-time" class="table">
 
@@ -1151,18 +1328,47 @@ showing that out-of-order ingestion is still preferred when possible.</p>
             </table>
 
             <figcaption>
-              <p><span class="label">Table 4:</span> Fix-up duration for the different datasets.</p>
+              <p><span class="label">Table 6:</span> Fix-up duration for the different datasets.</p>
             </figcaption>
           </figure>
 
+          <p class="todo">Update table above, because we use different version ranges</p>
+
           <h4 id="query-evaluation">Query Evaluation</h4>
 
-          <p><a href="#query-vm">Fig. 5</a>, <a href="#query-dm">Fig. 6</a> and <a href="#query-vq">Fig. 7</a> show the query evaluation times
+          <p><a href="#results-beara-vm-sumary">Fig. 5</a>, <a href="#query-dm">Fig. 12</a> and <a href="#query-vq">Fig. 16</a> show the query evaluation times
 for COBRA (after fix-up) and OSTRICH for respectively VM, DM and VQ.
-These figures show that for VM, COBRA is faster than OSTRICH minus a few outliers around the middle version.
+These query evaluation times are averaged across all query sets for their respective dataset.
+For completeness, we included more detailed plots for each query set separately in <a href="#appendix">the appendix</a>.
+The summarizing figures show that for VM, COBRA is faster than OSTRICH minus a few outliers around the middle version.
 For DM, COBRA is always faster than OSTRICH when querying within the first half of its delta chain.
 For the second half, COBRA becomes slower, and for BEAR-B Daily even becomes slower than OSTRICH.
 For VQ, COBRA is faster than OSTRICH for BEAR-B Hourly, slightly faster for BEAR-B Daily, and slower for BEAR-A.</p>
+
+          <p class="todo">Update the text above once final results are in. (also consider the new approaches!)</p>
+
+          <p class="todo">Update new figures to include COBRA results</p>
+
+          <figure id="results-beara-vm-sumary">
+<img src="img/query/results_beara-vm-summary.svg" alt="[bear-a vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 5:</span> Median BEAR-A VM query results for all triple patterns for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="results-beara-dm-summary">
+<img src="img/query/results_beara-dm-summary.svg" alt="[bear-a dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 6:</span> Median BEAR-A DM query results for all triple patterns from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="results-beara-vq-summary">
+<img src="img/query/results_beara-vq-summary.svg" alt="[bear-a vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 7:</span> Median BEAR-A VQ query results for all triple patterns.</p>
+            </figcaption>
+</figure>
 
           <figure id="query-vm" class="figure">
 
@@ -1173,27 +1379,50 @@ For VQ, COBRA is faster than OSTRICH for BEAR-B Hourly, slightly faster for BEAR
 <figure id="query-vm-beara" class="subfigure">
 <img src="img/results/beara-query-vm.png" alt="BEAR-A VM" class="results-triple" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 5.1:</span> BEAR-A</p>
+                <p><span class="label">Subfig. 8.1:</span> BEAR-A</p>
               </figcaption>
 </figure>
 
 <figure id="query-vm-bearbd" class="subfigure">
 <img src="img/results/bearbd-query-vm.png" alt="BEAR-B Daily VM" class="results-triple" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 5.2:</span> BEAR-B Daily</p>
+                <p><span class="label">Subfig. 8.2:</span> BEAR-B Daily</p>
               </figcaption>
 </figure>
 
 <figure id="query-vm-bearbh" class="subfigure">
 <img src="img/results/bearbh-query-vm.png" alt="BEAR-B Hourly VM" class="results-triple" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 5.3:</span> BEAR-B Hourly</p>
+                <p><span class="label">Subfig. 8.3:</span> BEAR-B Hourly</p>
               </figcaption>
 </figure>
 
 <figcaption>
-              <p><span class="label">Fig. 5:</span> Version Materialization evaluation times per version for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
+              <p><span class="label">Fig. 8:</span> Version Materialization evaluation times per version for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 For most versions, COBRA is faster than OSTRICH.</p>
+            </figcaption>
+</figure>
+
+          <p class="todo">RM figures above (also their raw image files)</p>
+
+          <figure id="results-bearb-daily-vm-sumary">
+<img src="img/query/results_bearb-daily-vm-summary.svg" alt="[bear-b-daily vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 9:</span> Median BEAR-B-daily VM query results for all triple patterns for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="results-bearb-daily-dm-summary">
+<img src="img/query/results_bearb-daily-dm-summary.svg" alt="[bear-b-daily dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 10:</span> Median BEAR-B-daily DM query results for all triple patterns from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="results-bearb-daily-vq-summary">
+<img src="img/query/results_bearb-daily-vq-summary.svg" alt="[bear-b-daily vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 11:</span> Median BEAR-B-daily VQ query results for all triple patterns.</p>
             </figcaption>
 </figure>
 
@@ -1206,28 +1435,51 @@ For most versions, COBRA is faster than OSTRICH.</p>
 <figure id="query-dm-beara" class="subfigure">
 <img src="img/results/beara-query-dm.png" alt="BEAR-A DM" class="results-triple" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 6.1:</span> BEAR-A</p>
+                <p><span class="label">Subfig. 12.1:</span> BEAR-A</p>
               </figcaption>
 </figure>
 
 <figure id="query-dm-bearbd" class="subfigure">
 <img src="img/results/bearbd-query-dm.png" alt="BEAR-B Daily DM" class="results-triple" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 6.2:</span> BEAR-B Daily</p>
+                <p><span class="label">Subfig. 12.2:</span> BEAR-B Daily</p>
               </figcaption>
 </figure>
 
 <figure id="query-dm-bearbh" class="subfigure">
 <img src="img/results/bearbh-query-dm.png" alt="BEAR-B Hourly DM" class="results-triple" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 6.3:</span> BEAR-B Hourly</p>
+                <p><span class="label">Subfig. 12.3:</span> BEAR-B Hourly</p>
               </figcaption>
 </figure>
 
 <figcaption>
-              <p><span class="label">Fig. 6:</span> Delta Materialization evaluation times between the first version and all other versions
+              <p><span class="label">Fig. 12:</span> Delta Materialization evaluation times between the first version and all other versions
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 For the first half of versions, COBRA is faster than OSTRICH, but slows down in the second half.</p>
+            </figcaption>
+</figure>
+
+          <p class="todo">RM figures above (also their raw image files)</p>
+
+          <figure id="results-bearb-hourly-vm-sumary">
+<img src="img/query/results_bearb-hourly-vm-summary.svg" alt="[bear-b-hourly vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 13:</span> Median BEAR-B-hourly VM query results for all triple patterns for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="results-bearb-hourly-dm-summary">
+<img src="img/query/results_bearb-hourly-dm-summary.svg" alt="[bear-b-hourly dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 14:</span> Median BEAR-B-hourly DM query results for all triple patterns from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="results-bearb-hourly-vq-summary">
+<img src="img/query/results_bearb-hourly-vq-summary.svg" alt="[bear-b-hourly vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 15:</span> Median BEAR-B-hourly VQ query results for all triple patterns.</p>
             </figcaption>
 </figure>
 
@@ -1236,33 +1488,37 @@ For the first half of versions, COBRA is faster than OSTRICH, but slows down in 
 <figure id="query-vq-beara" class="subfigure">
 <img src="img/results/beara-query-vq.png" alt="BEAR-A VQ" class="results-triple" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 7.1:</span> BEAR-A</p>
+                <p><span class="label">Subfig. 16.1:</span> BEAR-A</p>
               </figcaption>
 </figure>
 
 <figure id="query-vq-bearbd" class="subfigure">
 <img src="img/results/bearbd-query-vq.png" alt="BEAR-B Daily VQ" class="results-triple" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 7.2:</span> BEAR-B Daily</p>
+                <p><span class="label">Subfig. 16.2:</span> BEAR-B Daily</p>
               </figcaption>
 </figure>
 
 <figure id="query-vq-bearbh" class="subfigure">
 <img src="img/results/bearbh-query-vq.png" alt="BEAR-B Hourly VQ" class="results-triple" />
 <figcaption class="for-subfigure">
-                <p><span class="label">Subfig. 7.3:</span> BEAR-B Hourly</p>
+                <p><span class="label">Subfig. 16.3:</span> BEAR-B Hourly</p>
               </figcaption>
 </figure>
 
 <figcaption>
-              <p><span class="label">Fig. 7:</span> Version Query evaluation times across all versions for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
+              <p><span class="label">Fig. 16:</span> Version Query evaluation times across all versions for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 COBRA is faster than OSTRICH for the BEAR-B datasets, but slower for BEAR-A.</p>
             </figcaption>
 </figure>
 
-          <p><a href="#query-avg">Table 5</a> show the average overall query evaluation times for BEAR-A, BEAR-B Daily and BEAR-B Hourly.
+          <p class="todo">RM figures above (also their raw image files)</p>
+
+          <p><a href="#query-avg">Table 7</a> show the average overall query evaluation times for BEAR-A, BEAR-B Daily and BEAR-B Hourly.
 This shows that on average, COBRA is faster than OSTRICH,
 except for VQ in BEAR-A.</p>
+
+          <p class="todo">Update the text above once final results are in. (also consider the new approaches!)</p>
 
           <figure id="query-avg" class="table">
 
@@ -1334,9 +1590,11 @@ except for VQ in BEAR-A.</p>
             </table>
 
             <figcaption>
-              <p><span class="label">Table 5:</span> Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for the different datasets (ms).</p>
+              <p><span class="label">Table 7:</span> Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for the different datasets (ms).</p>
             </figcaption>
           </figure>
+
+          <p class="todo">Update table above with new results, and also include HDT and Jena approaches.</p>
 
           <h3 id="evaluation-discussion">Result analysis</h3>
 
@@ -1553,6 +1811,379 @@ This brings us closer to an efficient queryable Semantic Web that can evolve and
 </dl>
 </section>
 </footer>
+
+<br />
+<br />
+
+<div id="appendix">
+      <h1 id="appendix">Appendix</h1>
+      <section id="appendix-bear-a" inlist="" rel="schema:hasPart" resource="#appendix-bear-a">
+<div datatype="rdf:HTML" property="schema:description">
+          <h2 property="schema:name">BEAR-A Query Evaluation results</h2>
+
+          <p>In this appendix section, we list all measured BEAR-A query evaluation durations.
+Each figure contains the durations for each storage approach, being
+OSTRICH, COBRA, HDT-IC, HDT-CB, Jena-IC, Jena-CB, Jena-TB and Jena-CB/TB.</p>
+
+          <figure id="result_beara-vm-s-low">
+<img src="img/query/result_beara-vm-s-low.svg" alt="[bear-a S?? low vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 17:</span> Average VM query results for S?? triple patterns with a low cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-s-high">
+<img src="img/query/result_beara-vm-s-high.svg" alt="[bear-a S?? high vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 18:</span> Average VM query results for S?? triple patterns with a high cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-p-low">
+<img src="img/query/result_beara-vm-p-low.svg" alt="[bear-a ?P? low vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 19:</span> Average VM query results for ?P? triple patterns with a low cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-p-high">
+<img src="img/query/result_beara-vm-p-high.svg" alt="[bear-a ?P? high vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 20:</span> Average VM query results for ?P? triple patterns with a high cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-o-low">
+<img src="img/query/result_beara-vm-o-low.svg" alt="[bear-a ??O low vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 21:</span> Average VM query results for ??O triple patterns with a low cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-o-high">
+<img src="img/query/result_beara-vm-o-high.svg" alt="[bear-a ??O high vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 22:</span> Average VM query results for ??O triple patterns with a high cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-sp-low">
+<img src="img/query/result_beara-vm-sp-low.svg" alt="[bear-a SP? low vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 23:</span> Average VM query results for SP? triple patterns with a low cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-sp-high">
+<img src="img/query/result_beara-vm-sp-high.svg" alt="[bear-a SP? high vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 24:</span> Average VM query results for SP? triple patterns with a high cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-so-low">
+<img src="img/query/result_beara-vm-so-low.svg" alt="[bear-a S?O low vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 25:</span> Average VM query results for S?O triple patterns with a low cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-po-low">
+<img src="img/query/result_beara-vm-po-low.svg" alt="[bear-a ?PO low vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 26:</span> Average VM query results for ?PO triple patterns with a low cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-po-high">
+<img src="img/query/result_beara-vm-po-high.svg" alt="[bear-a ?PO high vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 27:</span> Average VM query results for ?PO triple patterns with a high cardinality for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vm-spo">
+<img src="img/query/result_beara-vm-spo.svg" alt="[bear-a SPO vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 28:</span> Average VM query results for SPO triple patterns for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-s-low">
+<img src="img/query/result_beara-dm-s-low.svg" alt="[bear-a S?? low dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 29:</span> Average DM query results for S?? triple patterns with a low cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-s-high">
+<img src="img/query/result_beara-dm-s-high.svg" alt="[bear-a S?? high dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 30:</span> Average DM query results for S?? triple patterns with a high cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-p-low">
+<img src="img/query/result_beara-dm-p-low.svg" alt="[bear-a ?P? low dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 31:</span> Average DM query results for ?P? triple patterns with a low cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-p-high">
+<img src="img/query/result_beara-dm-p-high.svg" alt="[bear-a ?P? high dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 32:</span> Average DM query results for ?P? triple patterns with a high cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-o-low">
+<img src="img/query/result_beara-dm-o-low.svg" alt="[bear-a ??O low dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 33:</span> Average DM query results for ??O triple patterns with a low cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-o-high">
+<img src="img/query/result_beara-dm-o-high.svg" alt="[bear-a ??O high dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 34:</span> Average DM query results for ??O triple patterns with a high cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-sp-low">
+<img src="img/query/result_beara-dm-sp-low.svg" alt="[bear-a SP? low dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 35:</span> Average DM query results for SP? triple patterns with a low cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-sp-high">
+<img src="img/query/result_beara-dm-sp-high.svg" alt="[bear-a SP? high dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 36:</span> Average DM query results for SP? triple patterns with a high cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-so-low">
+<img src="img/query/result_beara-dm-so-low.svg" alt="[bear-a S?O low dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 37:</span> Average DM query results for S?O triple patterns with a low cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-po-low">
+<img src="img/query/result_beara-dm-po-low.svg" alt="[bear-a ?PO low dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 38:</span> Average DM query results for ?PO triple patterns with a low cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-po-high">
+<img src="img/query/result_beara-dm-po-high.svg" alt="[bear-a ?PO high dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 39:</span> Average DM query results for ?PO triple patterns with a high cardinality from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-dm-spo">
+<img src="img/query/result_beara-dm-spo.svg" alt="[bear-a SPO dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 40:</span> Average DM query results for SPO triple patterns from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-s-low">
+<img src="img/query/result_beara-vq-s-low.svg" alt="[bear-a S?? low vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 41:</span> Average VQ query results for S?? triple patterns with a low cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-s-high">
+<img src="img/query/result_beara-vq-s-high.svg" alt="[bear-a S?? high vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 42:</span> Average VQ query results for S?? triple patterns with a high cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-p-low">
+<img src="img/query/result_beara-vq-p-low.svg" alt="[bear-a ?P? low vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 43:</span> Average VQ query results for ?P? triple patterns with a low cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-p-high">
+<img src="img/query/result_beara-vq-p-high.svg" alt="[bear-a ?P? high vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 44:</span> Average VQ query results for ?P? triple patterns with a high cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-o-low">
+<img src="img/query/result_beara-vq-o-low.svg" alt="[bear-a ??O low vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 45:</span> Average VQ query results for ??O triple patterns with a low cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-o-high">
+<img src="img/query/result_beara-vq-o-high.svg" alt="[bear-a ??O high vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 46:</span> Average VQ query results for ??O triple patterns with a high cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-sp-low">
+<img src="img/query/result_beara-vq-sp-low.svg" alt="[bear-a SP? low vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 47:</span> Average VQ query results for SP? triple patterns with a low cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-sp-high">
+<img src="img/query/result_beara-vq-sp-high.svg" alt="[bear-a SP? high vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 48:</span> Average VQ query results for SP? triple patterns with a high cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-so-low">
+<img src="img/query/result_beara-vq-so-low.svg" alt="[bear-a S?O low vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 49:</span> Average VQ query results for S?O triple patterns with a low cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-po-low">
+<img src="img/query/result_beara-vq-po-low.svg" alt="[bear-a ?PO low vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 50:</span> Average VQ query results for ?PO triple patterns with a low cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-po-high">
+<img src="img/query/result_beara-vq-po-high.svg" alt="[bear-a ?PO high vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 51:</span> Average VQ query results for ?PO triple patterns with a high cardinality.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_beara-vq-spo">
+<img src="img/query/result_beara-vq-spo.svg" alt="[bear-a SPO vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 52:</span> Average VQ query results for SPO triple patterns.</p>
+            </figcaption>
+</figure>
+        </div>
+</section>
+
+      <section id="appendix-bear-b-daily" inlist="" rel="schema:hasPart" resource="#appendix-bear-b-daily">
+<div datatype="rdf:HTML" property="schema:description">
+          <h2 property="schema:name">BEAR-B-daily Query Evaluation results</h2>
+
+          <p>In this appendix section, we list all measured BEAR-B-daily query evaluation durations.
+Each figure contains the durations for each storage approach, being
+OSTRICH, COBRA, HDT-IC, HDT-CB, Jena-IC, Jena-CB, Jena-TB and Jena-CB/TB.</p>
+
+          <figure id="result_bearb-daily-vm-p">
+<img src="img/query/result_bearb-daily-vm-p.svg" alt="[bear-b-daily ?P? vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 53:</span> Average VM query results for ?P? triple patterns for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_bearb-daily-vm-po">
+<img src="img/query/result_bearb-daily-vm-po.svg" alt="[bear-b-daily ?PO vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 54:</span> Average VM query results for ?PO triple patterns for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_bearb-daily-dm-p">
+<img src="img/query/result_bearb-daily-dm-p.svg" alt="[bear-b-daily ?P? dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 55:</span> Average DM query results for ?P? triple patterns from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_bearb-daily-dm-po">
+<img src="img/query/result_bearb-daily-dm-po.svg" alt="[bear-b-daily ?PO dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 56:</span> Average DM query results for ?PO triple patterns from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_bearb-daily-vq-p">
+<img src="img/query/result_bearb-daily-vq-p.svg" alt="[bear-b-daily ?P? vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 57:</span> Average VQ query results for ?P? triple patterns.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_bearb-daily-vq-po">
+<img src="img/query/result_bearb-daily-vq-po.svg" alt="[bear-b-daily ?PO vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 58:</span> Average VQ query results for ?PO triple patterns.</p>
+            </figcaption>
+</figure>
+        </div>
+</section>
+
+      <section id="appendix-bear-b-hourly" inlist="" rel="schema:hasPart" resource="#appendix-bear-b-hourly">
+<div datatype="rdf:HTML" property="schema:description">
+          <h2 property="schema:name">BEAR-B-hourly Query Evaluation results</h2>
+
+          <p>In this appendix section, we list all measured BEAR-B-hourly query evaluation durations.
+Each figure contains the durations for each storage approach, being
+OSTRICH, COBRA, HDT-IC, HDT-CB, Jena-IC, Jena-CB, Jena-TB and Jena-CB/TB.</p>
+
+          <figure id="result_bearb-hourly-vm-p">
+<img src="img/query/result_bearb-hourly-vm-p.svg" alt="[bear-b-hourly ?P? vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 59:</span> Average VM query results for ?P? triple patterns for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_bearb-hourly-vm-po">
+<img src="img/query/result_bearb-hourly-vm-po.svg" alt="[bear-b-hourly ?PO vm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 60:</span> Average VM query results for ?PO triple patterns for all versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_bearb-hourly-dm-p">
+<img src="img/query/result_bearb-hourly-dm-p.svg" alt="[bear-b-hourly ?P? dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 61:</span> Average DM query results for ?P? triple patterns from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_bearb-hourly-dm-po">
+<img src="img/query/result_bearb-hourly-dm-po.svg" alt="[bear-b-hourly ?PO dm]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 62:</span> Average DM query results for ?PO triple patterns from version 0 to all other versions.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_bearb-hourly-vq-p">
+<img src="img/query/result_bearb-hourly-vq-p.svg" alt="[bear-b-hourly ?P? vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 63:</span> Average VQ query results for ?P? triple patterns.</p>
+            </figcaption>
+</figure>
+
+          <figure id="result_bearb-hourly-vq-po">
+<img src="img/query/result_bearb-hourly-vq-po.svg" alt="[bear-b-hourly ?PO vq]" height="200em" class="plot" />
+<figcaption>
+              <p><span class="label">Fig. 64:</span> Average VQ query results for ?PO triple patterns.</p>
+            </figcaption>
+</figure>
+        </div>
+</section>
+
+    </div>
 
 </div>
 </div>
