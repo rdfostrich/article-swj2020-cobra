@@ -141,7 +141,7 @@ RM the table above.
 | Raw (N-Triples) | 46,069.76             | 556.44         | 8,314.86           |
 | Raw (gzip)      | *3,194.88*            |  30.98         |   466.35           |
 | OSTRICH         |  4,587.52             |  16.87         |   450.59           |
-| COBRA           |  TODO                 |  TODO          |   TODO             |
+| COBRA           |  TODO                 |  25.14         |   TODO             |
 | COBRA*          |  TODO                 |  TODO          |   TODO             |
 | Jena-IC         | 32,808.96             | 415.32         | 6,233.92           |
 | Jena-CB         | 18,216.96             |  42.82         |   473.41           |

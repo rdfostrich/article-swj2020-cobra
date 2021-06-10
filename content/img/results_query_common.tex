@@ -13,7 +13,8 @@
 \usetikzlibrary{arrows,positioning,shapes,calc,intersections,patterns}
 
 \definecolor{colorostrich}{RGB}{142, 23,  4}
-\definecolor{colorjena}{RGB}   { 62,111,186}
+\definecolor{colorcobra}{RGB}  { 62,111,186}
+\definecolor{colorjena}{RGB}   {204,147, 14}
 \definecolor{colorhdt}{RGB}    {172,196, 75}
 
 \newcommand\plotfontsize{\fontsize{6}{6}\selectfont}
@@ -66,7 +67,7 @@
       legend image post style={sharp plot, line width=0.5pt},
       scaled y ticks = false,
       y tick label style={/pgf/number format/fixed, /pgf/number format/1000 sep = \thinspace},
-      legend entries = {OSTRICH,HDT-IC,HDT-CB,Jena-IC,Jena-CB,Jena-TB,Jena-CB/TB,}
+      legend entries = {OSTRICH,COBRA,HDT-IC,HDT-CB,Jena-IC,Jena-CB,Jena-TB,Jena-CB/TB,}
   },
   queryplotbearbh/.style={%
       queryplot,
@@ -88,7 +89,7 @@
       xlabel={Offset},
       xtick={2,8,32,128,512,2048},
       ymax=1000,
-      legend entries = {OSTRICH,HDT-IC,Jena-IC,Jena-TB,}
+      legend entries = {OSTRICH,COBRA,HDT-IC,Jena-IC,Jena-TB,}
   },
   barqueryplot/.style={%
       ymajorgrids=true,
@@ -114,11 +115,13 @@
       legend image post style={line width=0.5pt},
       scaled y ticks = false,
       y tick label style={/pgf/number format/fixed, /pgf/number format/1000 sep = \thinspace},
-      legend entries = {OSTRICH,\ HDT-IC,\ \ HDT-CB,\ Jena-IC,Jena-CB,Jena-TB,Jena-CB/TB,}
+      legend entries = {OSTRICH, COBRA,\ HDT-IC,\ \ HDT-CB,\ Jena-IC,Jena-CB,Jena-TB,Jena-CB/TB,}
   },
   main/.style={every mark/.append style={solid, fill=gray},thick,mark size=1},
   ostrichall/.style={color=colorostrich,main,mark=diamond*,mark options={solid,fill=colorostrich}},
   ostrich/.style={ostrichall,discard if not={offset}{0}},
+  cobraall/.style={color=colorcobra,main,mark=diamond*,mark options={solid,fill=colorcobra}},
+  cobra/.style={cobraall,discard if not={offset}{0}},
   jenaic/.style={densely dashed,color=colorjena,main,mark=*,mark options={solid,fill=colorjena}},
   jenacb/.style={densely dashed,color=colorjena,main,mark=square*,mark options={solid,fill=white}},
   jenatb/.style={densely dotted,color=colorjena,main,mark=triangle*,mark options={solid,fill=colorjena}},
@@ -128,6 +131,7 @@
   hdtcb/.style={color=colorhdt,main,mark=square*,mark options={solid,fill=white}},
   barmain/.style={},
   barostrich/.style={fill=colorostrich,barmain},
+  barcobra/.style={fill=colorcobra,barmain},
   barjenaic/.style={densely dashed,fill=colorjena,barmain},
   barjenacb/.style={densely dashed,fill=colorjena,barmain},
   barjenatb/.style={densely dashed,fill=colorjena,barmain},
