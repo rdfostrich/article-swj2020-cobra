@@ -7,6 +7,7 @@
     \begin{semilogyaxis}[queryplotbearbd,mark repeat={5}]
         
         \addplot[ostrich] table [x=patch, y=lookup-mus, col sep=comma] {data/bearb-daily/query/ostrich/_median_\storage.csv};
+        \addplot[cobra] table [x=patch, y=lookup-mus, col sep=comma] {data/bearb-daily/query/cobra/_median_\storage.csv};
         
         \addplot[hdtic] table [x=version, y=ms, col sep=comma] {data/bearb-daily/query/hdt-ic/_median_\storage.csv};
         \addplot[hdtcb] table [x=version, y=ms, col sep=comma] {data/bearb-daily/query/hdt-cb/_median_\storage.csv};

@@ -141,8 +141,8 @@ RM the table above.
 | Raw (N-Triples) | 46,069.76             | 556.44         | 8,314.86           |
 | Raw (gzip)      | *3,194.88*            |  30.98         |   466.35           |
 | OSTRICH         |  4,587.52             |  16.87         |   450.59           |
-| COBRA           |  TODO                 |  25.14         |   TODO             |
-| COBRA*          |  TODO                 |  TODO          |   TODO             |
+| COBRA           |  4,066.74             |  25.69         |   331.20           |
+| COBRA*          |  TODO                 |  21.58         |   216.95           |
 | Jena-IC         | 32,808.96             | 415.32         | 6,233.92           |
 | Jena-CB         | 18,216.96             |  42.82         |   473.41           |
 | Jena-TB         | 82,278.4              |  23.61         | 3,678.89           |
@@ -162,8 +162,8 @@ There is no consistent overall winner.
 | Approach        | BEAR-A | BEAR-B-daily  | BEAR-B-hourly |
 | --------------- |-------:|--------------:|--------------:|
 | OSTRICH         | 2,256  | 12.36         | 4,497.32      |
-| COBRA           | TODO   | TODO          | TODO          |
-| COBRA*          | TODO   | TODO          | TODO          |
+| COBRA           | 1.300  |  6.54         |   529.99      |
+| COBRA*          | TODO   |  4.91         |   337.52      |
 | Jena-IC         |   443  |  8.91         |  142.26       |
 | Jena-CB         |   226  |  9.53         |  173.48       |
 | Jena-TB         | 1,746  |  0.35         |   70.56       |
@@ -185,6 +185,7 @@ The lowest times per dataset are indicated in italics.
 
 <figure id="ingestion-size-beara" class="subfigure">
 <img src="img/results/beara-ingestion-size.png" alt="BEAR-A Ingestion Size" class="results-triple">
+<img src="img/results-ingestion-size-beara.svg" alt="[bear-a ingestion sizes]" height="150em" class="plot">
 <figcaption markdown="block">
 BEAR-A
 </figcaption>
@@ -192,6 +193,7 @@ BEAR-A
 
 <figure id="ingestion-size-bearbd" class="subfigure">
 <img src="img/results/bearbd-ingestion-size.png" alt="BEAR-B Daily Ingestion Size" class="results-triple">
+<img src="img/results-ingestion-size-bearb-daily.svg" alt="[bear-b-hourly ingestion sizes]" height="150em" class="plot">
 <figcaption markdown="block">
 BEAR-B Daily
 </figcaption>
@@ -199,6 +201,7 @@ BEAR-B Daily
 
 <figure id="ingestion-size-bearbh" class="subfigure">
 <img src="img/results/bearbh-ingestion-size.png" alt="BEAR-B Hourly Ingestion Size" class="results-triple">
+<img src="img/results-ingestion-size-bearb-hourly.svg" alt="[bear-b-hourly ingestion sizes]" height="150em" class="plot">
 <figcaption markdown="block">
 BEAR-B Hourly
 </figcaption>
@@ -222,6 +225,7 @@ Update figures above, because we use different version ranges
 
 <figure id="ingestion-time-beara" class="subfigure">
 <img src="img/results/beara-ingestion-time.png" alt="BEAR-A Ingestion Time" class="results-triple">
+<img src="img/results-ingestion-rate-beara.svg" alt="[bear-a ingestion rate]" height="150em" class="plot">
 <figcaption markdown="block">
 BEAR-A
 </figcaption>
@@ -229,6 +233,7 @@ BEAR-A
 
 <figure id="ingestion-time-bearbd" class="subfigure">
 <img src="img/results/bearbd-ingestion-time.png" alt="BEAR-B Daily Ingestion Time" class="results-triple">
+<img src="img/results-ingestion-rate-bearb-daily.svg" alt="[bear-b-hourly ingestion sizes]" height="150em" class="plot">
 <figcaption markdown="block">
 BEAR-B Daily
 </figcaption>
@@ -236,8 +241,16 @@ BEAR-B Daily
 
 <figure id="ingestion-time-bearbh" class="subfigure">
 <img src="img/results/bearbh-ingestion-time.png" alt="BEAR-B Hourly Ingestion Time" class="results-triple">
+<img src="img/results-ingestion-rate-bearb-hourly.svg" alt="[bear-b-hourly ingestion rate]" height="150em" class="plot">
 <figcaption markdown="block">
 BEAR-B Hourly
+</figcaption>
+</figure>
+
+<figure id="ingestion-time-bearbh-log" class="subfigure">
+<img src="img/results-ingestion-rate-bearb-hourly-log.svg" alt="[bear-b-hourly ingestion rate with logarithmic axis]" height="150em" class="plot">
+<figcaption markdown="block">
+BEAR-B Hourly (Logarithmic Y axis)
 </figcaption>
 </figure>
 
@@ -274,9 +287,9 @@ Update text above if needed.
 
 | Dataset       | Time          |
 |---------------|:--------------|
-| BEAR-A        | 8.38 hours    |
-| BEAR-B Daily  | 2.48 minutes  |
-| BEAR-B Hourly | 11.41 minutes |
+| BEAR-A        | 8.38 hours (TODO)    |
+| BEAR-B Daily  | 3.91 minutes  |
+| BEAR-B Hourly | 7.82 hours    |
 
 <figcaption markdown="block">
 Fix-up duration for the different datasets.
@@ -284,7 +297,7 @@ Fix-up duration for the different datasets.
 </figure>
 
 {:.todo}
-Update table above, because we use different version ranges
+Update BEAR-A in table above
 
 #### Query Evaluation
 
