@@ -6,6 +6,8 @@ for storage in ${storages[@]}; do
     for query in ${queries[@]}; do
         tmp="content/img/query/result_beara-$storage-$query.tex"
         cp content/img/query/results_beara-template-$storage.tex $tmp
+        querycobra=$(echo "$query" | sed "s/-/-queries-/" | sed "s/high/highCardinality/" | sed "s/low/lowCardinality/" | sed "s/spo/spo-queries/")
+        gsed -i "s/QUERY_COBRA/$querycobra/" $tmp
         gsed -i "s/QUERY/$query/" $tmp
         tools/tikz2svg.sh $tmp
         rm $tmp
