@@ -167,6 +167,16 @@ Due to BEAR covering all query atoms we work with,
 and it providing baseline implementations for the different storage strategies,
 we make use of BEAR for our experiments.
 
+The BEAR benchmark also provides baseline RDF archive implementations based on [HDT](cite:cites hdt) and
+[Jena's](cite:cites jena) [TDB store](https://jena.apache.org/documentation/tdb/)
+for the IC, CB, and TB approaches, and the hybrid IC/CB and TB/CB approaches.
+Just like [TailR](cite:cites tailr), the hybrid approaches are based on snapshots followed by delta chains.
+Since HDT does not support quads by default, the TB and TB/CB approaches were not implemented in the HDT baseline implementations.
+Given the variety of these approaches in terms of storage strategies,
+together with their open availability and ease of use,
+they form a good basis for comparative analysis when benchmarking,
+which is why we make use of them during our experiments.
+
 ### OSTRICH
 
 As mentioned before, [OSTRICH](cite:cites ostrich) makes use of a hybrid IC/CB/TB storage approach
