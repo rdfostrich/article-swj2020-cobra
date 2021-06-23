@@ -392,35 +392,6 @@ Median BEAR-B-hourly VQ query results for all triple patterns.
 </figcaption>
 </figure>
 
-[](#query-avg) show the average overall query evaluation times for BEAR-A, BEAR-B Daily and BEAR-B Hourly.
-This shows that on average, COBRA is faster than OSTRICH,
-except for VQ in BEAR-A.
-
-{:.todo}
-Update the text above once final results are in. (also consider the new approaches!)
-
-<figure id="query-avg" class="table" markdown="1">
-
-|               | VM      | DM      | VQ     |
-|---------------|:--------|:--------|:-------|
-| **BEAR-A** | | |
-| OSTRICH       | 5.64    | 4,15    | *8,60*  |
-| COBRA         | *4.37*  | *2,93*  | 10,62   |
-| **BEAR-B Daily** | | |
-| OSTRICH       | 0,71    | 0,38    | 0.90    |
-| COBRA         | *0,51*  | *0,31*  | *0.89*  |
-| **BEAR-B Hourly** | | |
-| OSTRICH       | 0.73    | 0.27    | 1,72    |
-| COBRA         | *0.53*  | *0.19*  | *1,34*  |
-
-<figcaption markdown="block">
-Average query evaluation times for OSTRICH and COBRA for VM, DM and VQ for the different datasets (ms).
-</figcaption>
-</figure>
-
-{:.todo}
-Update table above with new results, and also include HDT and Jena approaches.
-
 ### Result analysis
 {:#evaluation-discussion}
 
