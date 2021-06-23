@@ -162,7 +162,7 @@ There is no consistent overall winner.
 | Approach        | BEAR-A | BEAR-B-daily  | BEAR-B-hourly |
 | --------------- |-------:|--------------:|--------------:|
 | OSTRICH         | 2,256  | 12.36         | 4,497.32      |
-| COBRA           | 1.300  |  6.54         |   529.99      |
+| COBRA           | 1,300  |  6.54         |   529.99      |
 | COBRA*          | TODO   |  4.91         |   337.52      |
 | Jena-IC         |   443  |  8.91         |  142.26       |
 | Jena-CB         |   226  |  9.53         |  173.48       |
@@ -395,8 +395,10 @@ Median BEAR-B-hourly VQ query results for all triple patterns.
 ### Result analysis
 {:#evaluation-discussion}
 
-In this section, we discuss the findings of our results regarding ingestion and query evaluation,
-and we test our hypotheses.
+In this section, we discuss the findings of our results regarding ingestion and query evaluation
+when comparing the bidirectional delta chain with a unidirectional delta chain,
+we test our hypotheses,
+and we discuss the overall comparison of different archiving approaches.
 
 #### Ingestion
 
@@ -432,10 +434,13 @@ compared to in-order ingestion followed by the fix-up process.
 
 #### Query Evaluation
 
-Regarding query performance, our results show that the bidirectional delta chain also has a large impact here.
+Regarding query performance, our results show that the bidirectional delta chain also has a large impact here compared to the unidirectional delta chain.
 Since two shorter delta chains lead to two smaller addition and deletion indexes compared to one longer delta chain,
-VM and DM times become lower, since less data needs to be iterated.
-We see that DM times for the second half of the bidirectional delta chain become slower compared to the first half.
+VM and DM times become lower for the dataset with few large versions (BEAR-A), since less data needs to be iterated.
+However, for datasets with many small versions (BEAR-B),
+we see that VM times become lower or equal for the first half of the bidirectional delta chain,
+but becomes slower for the second half.
+We see this behaviour also recurring across all datasets for DM queries.
 This is because in these cases we need to query within the two parts of the delta chain,
 i.e., we need to search through two addition and deletion indexes instead of just one.
 For datasets with many small versions (BEAR-B),
@@ -448,9 +453,9 @@ as the benefit of the shared snapshot outweighs the overhead of the delta chains
 However, for few large versions,
 the overhead of two delta chains is too large for VQ,
 and one delta chain performs better.
-In summary, a bidirectional delta chain is most effective for optimizing VM,
-largely beneficial for DM,
-and beneficial for VQ (assuming many small versions).
+In summary, a bidirectional delta chain is effective for optimizing VM (assuming few large versions),
+can speedup DM for the first half of all versions, but slow down for the second half,
+and is beneficial for VQ (assuming many small versions).
 
 #### Hypotheses
 
@@ -467,6 +472,27 @@ As such, we _accept_ this hypothesis.
 Our other hypotheses expect that evaluation times for [VM](#hypothesis-qualitative-querying-vm),
 [DM](#hypothesis-qualitative-querying-dm) and [VQ](#hypothesis-qualitative-querying-vq)
 with a bidirectional delta chain would be lower.
-Our results show that this is true, expect for VQ.
-As such, we _accept_ our [third](#hypothesis-qualitative-querying-vm) and [fourth](#hypothesis-qualitative-querying-dm) hypothesis,
-and _reject_ our [fifth](#hypothesis-qualitative-querying-vq) hypothesis.
+Our results show that each one of them is true in many cases, but they are not valid across the board,
+so we _reject_ each of them.
+
+#### Comparison of Archiving Approaches
+
+In previous work, it was shown that OSTRICH can speed up VM, DM, and VQ queries on average compared to other RDF archiving approaches,
+at the cost of higher ingestion times.
+Our experimental results for the new bidirectional delta chain approach from COBRA
+show that it can significantly reduce ingestion time, and sometimes also ingestion size.
+Even though there are these reductions, there are still approaches for which ingestion is significantly faster (Jena-TB, Jena-CB/TB, HDT-IC, HDT-CB)
+and storage size is slightly lower (Jena-TB, Jena-CB/TB, HDT-CB).
+
+The results show that HDT-based approaches can perform exceptionally well in certain cases,
+but they then perform relatively much worse in other cases.
+For instance, HDT-IC performs the best in all cases for VM queries,
+but this comes at the cost of very high storage requirements.
+Furthermore, HDT-CB performs really well for all queries,
+but becomes continuously slower for more versions in the dataset.
+Overall, Jena-based approaches are the slowest.
+In general, both OSTRICH and COBRA offer a valuable trade-off between these extremes,
+with COBRA focusing on reducing the problematically high ingestion times of OSTRICH.
+OSTRICH and COBRA are thereby never the optimal solution for all specific cases,
+but they perform –on average– sufficiently well for all different cases,
+which is not the case for the other approaches.

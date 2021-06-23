@@ -7,24 +7,27 @@ by making use of a *bidirectional delta chain*.
 Based on our implementation of this new approach (COBRA),
 our experimental results show that this modification
 leads to more efficient ingestion (41% faster) compared to a unidirectional delta chain (OSTRICH).
-This change also reduces total storage size (13% lower) for two out of three datasets.
+This change also reduces total storage size (19% lower) for two out of three datasets.
 Furthermore, all versioned query types achieve a performance boost (21% faster),
 except for VQ under the BEAR-A dataset.
-With query execution times in the order of 1 millisecond or less,
-the bidirectional delta chain strategy from COBRA is an ideal back-end for RDF archives in the context of Web querying,
+COBRA offers a more balanced performance trade-off between the different versioned query types and ingestion
+compared to other RDF archiving approaches that may perform better in specific cases,
+but worse in other cases.
+This trade-off, combined with query execution times in the order of 1 millisecond or less,
+shows that the bidirectional delta chain strategy from COBRA is an ideal back-end for RDF archives in the context of Web querying,
 as network latency is typically slower than that.
 
-As such, the bidirectional delta chain is a viable alternative to the unidirectional delta chain,
-as it is beneficial across nearly all metrics.
+As such, the bidirectional delta chain (COBRA) is a viable alternative to the unidirectional delta chain (OSTRICH),
+as it reduces its scalability problems during ingestion while still achieving sufficiently fast querying.
 We **recommend bidirectional delta chains** when any of the following is needed (in order of importance):
 
 * **Lower ingestion times**
-* **Faster VM and DM**
 * **Lower storage sizes**
 
 On the other hand, we **do not recommend bidirectional delta chains** in the following cases:
 
 * **Fast VQ is needed over datasets with very large versions**: Bidirectional chains slow down VQ when versions are large.
+* **Fast VM/DM is needed over datasets with many small versions**: Bidirectional chains slow down VM and DM in the second half for many smaller versions.
 * **Dataset has only a few small versions**: Unidirectional chain should be used until the ingestion of a new version exceeds the ingestion time of a new snapshot.
 
 These limitations of a bidirectional delta chain
