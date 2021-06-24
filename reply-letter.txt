@@ -1,0 +1,208 @@
+To the Editors of the Semantic Web Journal
+
+Dear Editors and Reviewers,
+
+Thank you for your detailed and insightful comments.
+Please find attached to this letter a revised version of our submission entitled
+"Optimizing Storage of RDF Archives using Bidirectional Delta Chains"
+in which we have addressed your comments.
+
+In particular, we have made the following major changes:
+* More extensive experiments (larger datasets, comparison with other systems)
+* Addition of an appendix with more detailed results
+* Addition of a section to explain the out-of-order ingestion in more detail (Section 4.5)
+* Enhanced discussion of results based on new experiments
+
+Due to the additional effort that was required to execute these experiments,
+we had to request additional help, hence the addition of another co-author.
+
+Hereafter, you can find detailed answers to your questions and remarks.
+Should you have any further questions or concerns, please do not hesitate to contact us.
+We look forward to hearing back from you and thank you in advance.
+
+Sincerely,
+Ruben Taelman
+on behalf of the authors
+
+imec - Ghent University - IDLab
+Technologiepark-Zwijnaarde 15
+B-9052 Gent
+Belgium
+
+# Editor
+
+> The authors may also consider including discussion of our following (very
+recent) workshop paper in the discussion of related work
+
+This work is indeed very relevant. We have now included this work in the related work section (2.2)
+
+# Review 1
+
+> the evaluation does not show whether the problems with OSTRICH
+mentioned by the authors starting at version 1,100 are resolved, since the
+maximum number of versions is 400.
+
+We have re-executed all experiments, and now evaluate BEAR-B Hourly for all its 1299 versions instead of 400 versions.
+The ingestion results in Figures 3.3 and 4.3 show that COBRA in fact resolves the ingestion problems experienced by OSTRICH.
+
+> I do not agree with the conclusion of the authors, stating that
+COBRA solves the scalability issues of OSTRICH w.r.t. ingestion. The
+scalability issues seem to be only delayed by a fixed factor (around 2). 
+
+We agree with this comment, and modified the text throughout this article to be more nuanced and exact.
+Instead of saying we “solve” the scalability problem, we now say that it is “improved”.
+In the conclusions section, we have added a paragraph explaining this difference,
+and that future work is required to handle multiple delta chains to fully solve the scalability problem.
+
+> page 2 “require all preceding deltas to be checked” at first this seems
+reasonable, but given the aggregated delta chain that should not be necessary
+(?) and it is confusing to me after reading the entire paper. I could imagine
+the index insert/update is slowing it down.
+
+We have clarified this in the introduction section.
+"While this aggregated delta chain is beneficial for faster query execution,
+it comes at the cost of increased ingestion times."
+
+> My interpretation of this table is that OSTRICH
+uses independent copies/snapshots - by definition of IC for every version -
+and additional deltas for every version. While the latter is accurate, the
+former seems not valid at the current stage.
+
+We have clarified in the related work section that OSTRICH does not fullfil IC completely.
+
+> I argue that git does also not fulfill IC strictly due to garbage collection
+which is employed by QuitStore. The underlying git storage layer uses a
+mixture of snapshots (objects) and pack files (compression and deltas).
+Moreover, QuitStore is described as fragment-based in [4]. 
+
+We have clarified the storage strategy of Quit Store in the related work section.
+
+> p7 “by invoking the streaming ingestion algorithm for unidirectional
+agg….” the input chain is non-aggregated so why is the streaming
+expecting aggregated deltas?
+
+This streaming algorithm produces unidirectional aggregated delta chains, but accepts (the more widely used) non-aggregated deltas as input.
+This has now been clarified in the text (Section 4.4).
+
+> Fig2 the varying number of deltas can be confusing. I think it would be more
+intuitive if they have the same number of deltas. I recommend using BEAR-A
+(versions) as a concrete and consistent example.
+
+Figure 2 now consistently uses six versions. The styling has also been made consistent with the other delta chain figures in the article to avoid confusion.
+
+> p9 “stored out of order”. Please describe the order more clearly.
+
+We have added a new section (4.5) that explains this out-of-order ingestion in detail,
+together with pseudocode that explains this process.
+We have illustrated this process in section 5.2 on BEAR-A in the text.
+
+> fig 6.1 I do not understand why values for 8 version-deltas are reported. DM
+between version 0 and version 0 (0-0) does not seem to be meaningful? Why is
+DM 0-3 most efficient for both approaches? I would expect only 0-4 to be
+significantly faster for COBRA.
+
+There was indeed a problem with the graphs. This has been resolved in the new graphs containing the new results.
+
+> fig 6.2/6.3 I do not understand the execution time minima very much at the
+beginning. For COBRA I would expect minima in the middle and for OSTRICH I
+would not expect them at all.
+
+(VM) execution times are the lowest for OSTRICH and COBRA if the snapshot version is targeted,
+which corresponds to the first version for OSTRICH, and the middle version for COBRA.
+
+> Does the fixup require the database to be read-only?
+
+Since this fix-up process only applies to the first (temporary) delta chain,
+and does not touch the second delta chain, it does not require temporarily making the store read-only.
+it may run in parallel to other ingestions processes for new versions.
+We have added some sentences in section 4.6 to clarify this.
+
+> Please use the review layout with line numbers and pages in future revisions.
+
+Since we are using an HTML template instead of the LaTeX template, such line numbers are not supported.
+We were however able to add page numbers as of this revision.
+
+# Review 2
+
+> While I acknowledge the soundness of the technical solution and the
+relatively novelty of the bidirectional delta chain approach applied to RDF
+(bidirectional deltas have been applied in other fields,
+e.g. https://www.sciencedirect.com/science/article/pii/S0306457311000926),
+one could argue that the overall contribution of the paper is limited, or it
+is hindered by a few key facts:
+
+The linked article on bidirectional delta files discusses a technique with a similar name, but in fact the technique is different.
+The linked article says that “A bidirectional delta file provides concurrent storage and usage of forwards and backwards delta techniques in a single file.”
+This allows one delta to be used as both a forward and reverse delta.
+While our solution does not apply bidirectionality to deltas themselves, but more broadly, to delta chains.
+We did however take inspiration from B-frames from the domain of video compression, which are similar, but they apply to non-aggregated deltas, instead of aggregated deltas that we work with. We now briefly discuss this in the introduction section.
+
+> First of all, authors motivate the need of improving OSTRICH for a very
+large number of versions ("...  [OSTRICH] starts showing high ingestion
+times starting around version 1,100"), the evaluation stops at 400
+versions. Why not testing with the full versions of BEAR-B?
+
+We have re-executed all experiments, and now evaluate BEAR-B Hourly for all its 1299 versions instead of 400 versions.
+
+> While the improvement in ingestion size is noticeable (41% less on
+average), this assumes that all versions are known beforehand. If I am not
+wrong, adding the in order time COBRA* (Table 3) and the fixing time (Table
+4) can equal or make the time even larger. Please clarify this point.
+
+This is indeed correct, we mentioned in section 5.3.1 that “On average, this fix-up requires 3,6 times more time relative to the overhead of COBRA compared to COBRA*, showing that out-of-order ingestion is still preferred when possible.”
+Later, in section 5.4.1, we mention that “The fix-up process for enabling this reversal does however require a significant execution time. Since this could easily run in a separate offline process in parallel to query execution and the ingestion of next versions, this additional time is typically not a problem. As such, when the server encounters a dataset with large versions (millions of triples per version), then the fix-up approach should be followed.”
+
+> The mixed results in query performance and the difference performance with
+large and small archives clearly shows that the author's idea of considering
+multiple snapshots and delta chains for future work, might actually make this
+contribution stronger. 
+
+We indeed consider multiple snapshots and delta chains future work. While we in fact already support ad-hoc creation of additional snapshots (as required for COBRA* before the fix-up step), there exist no algorithms for querying over such cases. Especially the DM and VQ algorithms needed for cross-delta-chain querying (with offset support) and cardinality estimation are highly complex, especially since we are working with aggregated deltas, for which significant additional research is required. Therefore, we consider this out of scope for this work, in which we deliberately focus purely on the bidirectionality of delta chains.
+We have now included these open questions in the conclusions section as well.
+
+> knowing how the new results of COBRA positions
+with the state of the art would enrich the big picture.
+
+We agree. We re-executed all experiments, and this time also include all 6 systems from the BEAR benchmark.
+While we attempted to make use of other systems such as X-RDF-3X, RDF-TX and Dydra as well,
+we encountered major difficulties with them caused by either missing implementations or the additional required implementation effort to support all required query interfaces.
+As such, we consider a comparison with _all_ other archiving systems out of scope for this work,
+as we can already draw all necessary conclusions around our contribution by comparing with the 6 systems from the BEAR benchmark.
+
+> Why is OSTRICH meant to be also an IC approach if it only keeps the first
+version? Isn't that a normal change-based approach? (at the end, there should
+always be a base dataset, right?)
+
+Indeed, according to the used definition of IC, OSTRICH is not strictly IC.
+We clarified this in the text and the table in section 2.2.
+
+> Why does not COBRA suffer a visible change in space in BEAR-A (Subfig. 3.1)
+in the middle (materialized) version in contrast to the two BEAR-B (Subfig.
+3.2 and 3.3). It is indeed acknowledged in the caption of the figure ("For
+BEAR-B Daily and Hourly, the middle snapshot leads to a significant increase
+in storage size") but not explained why.
+
+For BEAR-A, storage size for COBRA lowers at the middle version compared to OSTRICH, which shows that a snapshot with reversed deltas pointing to it (COBRA) requires less storage space compared to continued use of aggregated deltas (OSTRICH). This shows that this bidirectional delta chain is more effective for BEAR-A (in terms of storage size) compared to the BEAR-B datasets. We have clarified this in sections 5.3.1 and 5.4.1.
+
+> In Section 5.4.1, when authors talk about "many small versions", does it
+refer to few triples in each version, or to few changes in a version compared
+to the previous one? In the latter, in absolute value or in % over the total
+size?
+
+This refers to both the number of triples and the change ratio. We have added the following to the related work section (2.3), and reiterated this in section 5.4.1:
+BEAR-A provides triple pattern queries for three different query atoms for both result sets with a low and a high cardinality.
+The BEAR-B dataset contains the 100 most volatile resources from DBpedia Live as three different granularities (instant, hour and day),
+and provides a small collection of triple pattern queries corresponding to the real-world usage of DBpedia.
+Each version contains between 33K and 43K triples, where the instant granularity has an average change ratio of 0.011%,
+hour has 0.304%, and day has 1.252%.
+Given the relative number of triples and change ratios between BEAR-A and BEAR-B,
+we refer to BEAR-A as a dataset with few large versions,
+and to BEAR-B as a dataset with many small versions for the remainder of this article.
+We also added this description to the related work section.
+
+> In the abstract, this
+does not give much information: "In future work, other modifications to this
+delta chain structure deserve to be investigated, as they may be able to
+provide additional benefits."
+
+We have clarified in the abstract that these modifications are needed to further improve the scalability of ingestion and querying of datasets with many versions.
