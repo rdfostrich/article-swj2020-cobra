@@ -163,9 +163,6 @@ hour has 0.304%, and day has 1.252%.
 Given the relative number of triples and change ratios between BEAR-A and BEAR-B,
 we refer to BEAR-A as a dataset with few large versions,
 and to BEAR-B as a dataset with many small versions for the remainder of this article.
-Due to BEAR covering all query atoms we work with,
-and it providing baseline implementations for the different storage strategies,
-we make use of BEAR for our experiments.
 
 The BEAR benchmark also provides baseline RDF archive implementations based on [HDT](cite:cites hdt) and
 [Jena's](cite:cites jena) [TDB store](https://jena.apache.org/documentation/tdb/)
@@ -176,6 +173,10 @@ Given the variety of these approaches in terms of storage strategies,
 together with their open availability and ease of use,
 they form a good basis for comparative analysis when benchmarking,
 which is why we make use of them during our experiments.
+
+Due to BEAR covering all query atoms we work with,
+and it providing baseline implementations for the different storage strategies,
+we make use of BEAR for our experiments.
 
 ### OSTRICH
 

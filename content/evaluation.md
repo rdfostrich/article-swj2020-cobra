@@ -1,7 +1,7 @@
 ## Evaluation
 {:#evaluation}
 
-In this section, we evaluate our bidirectional archiving approach by comparing our implementation to native OSTRICH.
+In this section, we evaluate our bidirectional archiving approach by comparing our implementation to native OSTRICH and other systems.
 
 ### Implementation
 {:#evaluation-implementation}
@@ -18,14 +18,15 @@ The delta dictionary is encoded with [gzip](http://www.gzip.org/), which require
 In order to evaluate the ingestion and triple pattern query execution of COBRA,
 we make use of the [BEAR benchmark](https://aic.ai.wu.ac.at/qadlod/bear.html){:.mandatory}.
 To test the scalability of our approach for datasets with few and large versions, we use the BEAR-A benchmark.
-We use the first ten versions of the BEAR-A dataset (more versions cause memory issues),
+We use the first ten versions of the BEAR-A dataset (more versions cause memory issues with OSTRICH),
 which contains 30M to 66M triples per version.
 This dataset was compiled from the [Dynamic Linked Data Observatory](http://swse.deri.org/dyldo/).
 To test for datasets with many smaller versions, we use BEAR-B with the daily and hourly granularities.
 For the daily dataset we use 89 versions and for hourly dataset 1,299 versions,
 both of them have around 48K triples per version.
 All experiments were performed on a 64-bit Ubuntu 14.04 machine with a 24-core 2.40 GHz CPU and 128 GB of RAM.
-Our experimental setup and its raw results are available on [GitHub](https://github.com/rdfostrich/cobra/tree/master/Experiments/){:.mandatory}.
+Our experimental setup and its raw results are available on [GitHub](https://github.com/rdfostrich/cobra/tree/master/Experiments/){:.mandatory},
+as well as [the scripts that were used to process them](https://github.com/rdfostrich/cobra-bear-results/){:.mandatory}.
 
 Considering we aim to measure the benefits of the bidirectional aggregated delta chain
 compared to the unidirectional aggregated delta chain under the hybrid storage strategy,
@@ -36,7 +37,7 @@ we primarily distinguish between the following storage approaches:
 * **COBRA**: Bidirectional aggregated delta chain after fix-up ([](#evaluation-storage-approaches-cobra))
 
 In order to achieve a more complete comparison with other approaches,
-we also evaluate BEAR's Jena (IC, CB, TB and hybrid CB/TB) and HDT-based (IC and CB) RDF archive implementations.
+we also evaluate BEAR's Jena (IC, CB, TB and hybrid CB/TB) and HDT-based (IC and CB) RDF archive baseline implementations.
 We consider a comparison with other systems such as X-RDF-3X, RDF-TX and Dydra
 out of scope for this work due to the major difficulties we experienced with these systems
 caused by missing implementations or the additional required implementation effort to support the required query interfaces.
@@ -96,7 +97,6 @@ we limit our experiments to OSTRICHâ€™s unidrectional storage layout and COBRAâ€
 
 In this section, we discuss the results of our experiments on ingestion and query evaluation,
 which we then analyze in the next section.
-All raw results and the scripts that were used to process them are available on [GitHub](https://github.com/rdfostrich/cobra-bear-results/){:.mandatory}.
 
 #### Ingestion
 
@@ -466,7 +466,8 @@ to become lower with a bidirectional delta chain compared to a unidirectional de
 While this is true for BEAR-A and BEAR-B Hourly, this is not true for BEAR-B Daily.
 As such, we _reject_ this hypothesis.
 In our [second hypothesis](#hypothesis-qualitative-ingestion),
-we expected ingestion time to be lower with a bidirectional delta chain.
+we expected ingestion time to be lower with a bidirectional delta chain,
+which was the primary goal of this work.
 Our results show that this is true.
 As such, we _accept_ this hypothesis.
 Our other hypotheses expect that evaluation times for [VM](#hypothesis-qualitative-querying-vm),

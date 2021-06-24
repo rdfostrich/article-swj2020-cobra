@@ -24,7 +24,7 @@ together with accompanying ingestion and querying algorithms.
 Experimental results from our implementation
 show that the ingestion time is significantly reduced.
 As an additional benefit,
-this change also leads to lower total storage size and improved query execution performance for most cases.
+this change also leads to lower total storage size and even improved query execution performance in some cases.
 <!-- Conclusion   -->
 This work shows that modifying the structure of delta chains within the hybrid storage strategy
 can be highly beneficial for RDF archives.

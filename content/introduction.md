@@ -17,7 +17,7 @@ in order to preserve RDF on the Web and expose queryable access.
 Concretely, there is a need for systems that can store and query such datasets with low cost and effort on Web servers,
 so that they can cope with the large scale of RDF datasets on the Web, and their velocity of changes.
 In previous work, we introduced a [new hybrid archiving approach, implemented as a system called OSTRICH](cite:cites ostrich).
-The approach consists of efficient triple pattern queries for different versioned query types,
+The approach enables efficient triple pattern queries for different versioned query types,
 while still keeping storage requirements reasonable.
 OSTRICH was designed to run on average machines,
 so it can be used as a back-end for low-cost Web query interfaces such as [Triple Pattern Fragments](cite:cites ldf).
@@ -51,7 +51,7 @@ but we instead devise a similar technique for aggregated deltas.
 While bidirectional delta chains complicate ingestion and querying,
 it leads to two shorter delta chains.
 This will require less effort than one long delta chain,
-and lead to faster ingestion and querying.
+and may lead to faster ingestion and querying.
 
 In the next section, we discuss the related work,
 and give more details on OSTRICH.

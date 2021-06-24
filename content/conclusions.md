@@ -47,7 +47,7 @@ While the existing VM querying algorithm can be reused for this,
 new efficient algorithms for DM and VQ with offset support will be required,
 as well as algorithms for providing cardinality estimates.
 
-While these findings show that a bidirectional delta chain is mostly more beneficial than a unidirectional delta chain for the same version range,
+While these findings show that a bidirectional delta chain can be more beneficial than a unidirectional delta chain for the same version range,
 neither approaches will scale to an infinite number of versions.
 Therefore, investigating creation of multiple snapshots in future work to create new delta chains will be crucial for solving scalability issues
 when ingesting (theoretically) infinite numbers of version.

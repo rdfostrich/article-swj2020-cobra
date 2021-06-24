@@ -27,6 +27,6 @@ In-order ingestion time is lower for a BDC compared to a UDC.
 3. {:#hypothesis-qualitative-querying-vm}
 VM query execution is faster for a BDC compared to a UDC.
 4. {:#hypothesis-qualitative-querying-dm}
-DM query execution is faster for a BDC to a UDC.
+DM query execution is faster for a BDC compared to a UDC.
 5. {:#hypothesis-qualitative-querying-vq}
-VQ query execution is faster for a BDC to a UDC.
+VQ query execution is faster for a BDC compared to a UDC.
