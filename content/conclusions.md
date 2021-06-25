@@ -6,7 +6,7 @@ under the hybrid storage strategy (OSTRICH)
 by making use of a *bidirectional delta chain*.
 Based on our implementation of this new approach (COBRA),
 our experimental results show that this modification
-leads to more efficient ingestion (41% faster) compared to a unidirectional delta chain (OSTRICH).
+leads to more efficient ingestion (59% faster) compared to a unidirectional delta chain (OSTRICH).
 This change also reduces total storage size (19% lower) for two out of three datasets.
 Furthermore, all versioned query types achieve a performance boost (21% faster),
 except for VQ under the BEAR-A dataset.

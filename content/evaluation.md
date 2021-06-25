@@ -102,47 +102,33 @@ which we then analyze in the next section.
 
 [](#table-ingestion-size) and [](#table-ingestion-time) respectively show the total storage sizes and ingestion times
 for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
-This table shows that COBRA requires less ingestion time than OSTRICH in all cases (41% less on average).
-Furthermore, COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly, but not for BEAR-B Daily.
+
+When purely comparing the COBRA approaches and OSTRICH, it can be observed that
+COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly, but not for BEAR-B Daily.
 COBRA* requires more storage space than both COBRA and OSTRICH with BEAR-A, but it requires less ingestion time.
 For BEAR-B Daily, OSTRICH requires less storage, but COBRA* has the lowest ingestion time.
 For BEAR-B Hourly, COBRA* is lower in terms of storage size and ingestion time than both COBRA and OSTRICH.
+In summary, COBRA requires less ingestion time than OSTRICH in all cases (59% less on average),
+and it reduces storage size for two out of the three cases (19% lower on average).
 
-{:.todo}
-Update the text above once final results are in. (also consider the new approaches!)
-
-<figure id="ingestion-total" class="table" markdown="1">
-
-|                          | OSTRICH | COBRA*  | COBRA  |
-|--------------------------|:--------|:--------|:-------|
-| **BEAR-A** | | |
-| Size (GB)        | 3.92    | 4.31    | *3.36* |
-| Time (hours)   | 23.66   | *12.92* | 14.63  |
-| **BEAR-B Daily** | | |
-| Size (MB)        | *19.37* | 26.01   | 28.44  |
-| Time (minutes) | 6.53    | *3.28*  | 4.24   |
-| **BEAR-B Hourly** | | |
-| Size (MB)        | 61.02   | *46.42* | 53.26  |
-| Time (minutes) | 34.47   | *14.87* | 18.30  |
-
-<figcaption markdown="block">
-Total storage size and ingestion time for the different datasets.
-COBRA* is always the fastest, with no consistent winner for total storage size.
-</figcaption>
-</figure>
-
-{:.todo}
-RM the table above.
+Compared to the HDT and Jena-based approaches,
+and the original raw representation in N-Triples and gzip,
+we see similar results as shown before in [the OSTRICH article](cite:cites ostrich).
+COBRA, COBRA*, and OSTRICH reduce storage size compared to the raw gzip representation, expect for BEAR-A.
+HDT-CB is consistently smaller, and Jena-CB/TB is also smaller for the BEAR-B datasets.
+Regarding ingestion time, OSTRICH and COBRA are overall significantly slower than the alternatives.
+However, COBRA speeds up ingestion enough so that it comes close to some of the Jena-based approaches,
+and sometimes even becomes faster than them.
 
 <figure id="table-ingestion-size" class="table" markdown="1">
 
-| Approach        | BEAR-A                | BEAR-B-daily   | BEAR-B-hourly      |
+| Approach        | BEAR-A                | BEAR-B Daily   | BEAR-B Hourly      |
 | --------------- |----------------------:|---------------:|-------------------:|
 | Raw (N-Triples) | 46,069.76             | 556.44         | 8,314.86           |
 | Raw (gzip)      | *3,194.88*            |  30.98         |   466.35           |
 | OSTRICH         |  4,587.52             |  16.87         |   450.59           |
 | COBRA           |  4,066.74             |  25.69         |   331.20           |
-| COBRA*          |  TODO                 |  21.58         |   216.95           |
+| COBRA*          |  5,052.67             |  21.58         |   216.95           |
 | Jena-IC         | 32,808.96             | 415.32         | 6,233.92           |
 | Jena-CB         | 18,216.96             |  42.82         |   473.41           |
 | Jena-TB         | 82,278.4              |  23.61         | 3,678.89           |
@@ -159,11 +145,11 @@ There is no consistent overall winner.
 
 <figure id="table-ingestion-time" class="table" markdown="1">
 
-| Approach        | BEAR-A | BEAR-B-daily  | BEAR-B-hourly |
+| Approach        | BEAR-A | BEAR-B Daily  | BEAR-B Hourly |
 | --------------- |-------:|--------------:|--------------:|
 | OSTRICH         | 2,256  | 12.36         | 4,497.32      |
 | COBRA           | 1,300  |  6.54         |   529.99      |
-| COBRA*          | TODO   |  4.91         |   337.52      |
+| COBRA*          | 1,019  |  4.91         |   337.52      |
 | Jena-IC         |   443  |  8.91         |  142.26       |
 | Jena-CB         |   226  |  9.53         |  173.48       |
 | Jena-TB         | 1,746  |  0.35         |   70.56       |
@@ -179,29 +165,22 @@ The lowest times per dataset are indicated in italics.
 
 <figure id="ingestion-size" class="figure">
 
-<center>
-<img src="img/results/legend-ingestion.png" alt="Legend" class="results-legend">
-</center>
-
 <figure id="ingestion-size-beara" class="subfigure">
-<img src="img/results/beara-ingestion-size.png" alt="BEAR-A Ingestion Size" class="results-triple">
-<img src="img/results-ingestion-size-beara.svg" alt="[bear-a ingestion sizes]" height="150em" class="plot">
+<img src="img/results-ingestion-size-beara.svg" alt="[bear-a ingestion sizes]" height="200em" class="plot">
 <figcaption markdown="block">
 BEAR-A
 </figcaption>
 </figure>
 
 <figure id="ingestion-size-bearbd" class="subfigure">
-<img src="img/results/bearbd-ingestion-size.png" alt="BEAR-B Daily Ingestion Size" class="results-triple">
-<img src="img/results-ingestion-size-bearb-daily.svg" alt="[bear-b-hourly ingestion sizes]" height="150em" class="plot">
+<img src="img/results-ingestion-size-bearb-daily.svg" alt="[bear-b-hourly ingestion sizes]" height="200em" class="plot">
 <figcaption markdown="block">
 BEAR-B Daily
 </figcaption>
 </figure>
 
 <figure id="ingestion-size-bearbh" class="subfigure">
-<img src="img/results/bearbh-ingestion-size.png" alt="BEAR-B Hourly Ingestion Size" class="results-triple">
-<img src="img/results-ingestion-size-bearb-hourly.svg" alt="[bear-b-hourly ingestion sizes]" height="150em" class="plot">
+<img src="img/results-ingestion-size-bearb-hourly.svg" alt="[bear-b-hourly ingestion sizes]" height="200em" class="plot">
 <figcaption markdown="block">
 BEAR-B Hourly
 </figcaption>
@@ -209,46 +188,36 @@ BEAR-B Hourly
 
 <figcaption markdown="block">
 Cumulative storage sizes for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
-COBRA requires less storage space than OSTRICH for BEAR-A.
-For BEAR-B Daily and Hourly, the middle snapshot leads to a significant increase in storage size.
+COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly.
+The middle snapshot always leads to a significant increase in storage size.
 </figcaption>
 </figure>
 
-{:.todo}
-Update figures above, because we use different version ranges
-
 <figure id="ingestion-time" class="figure">
 
-<center>
-<img src="img/results/legend-ingestion.png" alt="Legend" class="results-legend">
-</center>
-
 <figure id="ingestion-time-beara" class="subfigure">
-<img src="img/results/beara-ingestion-time.png" alt="BEAR-A Ingestion Time" class="results-triple">
-<img src="img/results-ingestion-rate-beara.svg" alt="[bear-a ingestion rate]" height="150em" class="plot">
+<img src="img/results-ingestion-rate-beara.svg" alt="[bear-a ingestion rate]" height="200em" class="plot">
 <figcaption markdown="block">
 BEAR-A
 </figcaption>
 </figure>
 
 <figure id="ingestion-time-bearbd" class="subfigure">
-<img src="img/results/bearbd-ingestion-time.png" alt="BEAR-B Daily Ingestion Time" class="results-triple">
-<img src="img/results-ingestion-rate-bearb-daily.svg" alt="[bear-b-hourly ingestion sizes]" height="150em" class="plot">
+<img src="img/results-ingestion-rate-bearb-daily.svg" alt="[bear-b-hourly ingestion sizes]" height="200em" class="plot">
 <figcaption markdown="block">
 BEAR-B Daily
 </figcaption>
 </figure>
 
 <figure id="ingestion-time-bearbh" class="subfigure">
-<img src="img/results/bearbh-ingestion-time.png" alt="BEAR-B Hourly Ingestion Time" class="results-triple">
-<img src="img/results-ingestion-rate-bearb-hourly.svg" alt="[bear-b-hourly ingestion rate]" height="150em" class="plot">
+<img src="img/results-ingestion-rate-bearb-hourly.svg" alt="[bear-b-hourly ingestion rate]" height="200em" class="plot">
 <figcaption markdown="block">
 BEAR-B Hourly
 </figcaption>
 </figure>
 
 <figure id="ingestion-time-bearbh-log" class="subfigure">
-<img src="img/results-ingestion-rate-bearb-hourly-log.svg" alt="[bear-b-hourly ingestion rate with logarithmic axis]" height="150em" class="plot">
+<img src="img/results-ingestion-rate-bearb-hourly-log.svg" alt="[bear-b-hourly ingestion rate with logarithmic axis]" height="200em" class="plot">
 <figcaption markdown="block">
 BEAR-B Hourly (Logarithmic Y axis)
 </figcaption>
@@ -260,44 +229,44 @@ COBRA resets ingestion time from the snapshot version, while ingestion time for 
 </figcaption>
 </figure>
 
-{:.todo}
-Update figures above, because we use different version ranges
-
 In order to provide more details on the evolution of storage size and ingestion time of COBRA(*) compared to OSTRICH,
 [](#ingestion-size) shows the cumulative storage size for the different datasets,
 and [](#ingestion-time) shows the ingestion time for these datasets.
+Note that COBRA is ingested out of order, which means that the first half of the delta chain is ingested first in reverse order,
+and the second half of the delta chain is ingested after that in normal order.
 These figures show the impact of the middle snapshots within the bidirectional chain.
-For BEAR-A, storage size for COBRA lowers at the middle version,
+For BEAR-A, storage size for COBRA lowers in the second half of the delta chain,
 which shows that a snapshot with reversed deltas pointing to it (COBRA) requires less storage space
 compared to continued use of aggregated deltas (OSTRICH).
-For BEAR-B Daily and Hourly, the storage size significantly increases at the middle version,
-but the ingestion times for all later versions reset to low values.
+For BEAR-B Daily, the storage size significantly increases for the second half of the delta chain,
+but for BEAR-B hourly it decreases.
+For all datasets, COBRA ingestion times reset to low values from the middle version.
+Especially for BEAR-B Hourly we see a significant decrease in ingestion time for COBRA compared to OSTRICH.
+While OSTRICH experiences major performance issues from around version 1100,
+the ingestion times of COBRA are much lower, which clearly shows the benefit of the bidirectional delta chain.
 
 Finally, [](#ingestion-fixup-time) shows the fix-up times,
-which are measured as a separate offline process.
-This is the time it would take to transition from the COBRA\* to COBRA storage approach,
+which are measured as a separate offline process,
+together with their additional cost relative to out of order ingestion.
+The fix-up time is the time it would take to transition from the COBRA\* to COBRA storage approach,
 when the versions cannot be inserted out of order.
-On average, this fix-up requires 3,6 times more time relative to the overhead of COBRA compared to COBRA*,
-showing that out-of-order ingestion is still preferred when possible.
-
-{:.todo}
-Update text above if needed.
+While this fix-up requires only 2.39 times more time relative to the overhead of COBRA compared to COBRA* for BEAR-B Daily,
+it requires more than 200 times more time for BEAR-A and BEAR-B Hourly,
+which shows that out-of-order ingestion is still preferred when possible.
 
 <figure id="ingestion-fixup-time" class="table" markdown="1">
 
-| Dataset       | Time          |
-|---------------|:--------------|
-| BEAR-A        | 8.38 hours (TODO)    |
-| BEAR-B Daily  | 3.91 minutes  |
-| BEAR-B Hourly | 7.82 hours    |
+| Dataset       | Time          | Overhead cost |
+|---------------|:--------------|:--------------|
+| BEAR-A        | 9.52 hours    | 203.27x       |
+| BEAR-B Daily  | 3.91 minutes  |   2.39x       |
+| BEAR-B Hourly | 7.82 hours    | 243.78x       |
 
 <figcaption markdown="block">
-Fix-up duration for the different datasets.
+Fix-up duration for the different datasets,
+together with its cost relative to the overhead of COBRA compared to COBRA*.
 </figcaption>
 </figure>
-
-{:.todo}
-Update BEAR-A in table above
 
 #### Query Evaluation
 
@@ -402,24 +371,24 @@ and we discuss the overall comparison of different archiving approaches.
 
 #### Ingestion
 
-Our experimental results show that the usage of a bidirectional delta chain has a significant beneficial impact
-on storage size and ingestion time compared to a unidirectional delta chain.
 While the unidirectional delta chain leads to increasing ingestion times for every new version,
-initiating a new snapshot (COBRA\*) can effectively _reset_ these ingestion times.
+initiating a new snapshot (COBRA\*) can effectively _reset_ these ingestion times,
+and lead to overall lower ingestion times.
 The downside of this is that there can be an increase in storage size due to this,
-which is more significant for datasets that have many small (few triples and a low change ratio) versions (BEAR-B).
-As such, for those datasets (BEAR-B), it is recommended to wait longer before initiating a new snapshot in the delta chain,
-since ingestion times are typically much lower compared to datasets with fewer large (many triples and a high change ratio) versions (BEAR-A).
+for datasets that have few small or large versions (BEAR-B Daily and BEAR-A),
+otherwise for many small versions (BEAR-B Hourly) there is a decrease in storage size.
+As such, for those datasets (BEAR-B Daily and BEAR-A), it is recommended to wait longer before initiating a new snapshot in the delta chain.
 Given the capabilities and query load of the server and affordable storage overhead,
 a certain ingestion time threshold could be defined,
 which would initiate a new snapshot when this threshold is exceeded.
 
 Once there are two unidirectional delta chains,
 the first one could optionally be reversed so that both can share one snapshot through a fix-up process (COBRA).
-Our results show that this can further reduce storage size for datasets with few large versions (BEAR-A),
+Our results show that this can further reduce storage size for datasets with few large versions (BEAR-A and BEAR-B Hourly),
 and even lead to less storage space compared to the continued use of aggregated deltas (OSTRICH).
-However, for many small versions (BEAR-B), this leads to overhead in terms of storage size.
-This shows that a bidirectional delta chain is more effective for BEAR-A compared to the BEAR-B datasets in terms of storage size,
+However, even though there is a reduction of storage size for many small versions (BEAR-B Daily),
+this leads to overhead in terms of storage size compared to the unidirectional delta chain (OSTRICH).
+This shows that a bidirectional delta chain is more effective for BEAR-A and BEAR-B Hourly compared to the BEAR-B Daily dataset in terms of storage size,
 while it is always effective in terms of ingestion time.
 The fix-up process for enabling this reversal does however require a significant execution time.
 Since this could easily run in a separate offline process in parallel to query execution and the ingestion of next versions,
