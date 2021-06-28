@@ -374,7 +374,7 @@ and we discuss the overall comparison of different archiving approaches.
 While the unidirectional delta chain leads to increasing ingestion times for every new version,
 initiating a new snapshot (COBRA\*) can effectively _reset_ these ingestion times,
 and lead to overall lower ingestion times.
-The downside of this is that there can be an increase in storage size due to this,
+The downside is that there can be an increase in storage size due to this,
 for datasets that have few small or large versions (BEAR-B Daily and BEAR-A),
 otherwise for many small versions (BEAR-B Hourly) there is a decrease in storage size.
 As such, for those datasets (BEAR-B Daily and BEAR-A), it is recommended to wait longer before initiating a new snapshot in the delta chain.

@@ -20,7 +20,7 @@ Hereafter, you can find detailed answers to your questions and remarks.
 Should you have any further questions or concerns, please do not hesitate to contact us.
 We look forward to hearing back from you and thank you in advance.
 
-The full diff of all changes is available here:
+The full diff of all changes to the article is available here:
 https://github.com/rdfostrich/article-swj2020-cobra/compare/5b55429361370007238719dca198140b490b747b...master
 
 Sincerely,
