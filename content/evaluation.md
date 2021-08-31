@@ -122,44 +122,44 @@ and sometimes even becomes faster than them.
 
 <figure id="table-ingestion-size" class="table" markdown="1">
 
-| Approach        | BEAR-A                | BEAR-B Daily   | BEAR-B Hourly      |
-| --------------- |----------------------:|---------------:|-------------------:|
-| Raw (N-Triples) | 46,069.76             | 556.44         | 8,314.86           |
-| Raw (gzip)      | *3,194.88*            |  30.98         |   466.35           |
-| OSTRICH         |  4,587.52             |  16.87         |   450.59           |
-| COBRA           |  4,066.74             |  25.69         |   331.20           |
-| COBRA*          |  5,052.67             |  21.58         |   216.95           |
-| Jena-IC         | 32,808.96             | 415.32         | 6,233.92           |
-| Jena-CB         | 18,216.96             |  42.82         |   473.41           |
-| Jena-TB         | 82,278.4              |  23.61         | 3,678.89           |
-| Jena-CB/TB      | 31,160.32             |  22.83         |    53.84           |
-| HDT-IC          |  6,829.73             | 148.61         | 2,226.45           |
-| HDT-CB          |  3,485.43             |  *6.21*        |   *25.14*          |
+| Approach        | BEAR-A                  | BEAR-B Daily.    | BEAR-B Hourly        |
+| --------------- |------------------------:|-----------------:|---------------------:|
+| Raw (N-Triples) | 46,069.76               | 556.44           | 8,314.86             |
+| Raw (gzip)      | **3,194.88**            |  30.98           |   466.35             |
+| OSTRICH         |  4,587.52               |  16.87           |   450.59             |
+| COBRA           |  4,066.74               |  25.69           |   331.20             |
+| COBRA*          |  5,052.67               |  21.58           |   216.95             |
+| Jena-IC         | 32,808.96               | 415.32           | 6,233.92             |
+| Jena-CB         | 18,216.96               |  42.82           |   473.41             |
+| Jena-TB         | 82,278.4                |  23.61           | 3,678.89             |
+| Jena-CB/TB      | 31,160.32               |  22.83           |    53.84             |
+| HDT-IC          |  6,829.73               | 148.61           | 2,226.45             |
+| HDT-CB          |  3,485.43               |  **6.21**        |   **25.14**          |
 
 <figcaption markdown="block">
 Total storage size in MB for the different datasets.
-The lowest sizes per dataset are indicated in italics.
+The lowest sizes per dataset are indicated in bold.
 There is no consistent overall winner.
 </figcaption>
 </figure>
 
 <figure id="table-ingestion-time" class="table" markdown="1">
 
-| Approach        | BEAR-A | BEAR-B Daily  | BEAR-B Hourly |
-| --------------- |-------:|--------------:|--------------:|
-| OSTRICH         | 2,256  | 12.36         | 4,497.32      |
-| COBRA           | 1,300  |  6.54         |   529.99      |
-| COBRA*          | 1,019  |  4.91         |   337.52      |
-| Jena-IC         |   443  |  8.91         |  142.26       |
-| Jena-CB         |   226  |  9.53         |  173.48       |
-| Jena-TB         | 1,746  |  0.35         |   70.56       |
-| Jena-CB/TB      |   679  |  0.35         |    0.65       |
-| HDT-IC          |    34  |  0.39         |    5.89       |
-| HDT-CB          |   *18* | *0.02*        |   *0.07*      |
+| Approach        | BEAR-A.  | BEAR-B Daily    | BEAR-B Hourly   |
+| --------------- |---------:|----------------:|----------------:|
+| OSTRICH         | 2,256    | 12.36           | 4,497.32        |
+| COBRA           | 1,300    |  6.54           |   529.99        |
+| COBRA*          | 1,019    |  4.91           |   337.52        |
+| Jena-IC         |   443    |  8.91           |  142.26         |
+| Jena-CB         |   226    |  9.53           |  173.48         |
+| Jena-TB         | 1,746    |  0.35           |   70.56         |
+| Jena-CB/TB      |   679    |  0.35           |    0.65         |
+| HDT-IC          |    34    |  0.39           |    5.89         |
+| HDT-CB          |   **18** | **0.02**        |   **0.07**      |
 
 <figcaption markdown="block">
 Total ingestion time in minutes for the different datasets.
-The lowest times per dataset are indicated in italics.
+The lowest times per dataset are indicated in bold.
 </figcaption>
 </figure>
 
