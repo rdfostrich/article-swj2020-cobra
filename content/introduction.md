@@ -37,8 +37,8 @@ The reason for this is that the hybrid storage approach from OSTRICH only consis
 followed by an _aggregated delta chain_ that keeps growing longer for every new version.
 While this aggregated delta chain is beneficial for faster query execution,
 it comes at the cost of increased ingestion times.
-Since every additional delta requires all preceding deltas to be checked during ingestion,
-this process becomes slower for every new version.
+Since additional deltas lead to a cumulative increase in aggregated delta size during ingestion,
+this process becomes more memory-intensive and slower for every new version.
 In order to delay this problem, we propose a storage strategy modification,
 where there still is a single version snapshot,
 but we place it in the middle of the delta chain,
