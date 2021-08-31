@@ -80,7 +80,7 @@ and which storage strategy they follow. These are explained in more detail herea
 <figcaption markdown="block">
 Overview of RDF archiving solutions with their corresponding storage strategy:
 Individual copies (IC), Change-based (CB), Timestamp-based (TB), or Fragment-based (FB).
-✓: fullfils the strategy completely; ~: fullfuls the strategy partially.
+✓: fullfils the strategy completely; ~: fullfils the strategy partially.
 </figcaption>
 </figure>
 
