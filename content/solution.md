@@ -219,7 +219,7 @@ Out-of-order ingestion algorithm for creating a bidirectional aggregated delta c
 </figcaption>
 </figure>
 
-This our-of-order ingestion will typically not be used in a live setting.
+This out-of-order ingestion will typically not be used in a live setting.
 Instead, it can be used when initializing an archive when all versions are known beforehand.
 
 ### Query Algorithms
