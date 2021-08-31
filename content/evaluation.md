@@ -108,6 +108,8 @@ COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly, but
 COBRA* requires more storage space than both COBRA and OSTRICH with BEAR-A, but it requires less ingestion time.
 For BEAR-B Daily, OSTRICH requires less storage, but COBRA* has the lowest ingestion time.
 For BEAR-B Hourly, COBRA* is lower in terms of storage size and ingestion time than both COBRA and OSTRICH.
+The outliers that are apparent for BEAR-B Hourly are compression artefacts for the storage of dictionaries and delta chains using Kyoto Cabinet,
+as storage size may fluctuate slightly based on the available data.
 In summary, COBRA requires less ingestion time than OSTRICH in all cases (59% less on average),
 and it reduces storage size for two out of the three cases (19% lower on average).
 
