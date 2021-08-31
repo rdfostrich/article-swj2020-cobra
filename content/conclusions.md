@@ -48,7 +48,7 @@ new efficient algorithms for DM and VQ with offset support will be required,
 as well as algorithms for providing cardinality estimates.
 
 While these findings show that a bidirectional delta chain can be more beneficial than a unidirectional delta chain for the same version range,
-neither approaches will scale to an infinite number of versions.
+neither approach will scale to an infinite number of versions.
 Therefore, investigating creation of multiple snapshots in future work to create new delta chains will be crucial for solving scalability issues
 when ingesting (theoretically) infinite numbers of version.
 While we expect that the creation and querying of multiple delta chains will be significantly more expensive than a single delta chain,

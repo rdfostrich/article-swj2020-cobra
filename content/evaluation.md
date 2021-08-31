@@ -54,7 +54,7 @@ OSTRICH with a forward unidirectional aggregated delta chain &nbsp;&nbsp;&nbsp;
 <figure id="evaluation-storage-approaches-cobra-star" class="subfigure">
 <img src="img/delta-chain-bi-agg-before-fixup.svg" alt="COBRA* storage approach" class="eval-storage-approach">
 <figcaption markdown="block">
-COBRA* with a bidirectional aggregated delta chain *before* fix-up &nbsp;&nbsp;&nbsp;
+COBRA* with two unidirectional aggregated delta chains *before* fix-up &nbsp;&nbsp;&nbsp;
 </figcaption>
 </figure>
 
@@ -79,18 +79,18 @@ For example, following the out-of-order ingestion algorithm from [](#solution-in
 for BEAR-A, this will first lead to the creation of a snapshot for version 5,
 the creation of a reverse delta chain for versions 0-4,
 and finally the creation of a forward delta chain for versions 6-9.
-In practise, this may not always be possible, which is why we report on the additional fix-up time during ingestion separately
-that would be required when ingestion in order (COBRA\*).
+In practice, this may not always be possible, which is why we report on the additional fix-up time during ingestion separately
+that would be required when ingesting in order (COBRA\*).
 
 To evaluate triple pattern query performance,
 we make use of the query sets provided by BEAR.
-BEAR-A provides 7 query sets containing around 100 triple patterns that are further divided into high result cardinality and low result cardinality. 
+BEAR-A provides 7 query sets containing around 100 triple patterns that are further divided into high result cardinality and low result cardinality by the benchmark creators. 
 BEAR-B provides two query sets that contain `?P?` and `?PO` queries.
 We evaluate these queries as VM queries for all version, DM queries between the first and all other versions and a VQ query.
 In order to minimize outliers, we replicate the queries five times and take the mean results.
 Furthermore, we perform a warm-up period before the first query of each triple pattern.
-Since neither OSTRICH nor COBRA support multiple snapshots for all query atoms,
-we limit our experiments to OSTRICH’s unidrectional storage layout and COBRA’s bidirectional storage layout with a single snapshot.
+Since neither OSTRICH nor COBRA support arbitrary numbers of snapshots,
+we limit our experiments to OSTRICH’s unidirectional storage layout and COBRA’s bidirectional storage layout with a single snapshot.
 
 ### Measurements
 {:#evaluation-results}
@@ -114,8 +114,8 @@ In summary, COBRA requires less ingestion time than OSTRICH in all cases (59% le
 and it reduces storage size for two out of the three cases (19% lower on average).
 
 Compared to the HDT and Jena-based approaches,
-and the original raw representation in N-Triples and gzip,
-we see similar results as shown before in [the OSTRICH article](cite:cites ostrich).
+and the original raw representation of BEAR's delta files in N-Triples and gzip,
+we see similar results as shown before in [the OSTRICH article (section 8.3.1)](cite:cites ostrich).
 COBRA, COBRA*, and OSTRICH reduce storage size compared to the raw gzip representation, expect for BEAR-A.
 HDT-CB is consistently smaller, and Jena-CB/TB is also smaller for the BEAR-B datasets.
 Regarding ingestion time, OSTRICH and COBRA are overall significantly slower than the alternatives.
@@ -192,7 +192,8 @@ BEAR-B Hourly
 Cumulative storage sizes for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly.
 The middle snapshot always leads to a significant increase in storage size.
-Note that since COBRA ingestion happens out of order, the first half of the delta chain is ingested in reverse order.
+The ingestion of COBRA happens out of order, which means that the middle version is ingested first, up until version 0,
+after which all versions after the middle version are ingested in normal order.
 </figcaption>
 </figure>
 
@@ -229,7 +230,8 @@ BEAR-B Hourly (Logarithmic Y axis)
 <figcaption markdown="block">
 Ingestion times per version for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 COBRA resets ingestion time from the snapshot version, while ingestion time for OSTRICH keeps increasing.
-Note that since COBRA ingestion happens out of order, the first half of the delta chain is ingested in reverse order.
+The ingestion of COBRA happens out of order, which means that the middle version is ingested first, up until version 0,
+after which all versions after the middle version are ingested in normal order.
 </figcaption>
 </figure>
 
@@ -416,7 +418,7 @@ Since two shorter delta chains lead to two smaller addition and deletion indexes
 VM and DM times become lower for the dataset with few large versions (BEAR-A), since less data needs to be iterated.
 However, for datasets with many small versions (BEAR-B),
 we see that VM times become lower or equal for the first half of the bidirectional delta chain,
-but becomes slower for the second half.
+but become slower for the second half.
 We see this behaviour also recurring across all datasets for DM queries.
 This is because in these cases we need to query within the two parts of the delta chain,
 i.e., we need to search through two addition and deletion indexes instead of just one.
@@ -431,8 +433,8 @@ However, for few large versions,
 the overhead of two delta chains is too large for VQ,
 and one delta chain performs better.
 In summary, a bidirectional delta chain is effective for optimizing VM (assuming few large versions),
-can speedup DM for the first half of all versions, but slow down for the second half,
-and is beneficial for VQ (assuming many small versions).
+it can make DM faster for the first half of all versions, but it slows DM down for the second half,
+and it is beneficial for VQ (assuming many small versions).
 
 #### Hypotheses
 
@@ -464,7 +466,7 @@ and storage size is slightly lower (Jena-TB, Jena-CB/TB, HDT-CB).
 
 The results show that HDT-based approaches can perform exceptionally well in certain cases,
 but they then perform relatively much worse in other cases.
-For instance, HDT-IC performs the best in all cases for VM queries,
+For instance, HDT-IC performs best in all cases for VM queries,
 but this comes at the cost of very high storage requirements.
 Furthermore, HDT-CB performs really well for all queries,
 but becomes continuously slower for more versions in the dataset.

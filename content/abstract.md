@@ -6,7 +6,7 @@ and query across their versions.
 Different storage strategies are available for managing such versioned datasets,
 each being efficient for specific types of versioned queries.
 In recent work, a hybrid storage strategy has been introduced that combines these different strategies
-to lead to more efficient query execution for all versioned query types at the cost increased ingestion time.
+to lead to more efficient query execution for all versioned query types at the cost of increased ingestion time.
 While this trade-off is beneficial in the context of Web querying,
 it suffers from exponential ingestion times in terms of the number of versions,
 which becomes problematic for RDF datasets with many versions.

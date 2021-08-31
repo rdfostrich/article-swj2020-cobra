@@ -26,9 +26,9 @@ or even differences between different versions.
 To cover this new range of querying possibilities,
 [five foundational query types were introduced](cite:cites bear),
 which are referred to as _query atoms_.
-For brevity, we refer to [the article in which they were introduced](cite:cites bear) their formal details.
-In this scope of this article, we only discuss three of the five query atoms,
-as they can be expressed in [terms of each other](cite:cites tpfarchives).
+For brevity, we refer to [the article in which they were introduced](cite:cites bear) for their formal details.
+In the scope of this article, we only discuss three of the five query atoms,
+as the other two query atoms can be expressed in [terms of just three query atoms](cite:cites tpfarchives).
 The three relevant query atoms are defined as follows:
 
 1. **Version materialization (VM)** retrieves data using a query targeted at a single version.
@@ -104,14 +104,15 @@ It supports tagging, branching and merging.
 but they additionally introduce new SPARQL keywords, such as `REVISION`, `BRANCH` and `TAG`.
 
 #### Timestamp-based approaches
-[Hauptman et al.](cite:cites vcld) store each triple in a different named graph as a TB storage approach.
+[Hauptman et al.](cite:cites vcld) store each triple in a different named graph,
+which corresponds to the TB storage approach.
 The identifying graph of each triple is used in a commit graph for SPARQL query evaluation at a certain version.
 [X-RDF-3X](cite:cites xrdf3x) is a versioning extension of [RDF-3X](cite:cites rdf3x),
 where each triple is annotated with a creation and deletion timestamp.
 [RDF-TX](cite:cites rdftx) is an in-memory query engine that supports a temporal SPARQL querying extension,
-which makes use of a compressed multi-version B+Trees that outperforms similar systems such as X-RDF-3X in terms of querying efficiency,
+which makes use of a compressed multi-version B+Tree that outperforms similar systems such as X-RDF-3X in terms of querying efficiency,
 while having similar storage requirements.
-[v-RDFCSA](cite:cites selfindexingarchives) is a self-indexing RDF archive mechanism,
+[v-RDFCSA](cite:cites selfindexingarchives) is a self-indexing RDF archive mechanism
 that enables versioning queries on top of compressed RDF archives as a TB approach.
 [Dydra](cite:cites dydra) is an RDF graph storage platform with dataset versioning support.
 They introduce the `REVISION` keyword, which is similar to the SPARQL keyword `GRAPH` for referring to different dataset versions.
@@ -132,14 +133,14 @@ a new snapshot is created for the next version to avoid long version reconstruct
 [Cuevas et al.](cite:cites cuevas2020versioned) propose an approach similar to R&WBase,
 where the named graph functionality in SPARQL 1.1 engines is used to store RDF archives,
 and versioned queries are achieved through query rewriting.
-As opposed to R&WBase that only uses a CB approach, they propose distinct a IC strategy, four CB strategies, and a TB strategy.
+As opposed to R&WBase which only uses a CB approach, they propose distinct a IC strategy, four CB strategies, and a TB strategy.
 For each of those strategies, they introduce separate query rewriting techniques for VM and DM queries,
 but do not consider VQ queries.
 Experimental results on an archive with eight large versions show there is a time-space trade-off,
 whereby large storage sizes achieve faster query execution,
 and smaller storage sizes result in slower query execution.
 The authors consider the TB strategy achieving the best trade-off.
-Relevant for our work, is the use of four CB strategies,
+Relevant for our work is the use of four CB strategies,
 which correspond to forward, backward deltas, forward [aggregated](cite:cites vmrdf), and backward aggregated deltas.
 [OSTRICH](cite:cites ostrich) is a hybrid IC/CB/TB approach that exploits the advantages of each strategy
 to provide a trade-off between storage requirements and querying efficiency.
@@ -152,11 +153,11 @@ As such, we build upon OSTRICH in this work, and attempt to solve this problem.
 
 ### RDF Archiving Benchmarks
 
-[BEAR](cite:cites bear) is a benchmark for RDF archive systems.
+[BEAR](cite:cites bear) is a benchmark for RDF archive systems
 that is based on real-world datasets from different domains.
 The 58 versions of BEAR-A contain between 30M and 66M triples per version, with an average change ratio of 31%.
 BEAR-A provides triple pattern queries for three different query atoms for both result sets with a low and a high cardinality.
-The BEAR-B dataset contains the 100 most volatile resources from DBpedia Live as three different granularities (instant, hour and day),
+The BEAR-B dataset contains the 100 most volatile resources from DBpedia Live at three different granularities (instant, hour and day),
 and provides a small collection of triple pattern queries corresponding to the real-world usage of DBpedia.
 Each version contains between 33K and 43K triples, where the instant granularity has an average change ratio of 0.011%,
 hour has 0.304%, and day has 1.252%.

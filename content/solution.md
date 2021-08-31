@@ -35,7 +35,7 @@ where the snapshot comes first, and is followed by deltas that are relative to t
 2. The **reverse unidirectional** delta chain is a variant of this where everything is reversed.
 Concretely, the snapshot comes last, and is preceded by deltas, where each delta is relative to the next delta.
 3. These forward and reverse unidirectional approaches can be combined with each other to form a **bidirectional delta chain**,
-where a first set of deltas exist before the snapshot,
+where a first set of deltas exists before the snapshot,
 and a second set of deltas exists after the snapshot.
 
 Along the _aggregation_ axis, we consider 2 forms:
@@ -150,7 +150,7 @@ To compress each triple component further, a shared dictionary is used.
 In order to allow efficient cardinality estimate retrieval for deletions,
 the SPO deletion index contains additional metadata about the relative position of each triple inside the snapshot.
 To enable cardinality estimates for additions, we make use of a dedicated addition count index.
-For the sake of brevity, we omit further details about the components that can be found in the [OSTRICH article](cite:cites ostrich).
+For the sake of brevity, we omit further details about the components that can be found in the [OSTRICH article (section 5)](cite:cites ostrich).
 
 ### Ingestion Approach
 {:#solution-ingestion}
@@ -191,26 +191,26 @@ query executions will be delegated to this new reverse delta chain,
 and the temporary forward delta chain can be deleted.
 Since this fix-up process only applies to the first (temporary) delta chain,
 and does not touch the second delta chain,
-it may even run in parallel to other ingestions processes for new versions.
+it may even run in parallel to other ingestion processes for new versions.
 
 ### Out-of-order Ingestion Approach
 {:#solution-ingestion-outoforder}
 
-The ingestion approach from previous section assumes in-order ingestion of versions,
+The previously discussed ingestion approach assumes in-order ingestion of versions,
 where versions are ingested as soon as they become available.
-In some cases, it may occur that all versions are presents beforehand,
+In some cases, it may occur that all versions are present beforehand,
 and can be ingested at the same time.
 If this occurs, we can simplify ingestion and avoid the fix-up algorithm, by not inserting versions in their logical order.
 
-[](#algorithm-outoforder-ingest) shows a sketch of our fix-up algorithm in pseudo-code.
-Concretely, if we have a set of `n` versions (`n` is assumed even for simplicity of this paragraph)
-then we first determine the middle version `n/2`.
-For this middle version, we create a fully materialized snapshot, and assign its proper version label `n/2`.
-Next, we create our reverse delta chain for all versions `< n/2`,
-by invoking [the streaming ingestion algorithm to create unidirectional aggregated delta chains](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions) targeted at snapshot `n/2`, and by swapping the addition and deletion labels.
-Finally, we create our forward delta chain for all versions `> n/2`,
+[](#algorithm-outoforder-ingest) shows a sketch of our out-of-order algorithm in pseudo-code.
+Concretely, if we have a set of `n` versions
+then we first determine the middle version `⌊n/2⌋`.
+For this middle version, we create a fully materialized snapshot, and assign its proper version label `⌊n/2⌋`.
+Next, we create our reverse delta chain for all versions `< ⌊n/2⌋`,
+by invoking [the streaming ingestion algorithm to create unidirectional aggregated delta chains](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions) targeted at snapshot `⌊n/2⌋`, and by swapping the addition and deletion labels.
+Finally, we create our forward delta chain for all versions `> ⌊n/2⌋`,
 by again invoking [the streaming ingestion algorithm to create unidirectional aggregated delta chains](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions)
-targeted at snapshot `n/2`.
+targeted at snapshot `⌊n/2⌋`.
 
 <figure id="algorithm-outoforder-ingest" class="algorithm numbered">
 ````/algorithms/outoforder-ingest.txt````
@@ -231,7 +231,7 @@ We consider multiple snapshots and delta chains future work.
 We build upon the [existing algorithms for unidirectional (aggregated) delta chains](cite:cites ostrich),
 and thereby inherit their properties of streaming, offset support, and cardinality estimators.
 Below, we briefly discuss the relevant parts of these existing algorithms.
-For more details, we refer to the [OSTRICH article](cite:cites ostrich).
+For more details, we refer to the [OSTRICH article (section 7)](cite:cites ostrich).
 
 #### Version Materialization
 
@@ -252,7 +252,7 @@ either the start version is a snapshot or a delta,
 where the end version will always be a delta.
 If the start (or end) version is a snapshot, then the result is simply a query within the aggregated delta of the end version.
 Otherwise, the addition and deletion indexes for the two delta versions are iterated in a sort-merge join-like operation,
-and only emits the triples that have a different addition/deletion flag for the two versions.
+and only emit the triples that have a different addition/deletion flag for the two versions.
 
 In our bidirectional storage approach, one additional case can occur:
 when the start and end version correspond to deltas in the bidirectional delta chain *before* and *after* the snapshot,
@@ -261,8 +261,8 @@ For this, we split up our query into two queries:
 a DM query from the start version until the snapshot,
 and a DM query from the snapshot until the end version.
 These two queries can be resolved over the two respective delta chains using [the DM algorithm over a unidirectional delta chain](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization).
-As the results from these two queries are sorted,
-we can merge them in a sort-merge join way,
+As the OSTRICH DM algorithm guarantees that the triples from these two queries are sorted (because the are stored in order),
+we can merge them in a sort-merge join way (which preserves the order),
 where triples are only emitted if they don't exist in both streams (ignoring the addition/deletion flag).
 [](#algorithm-querying-dm) illustrates this algorithm in pseudocode.
 Following the patch notation for [DARCS](cite:cites darcs),
@@ -287,7 +287,7 @@ that would be omitted from the final result stream.
 #### Version Query
 
 A Version Query (VQ) enables querying across all versions,
-with results being annotated with the version in which they occur.
+with results being annotated with the versions in which they occur.
 [VQ over a unidirectional delta chain](https://rdfostrich.github.io/article-jws2018-ostrich/#version-query)
 is done by iterating over the snapshot for a given triple pattern in a streaming manner.
 Every snapshot triple is queried within the deletion index.
@@ -302,6 +302,6 @@ Instead of checking single addition and deletion streams,
 two addition and deletion streams have to be checked.
 This will produce distinct version annotations, for which we apply the union.
 
-To estimate the cardinality, the unidirectional delta chain approach can again be extended
+To estimate the cardinality of the VQ results, the unidirectional delta chain approach can again be extended
 by adding the snapshot cardinality with the addition cardinality for both delta chains for the given triple pattern.
 As some triples could occur in both delta chains, this can lead to an overestimation.
