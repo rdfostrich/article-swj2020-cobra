@@ -190,6 +190,7 @@ BEAR-B Hourly
 Cumulative storage sizes for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 COBRA requires less storage space than OSTRICH for BEAR-A and BEAR-B Hourly.
 The middle snapshot always leads to a significant increase in storage size.
+Note that since COBRA ingestion happens out of order, the first half of the delta chain is ingested in reverse order.
 </figcaption>
 </figure>
 
@@ -226,6 +227,7 @@ BEAR-B Hourly (Logarithmic Y axis)
 <figcaption markdown="block">
 Ingestion times per version for BEAR-A, BEAR-B Daily, and BEAR-B Hourly under the different storage approaches.
 COBRA resets ingestion time from the snapshot version, while ingestion time for OSTRICH keeps increasing.
+Note that since COBRA ingestion happens out of order, the first half of the delta chain is ingested in reverse order.
 </figcaption>
 </figure>
 
