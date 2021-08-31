@@ -1,0 +1,112 @@
+To the Editors of the Semantic Web Journal
+
+Dear Editors and Reviewers,
+
+Thank you for your detailed and insightful comments.
+Please find attached to this letter the second revision of our submission entitled
+"Optimizing Storage of RDF Archives using Bidirectional Delta Chains"
+in which we have addressed your comments.
+
+Hereafter, you can find detailed answers to your questions and remarks.
+Should you have any further questions or concerns, please do not hesitate to contact us.
+We look forward to hearing back from you and thank you in advance.
+
+The full diff of all changes to the article is available here:
+https://github.com/rdfostrich/article-swj2020-cobra/compare/640561bc07dfa875ea15fc8fba2fdffa30929738...master
+
+Sincerely,
+Ruben Taelman
+on behalf of the authors
+
+imec - Ghent University - IDLab
+Technologiepark-Zwijnaarde 15
+B-9052 Gent
+Belgium
+
+# Review 2
+
+> Subfig. 3.1:  I do not understand the size of 0 (or very close to 0) for
+version 5 for COBRA which actually seems to be a snapshot of noticeable size.
+I would assume it on a level close to version 0 of OSTRICH.
+
+The very first diff of BEAR-A is two orders of magnitude larger than the later diffs (https://aic.ai.wu.ac.at/qadlod/bear.html), which is the cause of this large different in snapshot size between OSTRICH at version 0, and COBRA at version 5.
+
+> Subfig. 3.2:  The cum. size jump between version 0 (46th inserted version)
+and 46 (47th inserted version) for COBRA is suspicious (if the delta between
+version 45 (snapshot) and version 46 would be so high, I would expect to see
+the same gap in COBRA* since both use version 45 as reference snapshot)
+
+We revised the data, and as far as we can see, these results are correct. There may be some confusion arising from the fact that the snapshot for COBRA is created first, and this cumulative size does not include the later deltas yet. Later in the text, we had included this sentence: “Note that COBRA is ingested out of order, which means that the first half of the delta chain is ingested first in reverse order, and the second half of the delta chain is ingested after that in normal order.” To reduce possible future confusion for other readers, we now included this text in the figure caption: “Note that since COBRA ingestion happens out of order, the first half of the delta chain is ingested in reverse order.”
+
+> Subfig. 3.3: Tearing lines (esp. for OSTRICH) and the clear size *drop* in
+the middle for COBRA* are counterintuitive and not explained (temporary data
+structure overhead/cleanup variety?)
+
+The size drop for COBRA* in figure 3.3 is because the creation of a new snapshot and delta chain outweighs continuing with the aggregated deltas in terms of storage size. This is because there are many small versions in BEAR-B Hourly, and at some point it becomes cheaper (storage-wise) to just create a new snapshot instead of continuing the delta chain. This actually gives some interesting insights for future work regarding the decision of whether or not to create a new snapshot. In this case, we could have reduced storage size even more by creating the snapshot slightly earlier.
+We hinted towards this in the first paragraph of section 5.4.1. But we now changed this explanation to be more explicit.
+
+The outliers are compression artefacts for the storage of dictionaries and delta chains using Kyoto Cabinet, as storage size may fluctuate slightly based on the available data. We now also mention this in section 5.3.1.
+
+# Review 3
+
+> Just the creation of
+the BEAR input datasets is not exactly reproduceable, as the evaluation
+scripts assume that the respective data already exists on a server
+donizetti.labnet.
+
+The scripts are indeed hardcoded to a specific server. However, we included scripts and corresponding instructions on how to recreate the BEAR input datasets in the README of the following directory: https://github.com/rdfostrich/BEAR/tree/master/src/common
+
+> * Algorithm 2 is introduced as showing the fix-up algorithm.  However, that's
+actually what Algorithm 1 shows.
+
+The sentence was indeed correct, we have now updated it to refer to the out-of-order algorithm (Algorithm 2).
+
+> * Algorithm 2 is said to assume that n is even, but the shown
+implementation, which uses Math.floor, does not.
+
+We have updated the text to remove the assumption that n is even, so that it is consistent with the pseudocode of Algorithm 2.
+
+> * Shouldn't you rather push the "inverse" of an addition into deletions? Or is a member of addition or deletions as simple as a single triple? If so, then all is fine.
+
+The return type of getAdditions/getDeletions is indeed a collection of simple triples.
+
+> * There are multiple references to the OSTRICH article [5].  These references
+would be easier to use if they pointed to specific individual sections of
+that article.
+
+The references to the OSTRICH article now include section references.
+
+> * In Section 4.6.2, the text about delta materialization says that "the
+results from the two queries are sorted".  Why are they sorted, and by what?
+Do you mean that the (unsorted) results of the first query come first, and
+then the (once more unsorted) results of the second query?
+
+The results (=triples) are sorted by triple order (depending on the current triple pattern). This order is guaranteed by OSTRICH, as it stores triples in multiple indexes for different orders (SPO, OSP, …). Since the two queries are sorted in the same way, they can be merged in a sort-merge-like operation, which preserves the same order.
+
+> * In Section 4.6.3, Version queries are defined as "results being annotated
+with the version in which they occur".  However, is the version always
+unique?  (That's what this phrasing seems to assume.)
+
+This was a typo, VQ results are annotated with the versions in which they occur.
+
+> * The setting shown in Subfigure 2.2 does not involve bidirectionality.
+
+The caption of this figure is indeed correct. At this stage (before fix-up), these are still just two unidirectional aggregated delta chains.
+
+> * In Section 5.2, why do you restrict your scope to "at most two delta
+chains"?  In other words, does this not mean that you assume that the
+threshold for a chain that's "too long" is "(number of versions) / 2"? Would
+your approach not perform even better with more delta chains?
+
+The main reason for this restriction is that we want to focus our experiments on evaluating the performance of the bidirectional delta chain, which requires two delta chains (a forward and reverse one). While more than two delta chains could indeed lead to better performance, it requires more advanced query algorithms, which is why we consider this future work (as mentioned in the conclusions section).
+
+> * In Section 5.3.1, what do you mean by "ingesting a raw representation"?
+
+We refer to the original delta input files as provided on the BEAR website, which corresponds to pairs of N-Triples files representing the added and deleted triples. We clarified this in section 5.3.1.
+
+> * Regarding Figure 3: Before reading your reminder about the reverse order
+of ingestion on the next page, it's hard to understand that we have a zero
+value in the middle. You could facilitate understanding by showing an arrow
+that indicates the order of ingestion.
+
+Attempts to modify the figures to include and arrow did (in our opinion) not improve understandability. As an alternative, we opted to include the note in the captions of figures 3 and 4: “The ingestion of COBRA happens out of order, which means that the middle version is ingested first, up until version 0, after which all versions after the middle version are ingested in normal order.”
