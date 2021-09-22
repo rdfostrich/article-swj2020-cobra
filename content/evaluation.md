@@ -36,12 +36,6 @@ we primarily distinguish between the following storage approaches:
 * **COBRA\***: Bidirectional aggregated delta chain before fix-up ([](#evaluation-storage-approaches-cobra-star))
 * **COBRA**: Bidirectional aggregated delta chain after fix-up ([](#evaluation-storage-approaches-cobra))
 
-In order to achieve a more complete comparison with other approaches,
-we also evaluate BEAR's Jena (IC, CB, TB and hybrid CB/TB) and HDT-based (IC and CB) RDF archive baseline implementations.
-We consider a comparison with other systems such as X-RDF-3X, RDF-TX and Dydra
-out of scope for this work due to the major difficulties we experienced with these systems
-caused by missing implementations or the additional required implementation effort to support the required query interfaces.
-
 <figure id="evaluation-storage-approaches" class="figure">
 
 <figure id="evaluation-storage-approaches-ostrich" class="subfigure">
@@ -69,6 +63,12 @@ COBRA with a bidirectional aggregated delta chain *after* fix-up (ingested out-o
 The different storage approaches used in our experiments for an arbitrary dataset with six versions.
 </figcaption>
 </figure>
+
+In order to achieve a more complete comparison with other approaches,
+we also evaluate BEAR's Jena (IC, CB, TB and hybrid CB/TB) and HDT-based (IC and CB) RDF archive baseline implementations.
+We consider a comparison with other systems such as X-RDF-3X, RDF-TX and Dydra
+out of scope for this work due to the major difficulties we experienced with these systems
+caused by missing implementations or the additional required implementation effort to support the required query interfaces.
 
 In the scope of this work, we work with at most two delta chains.
 For simplicity of these experiments, we always start a new delta chain in the middle version of the dataset

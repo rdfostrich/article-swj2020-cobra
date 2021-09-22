@@ -169,18 +169,18 @@ From the moment that this delta chain becomes too long, or some other threshold 
 then an offline fix-up algorithm is triggered that will effectively *reverse* this delta chain,
 and place a snapshot at the end, where a new forward delta chain can be built upon when new versions arrive.
 
-[](#algorithm-fixup) shows a sketch of our fix-up algorithm in pseudo-code.
-First, the aggregated deltas in the chain will be extracted as non-aggregated deltas by invoking [a DM query over the current unidirectional aggregated delta chain](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization).
-We store the deletions as additions, and the additions as deletions.
-Next, we create a new delta chain, and insert these reversed non-aggregated deltas by invoking [the streaming ingestion algorithm to create unidirectional aggregated delta chains](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions).
-Once ingestion is done, the existing delta chain is replaced by our new delta chain.
-
 <figure id="algorithm-fixup" class="algorithm numbered">
 ````/algorithms/fixup.txt````
 <figcaption markdown="block">
 Fix-up algorithm for reversing an existing bidirectional aggregated delta chain.
 </figcaption>
 </figure>
+
+[](#algorithm-fixup) shows a sketch of our fix-up algorithm in pseudo-code.
+First, the aggregated deltas in the chain will be extracted as non-aggregated deltas by invoking [a DM query over the current unidirectional aggregated delta chain](https://rdfostrich.github.io/article-jws2018-ostrich/#delta-materialization).
+We store the deletions as additions, and the additions as deletions.
+Next, we create a new delta chain, and insert these reversed non-aggregated deltas by invoking [the streaming ingestion algorithm to create unidirectional aggregated delta chains](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions).
+Once ingestion is done, the existing delta chain is replaced by our new delta chain.
 
 The main advantage of this fix-up approach is that it avoids query unavailability of the archive.
 The fix-up algorithm can run at any time, preferably when the server is experiencing a lower query load.
@@ -202,6 +202,13 @@ In some cases, it may occur that all versions are present beforehand,
 and can be ingested at the same time.
 If this occurs, we can simplify ingestion and avoid the fix-up algorithm, by not inserting versions in their logical order.
 
+<figure id="algorithm-outoforder-ingest" class="algorithm numbered">
+````/algorithms/outoforder-ingest.txt````
+<figcaption markdown="block">
+Out-of-order ingestion algorithm for creating a bidirectional aggregated delta chain for a predetermined set of versions.
+</figcaption>
+</figure>
+
 [](#algorithm-outoforder-ingest) shows a sketch of our out-of-order algorithm in pseudo-code.
 Concretely, if we have a set of `n` versions
 then we first determine the middle version `⌊n/2⌋`.
@@ -211,13 +218,6 @@ by invoking [the streaming ingestion algorithm to create unidirectional aggregat
 Finally, we create our forward delta chain for all versions `> ⌊n/2⌋`,
 by again invoking [the streaming ingestion algorithm to create unidirectional aggregated delta chains](https://rdfostrich.github.io/article-jws2018-ostrich/#ingestions)
 targeted at snapshot `⌊n/2⌋`.
-
-<figure id="algorithm-outoforder-ingest" class="algorithm numbered">
-````/algorithms/outoforder-ingest.txt````
-<figcaption markdown="block">
-Out-of-order ingestion algorithm for creating a bidirectional aggregated delta chain for a predetermined set of versions.
-</figcaption>
-</figure>
 
 This out-of-order ingestion will typically not be used in a live setting.
 Instead, it can be used when initializing an archive when all versions are known beforehand.

@@ -49,16 +49,6 @@ each change or set of changes.
 - The **Timestamp-Based (TB)** approach stores the temporal validity of facts.
 - The **Fragment-based (FB)** approach stores snapshots of each changed _fragment_ of datasets.
 
-There exists a correspondence between these query atoms
-and the independent copies (IC), change-based (CB), timestamp-based (TB) and fragment-based (FB) storage strategies.
-Namely, IC and FB typically lead to efficient VM queries,
-CB is better for DM queries,
-and TB is best for VQ queries.
-No single strategy leads to good performance of all query atoms.
-
-[](#rdf-archive-systems) shows an overview of the primary RDF archiving systems,
-and which storage strategy they follow. These are explained in more detail hereafter.
-
 <figure id="rdf-archive-systems" class="table" markdown="1">
 
 | Name                                            | IC | CB | TB | FB |
@@ -83,6 +73,16 @@ Individual copies (IC), Change-based (CB), Timestamp-based (TB), or Fragment-bas
 ✓: fullfils the strategy completely; ~: fullfils the strategy partially.
 </figcaption>
 </figure>
+
+There exists a correspondence between these query atoms
+and the independent copies (IC), change-based (CB), timestamp-based (TB) and fragment-based (FB) storage strategies.
+Namely, IC and FB typically lead to efficient VM queries,
+CB is better for DM queries,
+and TB is best for VQ queries.
+No single strategy leads to good performance of all query atoms.
+
+[](#rdf-archive-systems) shows an overview of the primary RDF archiving systems,
+and which storage strategy they follow. These are explained in more detail hereafter.
 
 #### Independent copies approaches
 [SemVersion](cite:cites semversion) tracks different versions of RDF graphs,
