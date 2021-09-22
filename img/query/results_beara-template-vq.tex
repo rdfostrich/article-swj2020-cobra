@@ -1,4 +1,5 @@
 \newcommand{\storage}{vq}
+\newcommand{\querycobra}{QUERY_COBRA}
 \newcommand{\query}{QUERY}
 \documentclass{article}
 \input{content/img/results_query_common.tex}
@@ -8,14 +9,15 @@
     \begin{semilogyaxis}[barqueryplot]
         
         \addplot[barostrich] table [x expr=0,y=lookup-mus-inf, col sep=comma] {data/beara/query/ostrich/\query/_median_\storage.csv};
+        \addplot[barcobra] table [x expr=1,y=lookup-mus, col sep=comma] {data/beara/query/cobra/\querycobra/_median_\storage.csv};
         
-        \addplot[barhdtic] table [x expr=1,y=ms, col sep=comma] {data/beara/query/hdt-ic/\query/\storage.csv};
-        \addplot[barhdtcb] table [x expr=2,y=ms, col sep=comma] {data/beara/query/hdt-cb/\query/\storage.csv};
+        \addplot[barhdtic] table [x expr=2,y=ms, col sep=comma] {data/beara/query/hdt-ic/\query/\storage.csv};
+        \addplot[barhdtcb] table [x expr=3,y=ms, col sep=comma] {data/beara/query/hdt-cb/\query/\storage.csv};
         
-        \addplot[barjenaic] table [x expr=3,y=ms, col sep=comma] {data/beara/query/jena-ic/\query/\storage.csv};
-        \addplot[barjenacb] table [x expr=4,y=ms, col sep=comma] {data/beara/query/jena-cb/\query/\storage.csv};
-        \addplot[barjenatb] table [x expr=5,y=ms, col sep=comma] {data/beara/query/jena-tb/\query/\storage.csv};
-        \addplot[barjenacbtb] table [x expr=6,y=ms, col sep=comma] {data/beara/query/jena-cb-tb/\query/\storage.csv};
+        \addplot[barjenaic] table [x expr=4,y=ms, col sep=comma] {data/beara/query/jena-ic/\query/\storage.csv};
+        \addplot[barjenacb] table [x expr=5,y=ms, col sep=comma] {data/beara/query/jena-cb/\query/\storage.csv};
+        \addplot[barjenatb] table [x expr=6,y=ms, col sep=comma] {data/beara/query/jena-tb/\query/\storage.csv};
+        \addplot[barjenacbtb] table [x expr=7,y=ms, col sep=comma] {data/beara/query/jena-cb-tb/\query/\storage.csv};
         
     \end{semilogyaxis}
 \end{tikzpicture}

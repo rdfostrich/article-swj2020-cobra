@@ -1,4 +1,5 @@
 \newcommand{\storage}{vm}
+\newcommand{\querycobra}{QUERY_COBRA}
 \newcommand{\query}{QUERY}
 \documentclass{article}
 \input{content/img/results_query_common.tex}
@@ -8,6 +9,7 @@
     \begin{semilogyaxis}[queryplot,every axis legend/.append style={at={(0.6,1.1)},anchor=north}]
         
         \addplot[ostrich] table [x=patch, y=lookup-mus-inf, col sep=comma] {data/beara/query/ostrich/\query/_median_\storage.csv};
+        \addplot[cobra] table [x=patch, y=lookup-mus, col sep=comma] {data/beara/query/cobra/\querycobra/_median_\storage.csv};
         
         \addplot[hdtic] table [x=version, y=ms, col sep=comma] {data/beara/query/hdt-ic/\query/\storage.csv};
         \addplot[hdtcb] table [x=version, y=ms, col sep=comma] {data/beara/query/hdt-cb/\query/\storage.csv};
