@@ -145,7 +145,7 @@ GEM
     sass-listen (4.0.0)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
-    scholarmarkdown (2.9.0)
+    scholarmarkdown (2.10.0)
       bibmarkdown (~> 2.0.0)
       bibtex-ruby
       citeproc-ruby (>= 1.1.6)
